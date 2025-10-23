@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-16" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="keywords" content="gaming, fire emblem">
+  <meta name="description" content="Reference Guide for FE8R">
+  <title>FE8R Reference Guide</title>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+
+<body>
+  <header class="container-fluid">
+    <nav>
+      <ul>
+        <li><strong><a href="{{ url_for('index') }}">FE8R Reference Guide</a></strong></li>
+      </ul>
+      <ul>
+        <li>
+          <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}
+    {% endblock content %}
+  </main>
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block content %}
+<article>
+    <header>
+        <strong>{{ item_data.name }}</strong>
+    </header>
+    {% if item_data.weapon_type %}
+    <img class="skill-icon" src="/static/images/icons/{{ item_data.weapon_type }}.webp"
+        title="{{ item_data.weapon_type }}" height="24" width="24" alt="{{ item_data.weapon_type }}" />{% if
+    item_data.weapon_rank %} {{ item_data.weapon_rank
+    }}{% endif %}<br />
+    {% endif %}
+    {% if item_data.min_range %}
+    {% if item_data.min_range == item_data.max_range %}
+    <span class="pico-color-amber-150">Rng: </span>{{ item_data.min_range }}<br />
+    {% else %}
+    <span class="pico-color-amber-150">Rng: </span>{{ item_data.min_range }}&ndash;{{ item_data.max_range
+    }}<br />
+    {% endif %}
+    {% endif %}
+    {% if item_data.weight %}
+    <span class="pico-color-amber-150">Wt: </span>{{ item_data.weight }}<br />
+    {% endif %}
+    {% if item_data.damage %}
+    <span class="pico-color-amber-150">Mt: </span>{{ item_data.damage }}<br />
+    {% endif %}
+    {% if item_data.hit %}
+    <span class="pico-color-amber-150">Hit: </span>{{ item_data.hit }}<br />
+    {% endif %}
+    {% if item_data.crit %}
+    <span class="pico-color-amber-150">Crit: </span>{{ item_data.crit }}<br />
+    {% endif %}
+    {% if item_data.value %}
+    <span class="pico-color-amber-150">Value: </span>{{ item_data.value }}<br />
+    {% endif %}
+    {% if item_data.desc %}
+    <p>{{ item_data.desc }}</p>
+    {% endif %}
+
+</article>
+{% endblock content %}

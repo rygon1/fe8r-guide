@@ -1,0 +1,88 @@
+<div>
+    <hgroup>
+        <h4>{{ class_data.name }}</h4>
+        <p>{{ class_data.desc }}</p>
+    </hgroup>
+    <details class="dropdown">
+        <summary>Stats</summary>
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th scope="col">Stat</th>
+                    <th scope="col">
+                        On Promo
+                    </th>
+                    <th scope="col">
+                        Growth
+                    </th>
+                    <th scope="col">
+                        Cap
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">HP</th>
+                    <td>+{{ class_data.promotion.hp }}</td>
+                    <td>+{{ class_data.growth_bonus.hp}}%</td>
+                    <td>{{ class_data.max_stats.hp + unit_data.stat_cap_modifiers.hp }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">STR</th>
+                    <td>+{{ class_data.promotion.str }}</td>
+                    <td>+{{ class_data.growth_bonus.str}}%</td>
+                    <td>{{ class_data.max_stats.str + unit_data.stat_cap_modifiers.str }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">MAG</th>
+                    <td>+{{ class_data.promotion.mag }}</td>
+                    <td>+{{ class_data.growth_bonus.mag}}%</td>
+                    <td>{{ class_data.max_stats.mag + unit_data.stat_cap_modifiers.mag }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">SKL</th>
+                    <td>+{{ class_data.promotion.skl }}</td>
+                    <td>+{{ class_data.growth_bonus.skl}}%</td>
+                    <td>{{ class_data.max_stats.skl + unit_data.stat_cap_modifiers.skl }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">SPD</th>
+                    <td>+{{ class_data.promotion.spd }}</td>
+                    <td>+{{ class_data.growth_bonus.spd}}%</td>
+                    <td>{{ class_data.max_stats.spd + unit_data.stat_cap_modifiers.spd }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">LCK</th>
+                    <td>+{{ class_data.promotion.lck }}</td>
+                    <td>+{{ class_data.growth_bonus.lck}}%</td>
+                    <td>{{ class_data.max_stats.lck + unit_data.stat_cap_modifiers.lck }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">DEF</th>
+                    <td>+{{ class_data.promotion.df }}</td>
+                    <td>+{{ class_data.growth_bonus.df}}%</td>
+                    <td>{{ class_data.max_stats.df + unit_data.stat_cap_modifiers.df }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">RES</th>
+                    <td>+{{ class_data.promotion.res }}</td>
+                    <td>+{{ class_data.growth_bonus.res}}%</td>
+                    <td>{{ class_data.max_stats.res + unit_data.stat_cap_modifiers.res }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">CON</th>
+                    <td>+{{ class_data.promotion.con }}</td>
+                    <td>+{{ class_data.growth_bonus.con}}%</td>
+                    <td>{{ class_data.max_stats.con + unit_data.stat_cap_modifiers.con }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">MOV</th>
+                    <td>{{ class_data.bases.mov }}</td>
+                    <td>+{{ class_data.growth_bonus.mov}}%</td>
+                    <td>{{ class_data.max_stats.mov + unit_data.stat_cap_modifiers.mov }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </details>
+
+</div>

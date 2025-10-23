@@ -1,0 +1,65 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block content %}
+<section>
+    <form>
+        <fieldset class="grid">
+            <div>
+                <select name="unitCategory" id="unitCategory" aria-label="Select category" required
+                    _="on change set myFilter to me.value then show <select/> in #unitSelector when its.getAttribute('data-category') is myFilter then set .unitSelect.value to 'default' then
+                    on load set myFilter to me.value then show <select/> in #unitSelector when its.getAttribute('data-category') is myFilter then set .unitSelect.value to 'default'">
+                    <option value="Vanilla">Vanilla</option>
+                    <option value="Monsters">Monsters</option>
+                    <option value="Dragon Gate">Dragon's Gate
+                    </option>
+                </select>
+            </div>
+            <div id="unitSelector">
+                {% for unit_category,units in arsenal_units.items() %}
+                <select class="unitSelect" name="unitSelect" aria-label="Select unit"
+                    data-category="{{ unit_category }}" required hx-get="/items/arsenals" hx-target="#arsenalSheet"
+                    hx-swap="outerHTML">
+                    <option value="default" selected disabled>Select a unit</option>
+                    {% for unit in units %}
+                    <option value="{{ unit.nid }}">{{ unit.name }}</option>
+                    {% endfor %}
+                </select>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </form>
+</section>
+<div id="arsenalSheet">
+    <h1>{{ unit_data["name"] }}</h1>
+    {% for arsenal_nid, arsenal in unit_arsenals.items() %}
+    <section>
+        <hgroup>
+            <h2>{{ arsenal["name"] }}</h2>
+            <p>{{ arsenal["desc"] }}</p>
+        </hgroup>
+        <select name="arsenalItemType" aria-label="Select weapon type" required
+            _="on change set myFilter to me.value then show .arsenalItemType in #arsenalItems when its.getAttribute('data-category') is myFilter or myFilter=='all'">
+            <option selected disabled value="">
+                Select weapon type
+            </option>
+            <option value="all">All</option>
+            {% for item_type in arsenal["items"]%}
+            <option value="{{item_type}}">{{ item_type }}</option>
+            {% endfor %}
+        </select>
+
+        <div id="arsenalItems">
+            {% for item_type,item_nids in arsenal["items"].items() %}
+            <div class="arsenalItemType" data-category="{{ item_type }}">
+                {% for item_nid in item_nids %}
+                <div hx-get="/items/{{ item_nid }}" hx-trigger="load" hx-target="this">
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+</div>
+{% endblock content %}
