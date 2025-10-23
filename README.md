@@ -23,7 +23,8 @@ Python >=3.10
 2. Run deploy.sh
 
     ```bash
-    chmod+x deploy.sh && ./deploy.sh
+    cd fe8r-guide
+    chmod +x deploy.sh && ./deploy.sh
     ```
 
 The next ones are optional, just in case this repo is out of date with the FE8RProject files.
@@ -41,10 +42,12 @@ The next ones are optional, just in case this repo is out of date with the FE8RP
     python get_resources.py
     ```
 
-### Running the server
+### Running the server locally
 
 ```bash
 source .venv/bin/activate && gunicorn wsgi:app
 ```
+
+Go to http://127.0.0.1:8000 in your internet browser of choice.
 
 If you're on Windows and not using WSL, try using waitress instead of gunicorn.
