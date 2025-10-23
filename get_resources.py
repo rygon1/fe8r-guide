@@ -96,6 +96,7 @@ def make_arsenal_json() -> None:
                 "Orson",
                 "Orson_Evil",
                 "Davius_Old",
+                "MyUnit",
             ):
                 arsenals[unit_nid] = {}
     # Add arsenal details
