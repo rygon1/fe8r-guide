@@ -17,14 +17,13 @@ Python >=3.10
 1. Clone this repo
 
     ```bash
-    git clone --depth 1
+    git clone --depth 1 https://github.com/rygon1/fe8r-guide.git
     ```
 
 2. Run deploy.sh
 
     ```bash
-    chmod+x deploy.sh
-    ./deploy.sh
+    chmod+x deploy.sh && ./deploy.sh
     ```
 
 The next ones are optional, just in case this repo is out of date with the FE8RProject files.
@@ -39,12 +38,13 @@ The next ones are optional, just in case this repo is out of date with the FE8RP
 3. In the fe8r-guide directory, run get_resources.py
   
     ```bash
-        python get_resources.py
+    python get_resources.py
     ```
 
 ### Running the server
 
 ```bash
-source .venv/bin/activate
-gunicorn wsgi:app
+source .venv/bin/activate && gunicorn wsgi:app
 ```
+
+If you're on Windows and not using WSL, try using waitress instead of gunicorn.
