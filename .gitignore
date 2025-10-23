@@ -218,3 +218,4 @@ static/images/*
 
 *.cfg
 /lib64
+ltprojpath.txt
