@@ -1,6 +1,7 @@
 import json
 import re
 from dataclasses import dataclass
+from typing import Any
 
 from flask import Blueprint, render_template, request
 
@@ -22,7 +23,7 @@ class FEItem:
     hit: int
     min_range: int
     max_range: int
-    icon_nid: str
+    icon_class: str
 
 
 @dataclass
@@ -54,21 +55,55 @@ def get_comp_str(data_entry, comp_name: str):
     return ""
 
 
-def process_styled_text(raw_text):
-    new_text = re.sub(
-        r"\<icon\>(.*?)\</\>",
-        r'<img class="skill-icon" src="/static/images/icons/\1.webp" title="\1" height="24" width="24" alt="\1"/>',
-        raw_text,
+def convert_func(matchobj):
+    if m := matchobj.group(1):
+        return f'<span class="{make_valid_class_name(m)}-icon"></span>'
+    return ""
+
+
+def process_styled_text(raw_text) -> str:
+    """
+    Converts in-game desc tags to html. Note that this uses pico.css, so remember to change the
+    classes to get proper colors.
+    """
+    new_text = raw_text
+    replacements: tuple[
+        tuple[str, str],
+        tuple[str, str],
+        tuple[str, str],
+        tuple[str, str],
+        tuple[str, str],
+    ] = (
+        (
+            r"\<icon\>(.*?)\</\>",
+            convert_func,
+        ),
+        (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="pico-color-\1-500">\2</span>'),
+        (r"{e:(.*?)}", r""),
+        (r" \(<span class=\"pico-color-red-500\"></span>\)", r""),
+        (r"\n", r"<br/>"),
     )
-    new_text = re.sub(
-        r"\<([^/]*?)\>(.*?)(\</\>)",
-        r'<span class="pico-color-\1-500">\2</span>',
-        new_text,
-    )
-    new_text = re.sub(r"{e:(.*?)}", r"", new_text)
-    new_text = re.sub(r" \(<span class=\"pico-color-red-500\"></span>\)", r"", new_text)
-    new_text = re.sub(r"\n", r"<br/>", new_text)
+    for pattern, replacement in replacements:
+        new_text = re.sub(pattern, replacement, new_text)
     return new_text
+
+
+def make_valid_class_name(s):
+    # Remove invalid characters and replace spaces with underscores
+    cleaned_s = "".join(c for c in s if c.isalnum() or c == " ").replace(" ", "_")
+
+    # Ensure it starts with a letter or underscore
+    if cleaned_s and not cleaned_s[0].isalpha() and cleaned_s[0] != "_":
+        cleaned_s = "_" + cleaned_s
+
+    # Convert to PascalCase (optional, but common for Python class names)
+    parts = cleaned_s.split("_")
+    pascal_case_name = "".join(part.capitalize() for part in parts)
+
+    if pascal_case_name[0] in "1234567890":
+        pascal_case_name = "x" + pascal_case_name
+
+    return pascal_case_name
 
 
 def init_lists() -> None:
@@ -133,7 +168,11 @@ def init_lists() -> None:
                     else 0
                 ),
                 target=target,
-                icon_nid=data_entry["icon_nid"],
+                icon_class=(
+                    f"{make_valid_class_name(data_entry["nid"])}-icon {make_valid_class_name(data_entry["icon_nid"])}-icon"
+                    if data_entry["icon_nid"]
+                    else ""
+                ),
             )
 
 

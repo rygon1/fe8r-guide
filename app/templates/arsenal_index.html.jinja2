@@ -19,7 +19,7 @@
                 {% for unit_category,units in arsenal_units.items() %}
                 <select class="unitSelect" name="unitSelect" aria-label="Select unit"
                     data-category="{{ unit_category }}" required hx-get="/items/arsenals" hx-target="#arsenalSheet"
-                    hx-swap="outerHTML">
+                    hx-swap="outerHTML">{# TODO Add hx-indicator #}
                     <option value="default" selected disabled>Select a unit</option>
                     {% for unit in units %}
                     <option value="{{ unit.nid }}">{{ unit.name }}</option>

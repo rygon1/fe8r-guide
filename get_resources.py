@@ -58,6 +58,30 @@ def get_comp(entry, comp_name: str, comp_type: type) -> Any:
         return None
 
 
+def make_valid_class_name(s):
+    # Remove invalid characters and replace spaces with underscores
+    cleaned_s = "".join(c for c in s if c.isalnum() or c == " ").replace(" ", "_")
+
+    # Ensure it starts with a letter or underscore
+    if cleaned_s and not cleaned_s[0].isalpha() and cleaned_s[0] != "_":
+        cleaned_s = "_" + cleaned_s
+
+    # Convert to PascalCase (optional, but common for Python class names)
+    parts = cleaned_s.split("_")
+    pascal_case_name = "".join(part.capitalize() for part in parts)
+
+    if pascal_case_name[0] in "1234567890":
+        pascal_case_name = "x" + pascal_case_name
+
+    return pascal_case_name
+
+
+def convert_func(matchobj):
+    if m := matchobj.group(1):
+        return f'<span class="{make_valid_class_name(m)}-icon"></span>'
+    return ""
+
+
 def process_styled_text(raw_text) -> str:
     """
     Converts in-game desc tags to html. Note that this uses pico.css, so remember to change the
@@ -73,7 +97,7 @@ def process_styled_text(raw_text) -> str:
     ] = (
         (
             r"\<icon\>(.*?)\</\>",
-            r'<img class="skill-icon" src="/static/images/icons/\1.webp" title="\1" height="24" width="24" alt="\1"/>',
+            convert_func,
         ),
         (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="pico-color-\1-500">\2</span>'),
         (r"{e:(.*?)}", r""),
@@ -304,7 +328,7 @@ def get_skill_icons():
 def main():
     make_arsenal_json()
     minify_json()
-    get_skill_icons()
+    # get_skill_icons()
 
 
 if __name__ == "__main__":

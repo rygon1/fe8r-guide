@@ -4,11 +4,10 @@
 {% block content %}
 <article>
     <header>
-        <strong>{{ item_data.name }}</strong>
+        <strong>{{ item_data.name }} <span class="{{ item_data.icon_class }}"></span></strong>
     </header>
     {% if item_data.weapon_type %}
-    <img class="skill-icon" src="/static/images/icons/{{ item_data.weapon_type }}.webp"
-        title="{{ item_data.weapon_type }}" height="24" width="24" alt="{{ item_data.weapon_type }}" />{% if
+    <span class="Wexpicons-icon {{ item_data.weapon_type }}-icon"></span>{% if
     item_data.weapon_rank %} {{ item_data.weapon_rank
     }}{% endif %}<br />
     {% endif %}
