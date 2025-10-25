@@ -1,7 +1,6 @@
 import json
 import re
 from dataclasses import dataclass
-from typing import Any
 
 from flask import Blueprint, render_template, request
 
@@ -33,6 +32,7 @@ class FEUnit:
 
 
 ITEMS = {}
+ITEM_CATS = {}
 UNITS = {}
 ARSENAL_UNITS = {}
 with bp.open_resource("../static/json/arsenals.json", "r") as f:
@@ -174,14 +174,31 @@ def init_lists() -> None:
                     else ""
                 ),
             )
+    # Make item categories
+    ITEM_CATS["Dragon's Gate"] = {
+        x: x_val for x, x_val in ITEMS.items() if x.endswith("_DG")
+    }
 
 
 init_lists()
 
 
 @bp.route("/")
+def get_fe_item_index() -> str:
+    if item_id := request.args.get("itemSelect"):
+        template = "item_sheet.html.jinja2"
+    else:
+        item_id = "Iron_Sword"
+        template = "item_index.html.jinja2"
+    return render_template(
+        template,
+        item_data=ITEMS[item_id],
+        item_cats=ITEM_CATS,
+    )
+
+
 @bp.route("/<string:fe_item_nid>")
-def get_fe_unit(fe_item_nid="Iron_Sword_Test") -> str:
+def get_fe_item_sheet(fe_item_nid="Iron_Sword_Test") -> str:
     fe_item_data = ITEMS[fe_item_nid]
     return render_template("item_sheet.html.jinja2", item_data=fe_item_data)
 

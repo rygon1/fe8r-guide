@@ -1,0 +1,35 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block content %}
+<h1>Items</h1>
+<section>
+    <form>
+        <fieldset class="grid">
+            <div>
+                <select name="itemCategory" id="itemCategory" aria-label="Select category" required
+                    _="on change set myFilter to me.value then show <select/> in #itemSelector when its.getAttribute('data-category') is myFilter then set .itemSelect.value to 'default' then
+                    on load set myFilter to me.value then show <select/> in #itemSelector when its.getAttribute('data-category') is myFilter then set .itemSelect.value to 'default'">
+                    {% for item_cat in item_cats%}
+                    <option value="{{ item_cat }}">{{ item_cat }}</option>
+                    {% endfor %}
+                    </option>
+                </select>
+            </div>
+            <div id="itemSelector">
+                {% for item_cat,items in item_cats.items() %}
+                <select class="itemSelect" name="itemSelect" aria-label="Select item" data-category="{{ item_cat }}"
+                    required hx-get="/items" hx-target="#itemSheet">{# TODO Add hx-indicator #}
+                    <option value="default" selected disabled>Select an item</option>
+                    {% for item_nid,item in items.items() %}
+                    <option value="{{ item.nid }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </form>
+</section>
+<div id="itemSheet">
+</div>
+{% endblock content %}
