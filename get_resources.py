@@ -4,12 +4,13 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from PIL import Image
 
 try:
-    with Path("ltprojpath.txt").open("r") as fp:
-        LTPROJ_DIR = Path(fp.read())
+    with Path("ltprojpath.txt").open("r", encoding="utf-8") as f:
+        LTPROJ_DIR = Path(f.read())
 except FileNotFoundError:
     print("Error: The file 'my_file.txt' was not found.")
 
@@ -19,6 +20,7 @@ if not LTPROJ_DIR.exists():
 JSON_DIR: Path = LTPROJ_DIR / "game_data"
 GUIDE_JSON_DIR: Path = Path.cwd() / "app/static/json"
 GUIDE_IMG_DIR: Path = Path.cwd() / "app/static/images"
+GUIDE_CSS_DIR: Path = Path.cwd() / "app/static/css"
 ICONS_16_DIR = LTPROJ_DIR / "resources/icons16"
 
 
@@ -78,7 +80,7 @@ def make_valid_class_name(s):
 
 def convert_func(matchobj):
     if m := matchobj.group(1):
-        return f'<span class="{make_valid_class_name(m)}-icon"></span>'
+        return f'<span class="{make_valid_class_name(m)}-subIcon"></span>'
     return ""
 
 
@@ -261,74 +263,98 @@ def make_arsenal_json() -> None:
     print("Done.")
 
 
-def extract_icon_from_sheet(
-    icon_sheet_path: Path | str,
-    x: int,
-    y: int,
-    width: int,
-    height: int,
-    output_path: Path | str,
-) -> None:
-    """
-    Extracts an icon from an icon sheet and saves it as a new image.
-    Args:
-        x, y (int): Coordinates of icon in icon sheet. Starts at top left.
-        width, height (int): Icon size in pixels
-    """
-    try:
-        icon_sheet = Image.open(icon_sheet_path)
-        icon_bbox = (x * width, y * height, x * width + width, y * height + height)
-        extracted_icon = icon_sheet.crop(icon_bbox)
-        extracted_icon = extracted_icon.convert("RGBA")
-        # Remove background
-        datas = extracted_icon.getdata()
-        new_img_data = []
-        target_color = (128, 160, 128)
-        for item in datas:
-            if (
-                item[0] == target_color[0]
-                and item[1] == target_color[1]
-                and item[2] == target_color[2]
-            ):
-                new_img_data.append((255, 255, 255, 0))
-            else:
-                new_img_data.append(item)
-        extracted_icon.putdata(new_img_data)
-        extracted_icon.save(output_path, "webp")
-    except FileNotFoundError:
-        print(f"Error: Icon sheet not found at {icon_sheet_path}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+def get_icons():
+    new_icons_path = GUIDE_IMG_DIR / "icons"
+    for entry in ICONS_16_DIR.iterdir():
+        if entry.suffix == ".png":
+            img = Image.open(entry)
+            img = img.convert("RGBA")
+            datas = img.getdata()
+            new_img_data = []
+            target_color = (128, 160, 128)
+            for item in datas:
+                if (
+                    item[0] == target_color[0]
+                    and item[1] == target_color[1]
+                    and item[2] == target_color[2]
+                ):
+                    new_img_data.append(
+                        (255, 255, 255, 0)
+                    )  # Replace with transparent white
+                else:
+                    new_img_data.append(item)
+            img.putdata(new_img_data)
+            img.save(new_icons_path / entry.name)
 
 
-def get_skill_icons():
-    print(f"Getting icons from icon sheets ...")
-    icon_json = ICONS_16_DIR / "icons16.json"
-    output_dir = GUIDE_IMG_DIR / "icons"
-    with icon_json.open("r") as fp:
+def make_icon_css():
+    css_path = GUIDE_CSS_DIR / "iconsheet.css"
+    icons_json = ICONS_16_DIR / "icons16.json"
+    items_json = JSON_DIR / "items.json"
+    css_str = ""
+    icon_height, icon_width = 16, 16
+    added_icon_sheet = []
+    with items_json.open("r") as fp:
         for entry in json.load(fp):
-            if entry["nid"] in (
-                "skill_icons",
-                "wexp_icons",
-                "Affinity",
-                "Monster WEP Icon",
-            ):
-                for fname, coords in entry["subicon_dict"].items():
-                    extract_icon_from_sheet(
-                        ICONS_16_DIR / f"{entry["nid"]}.png",
-                        coords[0],
-                        coords[1],
-                        16,
-                        16,
-                        output_dir / f"{fname}.webp",
-                    )
-    print("Done.")
+            if entry["icon_nid"]:
+                if entry["icon_nid"] not in added_icon_sheet:
+                    new_sheet_css = f"""
+                    .{make_valid_class_name(entry["icon_nid"])}-icon {{
+                        background-image: url(\'/static/images/icons/{quote(entry["icon_nid"]+".png")}\');
+                        background-repeat: no-repeat;
+                        width: 16px;
+                        height: 16px;
+                        display: inline-block;
+                    }}\n
+                    """
+                    css_str += new_sheet_css
+                    added_icon_sheet.append(entry["icon_nid"])
+                css_str += f"""
+                .{make_valid_class_name(entry["nid"])}-icon {{
+                    background-position: -{entry["icon_index"][0]*icon_width}px -{entry["icon_index"][1]*icon_height}px;
+                    width: 16px;
+                    height: 16px;
+                    margin: 0px 4px;
+                    transform: scale(1.5);
+                }}\n
+                """
+    with icons_json.open("r") as fp:
+        for entry in json.load(fp):
+            if entry["subicon_dict"]:
+                subicon_classes = ",".join(
+                    f".{make_valid_class_name(x)}-subIcon"
+                    for x in entry["subicon_dict"]
+                )
+
+                new_sheet_css = f"""
+                    {subicon_classes} {{
+                        background-image: url(\'/static/images/icons/{quote(entry["nid"]+".png")}\');
+                        background-repeat: no-repeat;
+                        width: 16px;
+                        height: 16px;
+                        display: inline-block;
+                    }}\n
+                    """
+                css_str += new_sheet_css
+                for subicon_nid, subicon_index in entry["subicon_dict"].items():
+                    css_str += f"""
+                        .{make_valid_class_name(subicon_nid)}-subIcon {{
+                            background-position: -{subicon_index[0]*icon_width}px -{subicon_index[1]*icon_height}px;
+                            width: 16px;
+                            height: 16px;
+                            margin: 0px 4px;
+                            transform: scale(1.5);
+                        }}\n
+                        """
+    with css_path.open("w") as fp:
+        fp.write(css_str)
 
 
 def main():
     make_arsenal_json()
     minify_json()
-    # get_skill_icons()
+    get_icons()
+    make_icon_css()
 
 
 if __name__ == "__main__":

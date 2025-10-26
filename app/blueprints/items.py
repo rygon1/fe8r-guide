@@ -57,7 +57,7 @@ def get_comp_str(data_entry, comp_name: str):
 
 def convert_func(matchobj):
     if m := matchobj.group(1):
-        return f'<span class="{make_valid_class_name(m)}-icon"></span>'
+        return f'<span class="{make_valid_class_name(m)}-subIcon"></span>'
     return ""
 
 

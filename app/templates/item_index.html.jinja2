@@ -19,7 +19,7 @@
             <div id="itemSelector">
                 {% for item_cat,items in item_cats.items() %}
                 <select class="itemSelect" name="itemSelect" aria-label="Select item" data-category="{{ item_cat }}"
-                    required hx-get="/items" hx-target="#itemSheet">{# TODO Add hx-indicator #}
+                    required hx-get="/items" hx-target="#itemSheet" hx-indicator="#itemSheet">
                     <option value="default" selected disabled>Select an item</option>
                     {% for item_nid,item in items.items() %}
                     <option value="{{ item.nid }}">{{ item.name }}</option>
@@ -31,5 +31,6 @@
     </form>
 </section>
 <div id="itemSheet">
+    <div aria-busy="true" class="htmx-indicator"></div>
 </div>
 {% endblock content %}

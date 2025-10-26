@@ -26,6 +26,10 @@ def create_app() -> Flask:
     def index() -> str:
         return render_template("index.html.jinja2", h1_title="home")
 
+    @app.route("/credits")
+    def get_credits() -> str:
+        return render_template("credits.html.jinja2")
+
     app.register_blueprint(units.bp)
     app.register_blueprint(items.bp)
 

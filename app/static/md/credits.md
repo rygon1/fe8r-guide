@@ -1,0 +1,952 @@
+# Credits
+
+## Icons - Skills, Items, Spells, Etc
+
+- {dancer_A, Rubber} Alt skill sheet (if there is anyone else on this one, please let the FE8R Dev know.)
+- {2WB, Hanakko} Dark Bow
+- {2WB} (Icon Blitz 1) DARK Unknown
+- {2WB} (Icon Blitz 1) DARK Unknown
+- {2WB} (Icon Blitz 1) Devil Bow.png
+- {2WB} (Icon Blitz 1) Devil Sword
+- {2WB} (Icon Blitz 1) Dracospear
+- {2WB} (Icon Blitz 1) Durandal (Ablaze)
+- {2WB} (Icon Blitz 1) Earthsword
+- {2WB} (Icon Blitz 1) Eclipse
+- {2WB} (Icon Blitz 1) Excalibur (3, 12)
+- {2WB} (Icon Blitz 1) Excalibur (Bow).png
+- {2WB} (Icon Blitz 1) Excalibur (Bow).png
+- {2WB} (Icon Blitz 1) Fenrir
+- {2WB} (Icon Blitz 1) Fimbulvetr1.png
+- {2WB} (Icon Blitz 1) Fire
+- {2WB} (Icon Blitz 1) Fire
+- {2WB} (Icon Blitz 1) Flux
+- {2WB} (Icon Blitz 1) Hunting Bow.png
+- {2WB} (Icon Blitz 1) Imperial Blade2
+- {2WB} (Icon Blitz 1) Imperial Lance2
+- {2WB} (Icon Blitz 1) Imperial Lance2
+- {2WB} (Icon Blitz 1) Imperial Poleaxe1.png
+- {2WB} (Icon Blitz 1) Iron Arch2
+- {2WB} (Icon Blitz 1) Iron Bow1
+- {2WB} (Icon Blitz 1) Iron Greatlance2
+- {2WB} (Icon Blitz 1) Iron Sword1
+- {2WB} (Icon Blitz 1) Killer Axe
+- {2WB} (Icon Blitz 1) Killer Bow
+- {2WB} (Icon Blitz 1) Killer Lance
+- {2WB} (Icon Blitz 1) Killing Edge
+- {2WB} (Icon Blitz 1) Light Brand
+- {2WB} (Icon Blitz 1) Luna
+- {2WB} (Icon Blitz 1) Nosferatu
+- {2WB} (Icon Blitz 1) Physic
+- {2WB} (Icon Blitz 1) Regal Sword
+- {2WB} (Icon Blitz 1) Reinefleche______Gilliam
+- {2WB} (Icon Blitz 1) Rex Hasta
+- {2WB} (Icon Blitz 1) Runesword
+- {2WB} (Icon Blitz 1) Short Spear
+- {2WB} (Icon Blitz 1) Silver Arch1
+- {2WB} (Icon Blitz 1) Silver Arch1.png
+- {2WB} (Icon Blitz 1) Silver Arch1.png
+- {2WB} (Icon Blitz 1) Silver Arch2
+- {2WB} (Icon Blitz 1) Silver Axe1
+- {2WB} (Icon Blitz 1) Silver Bow1
+- {2WB} (Icon Blitz 1) Silver Greatlance2
+- {2WB} (Icon Blitz 1) Silver Poleaxe2.png
+- {2WB} (Icon Blitz 1) Silver Sword1
+- {2WB} (Icon Blitz 1) Slim Axe.png
+- {2WB} (Icon Blitz 1) Slim Bow
+- {2WB} (Icon Blitz 1) Slim Sword
+- {2WB} (Icon Blitz 1) Slime
+- {2WB} (Icon Blitz 1) Steel Arch1
+- {2WB} (Icon Blitz 1) Steel Arch2
+- {2WB} (Icon Blitz 1) Steel Blade2
+- {2WB} (Icon Blitz 1) Steel Poleaxe1
+- {2WB} (Icon Blitz 1) Steel Sword1
+- {2WB} (Icon Blitz 1) Tomahawk.png
+- {2WB} (Icon Blitz 1) ULTIMATE BOW1
+- {2WB} (Icon Blitz 1) UNKNOWN Axe2.png
+- {2WB} (Icon Blitz 1) Wo Dao
+- {2WB} (Icon Blitz 1) Wyrmslayer
+- {2WB} (Icon Blitz 1) Zanbatou
+- {2WB} (Vanilla + Blitz) Armads
+- {2WB} (Vanilla + Blitz) Binding Blade
+- {2WB} (Vanilla + Blitz) Bright Lance
+- {2WB} (Vanilla + Blitz) Demon Surge
+- {2WB} (Vanilla + Blitz) Eckesachs
+- {2WB} (Vanilla + Blitz) Elfire
+- {2WB} (Vanilla + Blitz) Emblem Lance
+- {2WB} (Vanilla + Blitz) Fimbulvetr
+- {2WB} (Vanilla + Blitz) Gant s Lance
+- {2WB} (Vanilla + Blitz) Hellfang
+- {2WB} (Vanilla + Blitz) Killer Ballista
+- {2WB} (Vanilla + Blitz) Light Brand
+- {2WB} (Vanilla + Blitz) Magestone
+- {2WB} (Vanilla + Blitz) Magestone.png
+- {2WB} (Vanilla + Blitz) Maltet
+- {2WB} (Vanilla + Blitz) Mulagir
+- {2WB} (Vanilla + Blitz) Sharp Talon
+- {2WB} (Vanilla + Blitz) Vidofnir
+- {7743} [Ice] Blizzag
+- {Alice} Empty Icon.png
+- {Alice} Surge GBA-1.png
+- {Arch} [Anima] Ragnarok
+- {ArchaneaIconProject} 2019
+- {Artist Unknown, Hanakko} Dark Spear
+- {Artist Unknown} Axe 2
+- {Artist Unknown} Axe 2_________Ross
+- {Artist Unknown} Bow 1.png
+- {Artist Unknown} Bow 2
+- {Artist Unknown} Bow 4.png
+- {Artist Unknown} Fire Magic (2)
+- {Artist Unknown} Lance 2.png
+- {Artist Unknown} Staff 1
+- {Artist Unknown} Sword 2
+- {Artist Unknown} Sword 9.png
+- {AtelierLabs} bow 1.png
+- {AtelierLabs} Lunar Ray-1.png
+- {AtelierLabs} monster 1.png
+- {AtelierLabs} scythe 1.png
+- {AtelierLabs} spear 1.png
+- {AtelierLabs} spear 2.png
+- {AtelierLabs} staff 3
+- {AtelierLabs} sword 10.png
+- {AtelierLabs} sword 13.png
+- {AtelierLabs} sword 14.png
+- {AtelierLabs} sword 2______Franz
+- {AtelierLabs} sword 4.png
+- {AtelierLabs} sword 6.png
+- {AtelierLabs} sword 7.png
+- {AtelierLabs} sword 8.png
+- {AtelierLabs}sword 1.png
+- {Batima?} Monster-Dragon_______Thetis 1
+- {Batima?} Monster-Dragon_______Thetis2
+- {Batima?} Multishot______icono______arco tensado con fondo verde.
+- {Batima?} Quick Blade______icono____Quick Blade
+- {Batima} Arbalest
+- {Batima} Armads
+- {Batima} Armads____________Moulder
+- {Batima} Beastkiller.png
+- {Batima} Blizzard (POR)
+- {Batima} Bolganone (FEA).png
+- {Batima} Book of Naga (Alt Color 2)
+- {Batima} Book of Naga (Alt Color)
+- {Batima} Bowgun
+- {Batima} Brass Katana.png
+- {Batima} Brass Naginata.png
+- {Batima} Brave Bow (Tellius)
+- {Batima} Brave Lance (DS)
+- {Batima} Broken Poleaxe
+- {Batima} Bronze Blade
+- {Batima} Bronze Poleaxe
+- {Batima} Bronze Sword
+- {Batima} Bull Blade-1.png
+- {Batima} Crossbow
+- {Batima} Dark Spikes
+- {Batima} Dark Spikes
+- {Batima} Double Bow (FEA OLD)
+- {Batima} Dragonstone+ - Alt3
+- {Batima} Dulam
+- {Batima} Excalibur (FEA) - Alt
+- {Batima} Failnaught.png
+- {Batima} Falchion (Archanea) - Exalted
+- {Batima} Falchion (Ylisse) - Exalted-1.png
+- {Batima} Flame Sword-1.png
+- {Batima} Forseti
+- {Batima} Freikugel (WIP)
+- {Batima} Freikugel (WIP) (Glowing)
+- {Batima} Fujin Yumi.png
+- {Batima} Gáe Bolg
+- {Batima} Geirskögul _______Seth
+- {Batima} Geosphere (Vert)
+- {Batima} Glass Bow
+- {Batima} Glower (DS)
+- {Batima} Great Ballista.png
+- {Batima} Gungnir
+- {Batima} Hauteclere
+- {Batima} Helswath
+- {Batima} Imhullu
+- {Batima} Iote's Shield
+- {Batima} Iron Club
+- {Batima} Iron Dagger
+- {Batima} Iron Naginata
+- {Batima} Killing Edge (FEA)
+- {Batima} Levin Sword
+- {Batima} Light (Lightning) (Alt Color)
+- {Batima} Longsword.png
+- {Batima} Loptous (Custom) (Alt)
+- {Batima} Loptous (Custom) (Alt)
+- {Batima} Loptous (Custom) (Alt)_______Saleh
+- {Batima} Luce (Alt Color)
+- {Batima} Mareeta's Sword
+- {Batima} Meisteraxt
+- {Batima} Meisterbogen.png
+- {Batima} Meisterschwert
+- {Batima} Merric's Tome.png
+- {Batima} Missiletainn.png
+- {Batima} Nameless Blade
+- {Batima} Nini's Ice Lance.png
+- {Batima} Onager.png
+- {Batima} Pachyderm.png
+- {Batima} Panther Lance.png
+- {Batima} Poison Ballista.png
+- {Batima} Poison Dagger.png
+- {Batima} Ragnell (FEA)
+- {Batima} Ragnell (FEA)
+- {Batima} Ragnell (FEA)_____Gerik
+- {Batima} Regal Blade.png
+- {Batima} Rexaura (Alt Color).png
+- {Batima} Rexcalibur
+- {Batima} Silver Club
+- {Batima} Silver Dagger.png
+- {Batima} Silver Greatlance
+- {Batima} Silver Longbow.png
+- {Batima} Silver Naginata
+- {Batima} Silver Poleaxe
+- {Batima} Silver Yumi.png
+- {Batima} Sol Katti (FEA)
+- {Batima} Spear (Custom)
+- {Batima} Starlight (DS).png
+- {Batima} Steel Club
+- {Batima} Steel Dagger.png
+- {Batima} Steel Longbow.png
+- {Batima} Steel Naginata - Fancy
+- {Batima} Steel Poleaxe
+- {Batima} Swarm (DS)
+- {Batima} Swordslayer
+- {Batima} Swordslayer
+- {Batima} Swordslayer________Duessel
+- {Batima} Swordslayer-1.png
+- {Batima} Thani - Alt
+- {Batima} Thunderbolt.png
+- {Batima} Tyrfing(FEA)
+- {Batima} Tyrfing(FEA)
+- {Batima} Unused Ring 1
+- {Batima} Urvan
+- {Batima} Valflame
+- {Batima} Valkyrie
+- {Batima} Yato (Blazing)
+- {Batima} Yato (Noble) (Glowing)
+- {Batima} Yato (Omega) (Glowing).png
+- {Batima} Yewfelle - Copia.png
+- {Batima} Zanbato (Edit)
+- {BBHood217}
+- {Beansy} Angel Crown
+- {Beansy} Angel Tear2
+- {Beansy} Arectaris
+- {Beansy} Arectaris.png
+- {Beansy} Audhulma
+- {Beansy} Aura
+- {Beansy} Aurora.png
+- {Beansy} Aymr
+- {Beansy} Barrier
+- {Beansy} Battle Axe
+- {Beansy} Black Fang.png
+- {Beansy} Blue Wave Sword
+- {Beansy} Bolverk
+- {Beansy} Bowgun
+- {Beansy} Bronze Axe
+- {Beansy} Brynhildr
+- {Beansy} Collapse
+- {Beansy} Crablass.png
+- {Beansy} Crystal Sword.png
+- {Beansy} Deathsickle.png
+- {Beansy} Devil Axe
+- {Beansy} Dragon Axe
+- {Beansy} Ease
+- {Beansy} Edge
+- {Beansy} Evil Nos Spear
+- {Beansy} Fiendcleaver
+- {Beansy} Fimbulvetr
+- {Beansy} Fimbulvetr
+- {Beansy} Frost Blade.png
+- {Beansy} Gigaflame
+- {Beansy} Gilded Claw.png
+- {Beansy} Hailstorm
+- {Beansy} Heal
+- {Beansy} Helix Blade (Half 1)
+- {Beansy} Helix Blade (Half 2)
+- {Beansy} Helix Blade (Vengeful).png
+- {Beansy} Helix Blade.png
+- {Beansy} Ice Shard
+- {Beansy} Icebolt
+- {Beansy} Iron Ballista
+- {Beansy} Ivaldi
+- {Beansy} Killer Axe+
+- {Beansy} Killer Bow+
+- {Beansy} Killer Lance
+- {Beansy} Killer Scythe.png
+- {Beansy} Lancereaver
+- {Beansy} Magic Bow.png
+- {Beansy} Miasma
+- {Beansy} Poison Axe
+- {Beansy} Purple Wave Sword
+- {Beansy} Recover
+- {Beansy} Ring Black
+- {Beansy} Ring Blue
+- {Beansy} Ring Green
+- {Beansy} Ring Red
+- {Beansy} Ruby Sword
+- {Beansy} Scythe.png
+- {Beansy} Short Axe(Vanilla)
+- {Beansy} Silver Axe
+- {Beansy} Sleep
+- {Beansy} Solar Flare.png
+- {Beansy} Sord.png
+- {Beansy} Spear
+- {Beansy} Steel Axe
+- {Beansy} Steel Scythe.png
+- {Beansy} Sunbeam.png
+- {Beansy} Swordslayer
+- {Beansy} Toxic Gas.png
+- {Beansy} True Lens
+- {Beansy} Warp Axe
+- {Beansy} Wind Sword.png
+- {Beansy} Yato
+- {Bonzai, Blazer} [Ice] Aqua Edge
+- {CamTech075} (Pack 1) icon 006
+- {CamTech075} (Pack 1) icon 007
+- {CamTech075} (Pack 1) icon 009
+- {CamTech075} (Pack 1) icon 010.png
+- {CamTech075} (Pack 1) icon 015
+- {CamTech075} (Pack 1) icon 019
+- {CamTech075} (Pack 1) icon 026
+- {CamTech075} (Pack 1) icon 030.png
+- {CamTech075} (Pack 1) icon 041.png
+- {CamTech075} (Pack 1) icon 049
+- {CamTech075} (Pack 1) icon 057________Vanessa
+- {CamTech075} (Pack 1) icon 079.png
+- {CamTech075} (Pack 1) icon 081.png
+- {CamTech075} (Pack 1) icon 108.png
+- {CamTech075} (Pack 1) icon 121.png
+- {CamTech075} (Pack 2) icon 003
+- {CamTech075} (Pack 2) icon 005.png
+- {CamTech075} (Pack 2) icon 006.png
+- {CamTech075} (Pack 2) icon 012.png
+- {CamTech075} (Pack 2) icon 013
+- {CamTech075} (Pack 2) icon 014
+- {CamTech075} (Pack 2) icon 026
+- {CamTech075} (Pack 2) icon 026.png
+- {CamTech075} (Pack 2) icon 027.png
+- {CamTech075} (Pack 2) icon 028.png
+- {CamTech075} (Pack 2) icon 030.png
+- {CamTech075} (Pack 2) icon 033.png
+- {CamTech075} Steel Axe [F2E]
+- {Cardcafe} (FE15) Item 12
+- {Cardcafe} (FE15) Item 4
+- {Cardcafe} (Mixed 2) Item 4
+- {Cardcafe} (Mixed 2) Tome 1
+- {Cardcafe} (Mixed 2) Tome 13
+- {Cardcafe} (Mixed 2) Tome 16.png
+- {Cardcafe} (Mixed 2) Tome 21.png
+- {Cardcafe} (Mixed 2) Tome 23.png
+- {Cardcafe} (Mixed 2) Tome 26.png
+- {Cardcafe} (Mixed 2) Tome 28.png
+- {Cardcafe} (Mixed 2) Tome 30.png
+- {Cardcafe} (Mixed 2) Tome 30.png
+- {Cardcafe} (Mixed 2) Tome 31.png
+- {Cardcafe} (Mixed 2) Tome 31.png
+- {Cardcafe} (Mixed 2) Tome 32.png
+- {Cardcafe} (Mixed 2) Tome 33.png
+- {Cardcafe} (Mixed 2) Tome 34.png
+- {Cardcafe} (Mixed 2) Tome 6.png
+- {Cardcafe} Item 4
+- {Cardcafe} Tome 3.png
+- {Cardcafe} Tome 4.png
+- {Cardcafe} Tome 4.png
+- {Celice} [Gáe Bolg]
+- {Celice} Anima 14.png
+- {Celice} Anima 16.png
+- {Celice} Anima 17.png
+- {Celice} Anima 21.png
+- {Celice} Anima 22.png
+- {Celice} Anima 23.png
+- {Celice} Anima 23.png
+- {Celice} Anima 24.png
+- {Celice} Anima 4.png
+- {Celice} Anima 5.png
+- {Celice} Anima 5.png
+- {Celice} Anima 6.png
+- {Celice} Anima 9.png
+- {Celice} Axe 10.png
+- {Celice} Axe 14.png
+- {Celice} Axe 23.png
+- {Celice} Axe 4
+- {Celice} Axe 6
+- {Celice} Ballista 2
+- {Celice} Ballista_3.png
+- {Celice} Bow 2-1.png
+- {Celice} Bow 5.png
+- {Celice} Dark 5.png
+- {Celice} Item 12
+- {Celice} Item 13
+- {Celice} Item 8
+- {Celice} Lance 17.png
+- {Celice} Lance 18
+- {Celice} Lance_8.png
+- {Celice} Lance10.png
+- {Celice} Light 3.png
+- {Celice} Light 5.png
+- {Celice} Light 6.png
+- {Celice} Light 9
+- {Celice} Monster 1.png
+- {Celice} Monster 2.png
+- {Celice} Staff 11.png
+- {Celice} Staff 12.png
+- {Celice} Staff 18
+- {Celice} Staff 21.png
+- {Celice} Staff 22.png
+- {Celice} Staff 3.png
+- {Celice} Staff 6.png
+- {Celice} Staff 8.png
+- {Celice} Sword 13
+- {Celice} Sword 25.png
+- {Celice} Sword 27.png
+- {Celice} Sword 30.png
+- {Celice} Sword 32.png
+- {Celice} Tome 1.png
+- {Celice} Tome 2.png
+- {Celice} Tome 3.png
+- {Celice} Tome 5.png
+- {Chamomile} Forseti (FE13)
+- {Chamomile} Mystletainn (FE13)
+- {Chamomile} Mystletainn (FE13)
+- {Chamomile} Tyrfing (FE13)
+- {Chamomile} Valkyrie (FE13)
+- {Dark} (Succubus) Monster 1.png
+- {Dark} (Succubus) Monster 2.png
+- {DATonDemand, 2wb} Gullin Katti (Boar Cutter)
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Armor 50
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Axe 11
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Axe 11__Kyle
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Icon 34
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Icon 38
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 19
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 23
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 44
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 50
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 55
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 60
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Item 63
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Staff 6
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 11
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 15
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 16
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 17
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 20.png
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 30.png
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 5
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 6.png
+- {EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Sword 7.png
+- {Ereshkigal} (Proficient) Axe 1.png
+- {Ereshkigal} (Proficient) Lance 2.png
+- {Ereshkigal} (Proficient) Lance 4
+- {Ereshkigal} (Proficient) Sword 3
+- {Ereshkigal} Anima 12.png
+- {Ereshkigal} Anima 13.png
+- {Ereshkigal} Anima 14.png
+- {Ereshkigal} Anima 15.png
+- {Ereshkigal} Anima 16.png
+- {Ereshkigal} Anima 17.png
+- {Ereshkigal} Anima 18.png
+- {Ereshkigal} Anima 22.png
+- {Ereshkigal} Anima 24.png
+- {Ereshkigal} Anima 6.png
+- {Ereshkigal} Axe 14.png
+- {Ereshkigal} Axe 23.png
+- {Ereshkigal} Axe 6.png
+- {Ereshkigal} Axe 8.png
+- {Ereshkigal} Blade 14
+- {Ereshkigal} Blade 14
+- {Ereshkigal} Blade 16
+- {Ereshkigal} Blade 17
+- {Ereshkigal} Blade 9
+- {Ereshkigal} Bow 15.png
+- {Ereshkigal} Bow 19
+- {Ereshkigal} Bow 23
+- {Ereshkigal} Dagger 14.png
+- {Ereshkigal} Dagger 6
+- {Ereshkigal} Dagger 7.png
+- {Ereshkigal} Dark 18.png
+- {Ereshkigal} Extra 11.png
+- {Ereshkigal} Extra 22
+- {Ereshkigal} Extra 23
+- {Ereshkigal} Extra 23
+- {Ereshkigal} Extra 29.png
+- {Ereshkigal} Extra 35.png
+- {Ereshkigal} Extra 49.png
+- {Ereshkigal} Extra 9
+- {Ereshkigal} Hammer 1
+- {Ereshkigal} Hammer 10
+- {Ereshkigal} Hammer 12
+- {Ereshkigal} Hammer 13.png
+- {Ereshkigal} Hammer 14.png
+- {Ereshkigal} Hammer 16
+- {Ereshkigal} Hammer 2.png
+- {Ereshkigal} Hammer 3.png
+- {Ereshkigal} Hammer 4.png
+- {Ereshkigal} Hammer 6.png
+- {Ereshkigal} Katana 2.png
+- {Ereshkigal} Katana 6.png
+- {Ereshkigal} Katana 9
+- {Ereshkigal} Lance 22______Innes
+- {Ereshkigal} Lance 23.png
+- {Ereshkigal} Lance 25.png
+- {Ereshkigal} Lance 26
+- {Ereshkigal} Lance 4
+- {Ereshkigal} Lance 6.png
+- {Ereshkigal} Lance 7.png
+- {Ereshkigal} Proficient Fire 1
+- {Ereshkigal} Staff 1
+- {Ereshkigal} Staff 11.png
+- {Ereshkigal} Staff 12
+- {Ereshkigal} Staff 15.png
+- {Ereshkigal} Staff 3
+- {Ereshkigal} Staff 4.png
+- {Ereshkigal} Steel Axe-1.png
+- {Ereshkigal} Sword 17______Dozla
+- {Ereshkigal} Sword 22
+- {Ereshkigal} Sword 4.png
+- {Ereshkigal} Unique 11
+- {Ereshkigal} Unique 8
+- {Ereshkigal} Unique 9
+- {Feier} (Icon Blitz 3) Bellringer
+- {Feier} (Icon Blitz 3) Tanngrisnir
+- {Fenriel, FE12} Levin Sword
+- {Fenrier} Gunblade - Lionheart
+- {Fenrier} Gunblade - Punishment
+- {Fenrier} Gunblade - Revolver
+- {FuriousHaunter} Anima Reaver.png
+- {FuriousHaunter} Binding Axe [F2E]-1.png
+- {FuriousHaunter} Binding Axe.png
+- {FuriousHaunter} Binding Blade
+- {FuriousHaunter} Dark Reaver.png
+- {FuriousHaunter} Day Breaker
+- {FuriousHaunter} Death.png
+- {FuriousHaunter} Flare Axe.png
+- {FuriousHaunter} Ganglari
+- {FuriousHaunter} Ganglari______Marisa
+- {FuriousHaunter} Glacier.png
+- {FuriousHaunter} Glass Axe.png
+- {FuriousHaunter} Glass Bow.png
+- {FuriousHaunter} Glass Lance.png
+- {FuriousHaunter} Grief
+- {FuriousHaunter} Lance 1
+- {FuriousHaunter} Mjolnir.png
+- {FuriousHaunter} Placidity.png
+- {FuriousHaunter} Shining Bow.png
+- {FuriousHaunter} Viper_______Neimi
+- {FuriousHaunter} Void Dagger.png
+- {GabrielKnight} (1) Icon 12
+- {GabrielKnight} (3) Icon 9
+- {GabrielKnight} (Blessed&Killer) Axe 1
+- {GabrielKnight} (Blessed&Killer) Axe 1.png
+- {GabrielKnight} (Blessed&Killer) Bow 1.png
+- {GabrielKnight} (Blessed&Killer) Lance 1.png
+- {GabrielKnight} (Blessed&Killer) Sword 2.png
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Axe 4.png
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Axe 5.png
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Bow 1
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Bow 5
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Lance 4.png
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Lance 5.png
+- {GabrielKnight} (Br,Ir,St,Slvr,Gld) Sword 5.png
+- {GabrielKnight} (Icon Blitz 3) Axe-1.png
+- {GabrielKnight} (Icon Blitz 3) Axe.png
+- {GabrielKnight} (Icon Blitz 3) Bow.png
+- {GabrielKnight} (Icon Blitz 3) Lance.png
+- {GabrielKnight} (Icon Blitz 3) Sword.png
+- {George Reds} (Icon Blitz 1) Axe 1.png
+- {George Reds} (Icon Blitz 1) Axe 15.png
+- {George Reds} (Icon Blitz 1) Axe 3.png
+- {George Reds} (Icon Blitz 1) Bow 1.png
+- {George Reds} (Icon Blitz 1) Bow 2.png
+- {George Reds} (Icon Blitz 1) Bow 2.png
+- {George Reds} (Icon Blitz 1) Lance 3.png
+- {George Reds} (Icon Blitz 1) Staff 1
+- {George Reds} (Icon Blitz 1) Staff 1
+- {George Reds} (Icon Blitz 1) Sword 10.png
+- {George Reds} (Icon Blitz 1) Sword 11.png
+- {George Reds} (Icon Blitz 1) Sword 6.png
+- {George Reds} (Icon Blitz 1) Tome 3.png
+- {George Reds} (Icon Blitz 1) Tome 5.png
+- {George Reds} Icon_Blitz_1_Lance_4.png
+- {George Reds} Icon_Blitz_1_Lance_5.png
+- {HyperGammaSpaces} [Light] Sagittae
+- {JPN} 5
+- {Jubby} [Urvan]-1.png
+- {Jubby} Anima 10.png
+- {Jubby} Anima 12.png
+- {Jubby} Anima 3.png
+- {Jubby} Anima 5.png
+- {Jubby} Axe 6.png
+- {Jubby} Axe 9.png
+- {Jubby} Dagger 3________Colm
+- {Jubby} Dagger 5.png
+- {Jubby} Dagger 5.png
+- {Jubby} Dagger 9
+- {Jubby} Lance 10
+- {Jubby} Lance 4
+- {Jubby} Lance 4
+- {Kyrads} Munio Alt B.png
+- {Kyrads} Saggitae
+- {Kyrads} Seraphim
+- {Kyrads} Seraphim Alt
+- {Kyrads} Umbra
+- {Leif} Dark 2.png
+- {Leif} Dark 4.png
+- {Leif} Dark 6.png
+- {Leif} Dark 7.png
+- {Leif} Light 5.png
+- {Leif} Light 5.png
+- {Leif} Light 6.png
+- {Leif} Thunder 5.png
+- {Leif} Wind 5.png
+- {Lisandra Brave} (FE5 Recolor) 106 8x8
+- {Lisandra Brave} (FE5 Recolor) 109 8x8.png
+- {Lisandra Brave} (FE5 Recolor) 117 8x8
+- {Lisandra Brave} (FE5 Recolor) 64 8x8
+- {Lisandra Brave} (FE5 Recolor) 67 8x8
+- {Lisandra Brave} (FE5 Recolor) Wind Sword-1.png
+- {Lisandra Brave} Tome icon 000 (2).png
+- {Lisandra Brave} Tome icon 002 (2).png
+- {Lisandra Brave} Tome icon 005 (2).png
+- {Lisandra Brave} Tome icon 008 (2).png
+- {Lisandra Brave} Tome icon 017.png
+- {Lisandra Brave} Vorpal Blade [F2E]-1.png
+- {LordGlenn, BwdYeti} (ArchaneaIconProject) Durandal (Blazing)-1.png
+- {LordGlenn} (ArchaneaIconProject) Amiti-1.png
+- {LordGlenn} (ArchaneaIconProject) Armorsmasher (3x Effectiveness)-1.png
+- {LordGlenn} (ArchaneaIconProject) Colichemarde (Chroma)-1.png
+- {LordGlenn} (ArchaneaIconProject) tile014______Garcia
+- {LordGlenn} (ArchaneaIconProject) tile027
+- {LordGlenn} (ArchaneaIconProject) tile051.png
+- {LordGlenn} (ArchaneaIconProject) tile076
+- {LordGlenn} (ArchaneaIconProject) tile080.png
+- {LordGlenn} (ArchaneaIconProject) tile105.png
+- {LordGlenn} (ArchaneaIconProject) tile112.png
+- {LordGlenn} (ArchaneaIconProject) tile115.png
+- {LordGlenn} (ArchaneaIconProject) tile119.png
+- {LordGlenn} (ArchaneaIconProject) tile131.png
+- {LordGlenn} (ArchaneaIconProject) tile133.png
+- {LordGlenn} (ArchaneaIconProject) tile134-1.png
+- {LordGlenn} (ArchaneaIconProject) tile134.png
+- {LordGlenn} (ArchaneaIconProject) tile136
+- {LordGlenn} (ArchaneaIconProject) tile143.png
+- {LordGlenn} (ArchaneaIconProject) tile150
+- {LordGlenn} (ArchaneaIconProject) tile159.png
+- {LordGlenn} (ArchaneaIconProject) tile165.png
+- {LordGlenn} (ArchaneaIconProject) tile166.png
+- {LordGlenn} (ArchaneaIconProject) tile179.png
+- {LordGlenn} (ArchaneaIconProject) tile185.png
+- {LordGlenn} (ArchaneaIconProject) tile186
+- {LordGlenn} (ArchaneaIconProject) tile187.png
+- {LordGlenn} (ArchaneaIconProject) tile191.png
+- {LordGlenn} (ArchaneaIconProject) tile196.png
+- {LordGlenn} (ArchaneaIconProject) tile200
+- {LordGlenn} (Askr-Embla) Fensalir icon 001.png
+- {LordGlenn} (Askr-Embla) Fólkvangr icon 002.png
+- {LordGlenn} (FE10 Affinity-WLVL) Icon 012
+- {LordGlenn} (FE4 Regalia) icon 007.png
+- {LordGlenn} (FE4 Regalia) icon 013.png
+- {LordGlenn} {ArchaneaIconProject} 2019_______Artur
+- {LordGlenn} {ArchaneaIconProject} 2019_______Joshua
+- {LordGlenn} {ArchaneaIconProject} 2019_______Tana
+- {LordGlenn} {ArchaneaIconProject} 2019______Amelia
+- {LordGlenn} {ArchaneaIconProject} 2019______L’Arachel
+- {LordGlenn} {ArchaneaIconProject} 2019______Lute
+- {LordGlenn} {ArchaneaIconProject} 2019______Natasha
+- {LordGlenn} Axe 18.png
+- {LordGlenn} Axe 2.png
+- {LordGlenn} Axe 7.png
+- {LordGlenn} Bow 17
+- {LordGlenn} Dark 11
+- {LordGlenn} Dark 3
+- {LordGlenn} Dark 5
+- {LordGlenn} Dark 6
+- {LordGlenn} Item 6
+- {LordGlenn} Item 7
+- {LordGlenn} Lance 20.png
+- {LordGlenn} Lance 27.png
+- {LordGlenn} Lance 7.png
+- {LordGlenn} Staff 1
+- {LordGlenn} Staff 12
+- {LordGlenn} Staff 13
+- {LordGlenn} Staff 15.png
+- {LordGlenn} Staff 17.png
+- {LordGlenn} Staff 2
+- {LordGlenn} Staff 3
+- {LordGlenn} Staff 4
+- {LordGlenn} Staff 6.png
+- {LordGlenn} Staff 7
+- {LordGlenn} Staff 8
+- {LordGlenn} Sword 24_________Franz
+- {LordGlenn} Sword 26.png
+- {LordGlenn} Sword 50.png
+- {LordGlenn} Tome 22.png
+- {LordGlenn} Tome 30.png
+- {lovemachine} Silver Greatlance 02
+- {lovemachine} Steel Greatlance
+- {MeatOfJustice} Item 5
+- {MeatOfJustice} Item 7
+- {MeatOfJustice} Scythe 2
+- {MeatOfJustice} Scythe 4
+- {Mikey_Seregon} [Anima] Mad Growth
+- {N426} (Icon Blitz 3) Thundersnow.png
+- {Nickt, MisakaMikoto} icon 001
+- {Norikins} [Earth] Atlas - Heroes
+- {Norikins} [Earth] Demonic Tome - Heroes
+- {Norikins} [Earth] Elstone - Heroes
+- {Norikins} [Earth] Stone - Heroes
+- {Orihara Saki} Calamity Gate
+- {Orihara Saki} Medusa Bow.png
+- {Orihara Saki} Rauor Snake Spirit
+- {Orihara Saki} Rauorserpent.png
+- {Orihara Saki} Svatr Snake Spirit
+- {Orihara Saki} Valter's Cursed Lance.png
+- {Orihara_Saki} [Fire] Rauðr Calamity Gate
+- {Orihara_Saki} [Fire] Rauðrserpent
+- {Orihara_Saki} [Fire] Rauðrwolf
+- {Peerless, Hanakko} Dark Tome
+- {Peerless} icon 008
+- {Peerless} icon 014.png
+- {Peerless} icon 031
+- {Peerless} icon 036.png
+- {Pikmin} Blank Skill Book
+- {Purple} Philippines Bow.png
+- {Purple} Riptide
+- {Purple} Sheer Cold.png
+- {Rootrick, Zarg} (Secret of Evermore) Belt 2
+- {Rootrick, Zarg} (Secret of Evermore) Item 15
+- {Rootrick, Zarg} (Secret of Evermore) Staff 3
+- {Rootrick, Zarg} (Secret of Evermore) Sword 1
+- {SacredStones} Baselard.png
+- {SacredStones} Binding Blade
+- {SacredStones} Hauteclere Heroes DS version
+- {SacredStones} Luna Bow (FEH-Echoes) (SacredStones).png
+- {SacredStones} Mercurius Awakening version
+- {SacredStones} Nidhogg (FEH) (SacredStones)
+- {SacredStones} Raijinto.png
+- {SaintRubenio} Bow 1
+- {SaintRubenio} Lance 3
+- {SaintRubenio} Staff 1
+- {Scraiza} [Dark] Slow Purple Blast
+- {Seal, Sacred War} [Anima] Ragnarok v2
+- {Seal} (SacredWar) Axe 3.png
+- {Seal} (SacredWar) Ballista 2.png
+- {Seal} (SacredWar) Ballista 3
+- {Seal} (SacredWar) Ballista 3.png
+- {Seal} (SacredWar) Bow 12
+- {Seal} (SacredWar) Bow 12
+- {Seal} (SacredWar) Bow 3
+- {Seal} (SacredWar) Bow 9
+- {Seal} (SacredWar) Dark 9.png
+- {Seal} (SacredWar) Dark 9.png
+- {Seal} (SacredWar) Item 21
+- {Seal} (SacredWar) Item 57
+- {Seal} (SacredWar) Lance 15.png
+- {Seal} (SacredWar) Lance 21
+- {Seal} (SacredWar) Light 1
+- {Seal} (SacredWar) Light 2
+- {Seal} (SacredWar) Light 3
+- {Seal} (SacredWar) Light 6.png
+- {Seal} (SacredWar) Monster 10
+- {Seal} (SacredWar) Monster 10.png
+- {Seal} (SacredWar) Monster 13
+- {Seal} (SacredWar) Monster 14
+- {Seal} (SacredWar) Monster 15
+- {Seal} (SacredWar) Monster 16
+- {Seal} (SacredWar) Monster 2.png
+- {Seal} (SacredWar) Monster 3
+- {Seal} (SacredWar) Monster 4
+- {Seal} (SacredWar) Monster 5.png
+- {Seal} (SacredWar) Monster 6.png
+- {Seal} (SacredWar) Monster 7.png
+- {Seal} (SacredWar) Monster 8.png
+- {Seal} (SacredWar) Monster 9.png
+- {Seal} (SacredWar) Staff 1
+- {Seal} (SacredWar) Staff 10.png
+- {Seal} (SacredWar) Staff 15.png
+- {Seal} (SacredWar) Staff 19.png
+- {Seal} (SacredWar) Staff 22
+- {Seal} (SacredWar) Staff 25
+- {Seal} (SacredWar) Staff 6.png
+- {Seal} (SacredWar) Sword 19.png
+- {Seal} (SacredWar) Tome 1.png
+- {Seliost1} Crimson Rose
+- {SHYUTERz} [Breath] Ice Breath
+- {SHYUTERz} [Dark] Blood Sigil
+- {SkidMarc25} Fervor's Cut.png
+- {SkidMarc25} Hell Sickle.png
+- {SkidMarc25} Libido Scythe.png
+- {SkidMarc25} Scythe.png
+- {SmithyGCN, Zarg} (Soul Blazer) Item 15
+- {SmithyGCN, Zarg} (Soul Blazer) Item 51
+- {SMITHYGCN} Hammer 4.png
+- {SMITHYGCN} Lance 6.png
+- {SMITHYGCN} Potion III
+- {SMITHYGCN} Potion V
+- {SMITHYGCN} Sword 10.png
+- {SMITHYGCN} Sword 12.png
+- {SMITHYGCN} Sword 25.png
+- {SMITHYGCN} Sword 5.png
+- {SN_Ivan} Killer Lance (Radiant Dawn)______Cormag
+- {SN_Ivan} Light
+- {SN_Ivan} Storm Sword (Radiant Dawn)
+- {Snakey1} icon 011.png
+- {Snakey1} icon 019.png
+- {St jack, Aegius, PurpleMage} [Fire] Heat Ray
+- {tatutachang} Champions Sword.png
+- {Teraspark} [Fire] Inferno
+- {The Big Dededester} Demon Axe
+- {The Big Dededester} Demon Basilikos.png
+- {The Big Dededester} Demon Regal Blade
+- {The Big Dededester} Demon Regal Blade
+- {The Big Dededester} Demon Reinfleche.png
+- {The Big Dededester} Godspenst.png
+- {Thunder Mage} Anima 3
+- {Thunder Mage} Anima 33.png
+- {Thunder Mage} Anima 38.png
+- {Thunder Mage} Anima 4
+- {Thunder Mage} Anima 40.png
+- {Thunder Mage} Anima 5
+- {Thunder Mage} Tome 6
+- {Thunder Mage} Tome 7
+- {Thunder Mage} Tome 9
+- {Topazlight} Adamant  Club (Old)
+- {Topazlight} Adamant Club
+- {Topazlight} Imposing Axe
+- {Topazlight} Mace
+- {Topazlight} Mace - No Loop Guard
+- {Topazlight} Mage Ring TCG
+- {Topazlight} Swordcatcher
+- {Valak} (Icon Blitz 1) Book 15
+- {Valak} (Icon Blitz 1) Book 7
+- {Valak} (Icon Blitz 1) Bow 1
+- {Valak} (Icon Blitz 1) Bow 4
+- {Valak} (Icon Blitz 1) Bow 5
+- {Valak} (Icon Blitz 1) Tome 2.png
+- {Valak} (Icon Blitz 1) Tome 22.png
+- {Valak} (Icon Blitz 1) Tome 23.png
+- {Valak} (Icon Blitz 1) Tome 26.png
+- {Valak} (Icon Blitz 1) Tome 7
+- {VelvetKitsune, 2WB, Ereshkigal} Silver Zweihander
+- {VelvetKitsune, 2WB, Zelix} Silver Joustlance
+- {VelvetKitsune, EldritchA, Indogutsu Tenbuki} (Tactics Ogre) Obsidian Blade
+- {VelvetKitsune} Aurion-1.png
+- {VelvetKitsune} Disintegrator.png
+- {VelvetKitsune} Savagery.png
+- {WhatIsAnAubin} Warding Amulet
+- {WhydidImakethisaccount} Item 3
+- {Windsweep} Gold Scroll
+- {Windsweep} Shadow Sowrd
+- {Zane} (Icon Blitz 1) Bow 3
+- {Zane} (Icon Blitz 1) Bow 6.png
+- {Zane} (Icon Blitz 1) Lance 15.png
+- {Zane} (Icon Blitz 1) Sword 12
+- {Zane} (Icon Blitz 1) Sword 21
+- {Zane} (Icon Blitz 1) Sword 6.png
+- {Zane} (Icon Blitz 1) Sword 9
+- {Zane} Axe 18
+- {Zane} Axe 29.png
+- {Zane} Axe 43.png
+- {Zane} Axe 6.png
+- {Zane} icon 029.png
+- {Zane} icon 044.png
+- {Zane} icon 058
+- {Zane} icon 074
+- {Zane} icon 090.png
+- {Zane} icon 094.png
+- {Zane} icon 164.png
+- {Zane} icon 203.png
+- {Zane} icon 218
+- {Zarg} (Icon Blitz 3) Axe.png
+- {Zarg} (Icon Blitz 3) Star Staff.png
+- {Zarg} Anima 5
+- {Zarg} Anima 9.png
+- {Zarg} Axe 11.png
+- {Zarg} Axe 24.png
+- {Zarg} Axe 29.png
+- {Zarg} Axe 33
+- {Zarg} Axe 4.png
+- {Zarg} Bow 16
+- {Zarg} Bow 16
+- {Zarg} Bow 17.png
+- {Zarg} Bow 26
+- {Zarg} Bow 4.png
+- {Zarg} Bow 9
+- {Zarg} Dark 2
+- {Zarg} Dark 4
+- {Zarg} Dark 9
+- {Zarg} Dark 9.png
+- {Zarg} Item 14
+- {Zarg} Item 17
+- {Zarg} Item 25
+- {Zarg} Item 34
+- {Zarg} Lance 10.png
+- {Zarg} Lance 24.png
+- {Zarg} Lance 25.png
+- {Zarg} Lance 27.png
+- {Zarg} Lance 28
+- {Zarg} Lance 29
+- {Zarg} Lance 31.png
+- {Zarg} Lance 33
+- {Zarg} Lance 33
+- {Zarg} Light 3.png
+- {Zarg} Monster 1
+- {Zarg} Monster 14
+- {Zarg} Monster 15
+- {Zarg} Monster 17
+- {Zarg} Monster 3
+- {Zarg} Monster 5
+- {Zarg} Monster 7
+- {Zarg} Staff 12
+- {Zarg} Staff 14.png
+- {Zarg} Staff 17
+- {Zarg} Staff 18.png
+- {Zarg} Staff 19
+- {Zarg} Staff 19
+- {Zarg} Staff 20
+- {Zarg} Staff 23.png
+- {Zarg} Staff 24.png
+- {Zarg} Staff 26.png
+- {Zarg} Staff 27.png
+- {Zarg} Staff 3.png
+- {Zarg} Staff 5.png
+- {Zarg} Staff 7
+- {Zarg} Staff 8.png
+- {Zarg} Staff 9.png
+- {Zarg} Sword 15.png
+- {Zarg} Sword 17.png
+- {Zarg} Sword 27.png
+- {Zarg} Sword 40
+- {Zarg} Sword 6
+- {Zelix} BraveLance
+- {Zelix} HorseLance.png
+- {Zelix} icon 013
+- {Zelix} icon 023.png
+- {Zelix} icon 025.png
+- {Zelix} icon 052.png
+- {Zelix} icon 064
+- {Zelix} icon 067
+- {Zelix} icon 072.png
+- {Zelix} icon 078
+- {Zelix} icon 082
+- {Zelix} icon 084
+- {Zelix} icon 087
+- {Zelix} icon 090
+- {Zelix} icon 092
+- {Zelix} icon 093
+- {Zelix} icon 094.png
+- {Zelix} icon 095.png
+- {Zelix} icon 133
+- {Zelix} icon 138
+- {Zelix} icon 139
+- {Zelix} icon 140
+- {Zelix} icon 149
+- {Zelix} icon 151
+- {Zelix} icon 163
+- {Zelix} icon_047.png
+- {Zelix} KillingAxe
+- {Zelix} LongBow
+- {Zelix} MonsterLance.png
+- {Zelix} PoisonAxe
+- {Zelix} ShortAxe
+- {Zoramine} Cavalier (M) Promoted Spider Rider
