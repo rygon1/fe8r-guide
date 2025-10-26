@@ -2,6 +2,7 @@
 {% extends "layout.html.jinja2" %}
 {% endif %}
 {% block content %}
+<h1>Arsenals</h1>
 <section>
     <form>
         <fieldset class="grid">
@@ -19,7 +20,7 @@
                 {% for unit_category,units in arsenal_units.items() %}
                 <select class="unitSelect" name="unitSelect" aria-label="Select unit"
                     data-category="{{ unit_category }}" required hx-get="/items/arsenals" hx-target="#arsenalSheet"
-                    hx-swap="outerHTML">{# TODO Add hx-indicator #}
+                    hx-swap="outerHTML" hx-indicator="#arsenalSheet">
                     <option value="default" selected disabled>Select a unit</option>
                     {% for unit in units %}
                     <option value="{{ unit.nid }}">{{ unit.name }}</option>
@@ -31,11 +32,12 @@
     </form>
 </section>
 <div id="arsenalSheet">
-    <h1>{{ unit_data["name"] }}</h1>
+    <div aria-busy="true" class="htmx-indicator"></div>
+    <h2>{{ unit_data["name"] }}</h2>
     {% for arsenal_nid, arsenal in unit_arsenals.items() %}
     <section>
         <hgroup>
-            <h2>{{ arsenal["name"] }}</h2>
+            <h3>{{ arsenal["name"] }}</h3>
             <p>{{ arsenal["desc"] }}</p>
         </hgroup>
         <select name="arsenalItemType" aria-label="Select weapon type" required
