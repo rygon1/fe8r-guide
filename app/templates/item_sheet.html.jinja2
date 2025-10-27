@@ -37,6 +37,9 @@
     {% if item_data.desc %}
     <p>{{ item_data.desc }}</p>
     {% endif %}
+    <footer><small><a href="#"
+                _="on click call navigator.clipboard.writeText('[{{item_data.name}}](https://fe8r-guide.onrender.com/items/{{item_data.nid}})')">Copy
+                Markdown Link</a></small></footer>
 
 </article>
 {% endblock content %}
