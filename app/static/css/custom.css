@@ -84,6 +84,14 @@ article > footer {
   /* Original: var(--pico-border-radius) */
 }
 
+.clickable { cursor: pointer; }
+
+.align-right {margin: 0;
+    margin-left: 0px;
+  margin-left: var(--pico-spacing);
+  padding: 0;
+  float: right;}
+
 .htmx-indicator{
         display:none;
     }
