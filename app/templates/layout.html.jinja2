@@ -8,7 +8,7 @@
   <meta name="keywords" content="gaming, fire emblem">
   <meta name="description" content="Reference Guide for FE8R">
   <title>FE8R Reference Guide</title>
-
+  {#
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
@@ -17,7 +17,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
-    rel="stylesheet">
+    rel="stylesheet"> #}
+  <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/_hyperscript.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pico.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pico.colors.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/iconsheet.css') }}">
 </head>
@@ -30,10 +34,18 @@
       </ul>
       <ul>
         <li>
-          <a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
+          <details class="dropdown">
+            <summary>Items</summary>
+            <ul dir="rtl">
+              <li><a href="{{ url_for('items.get_fe_item_index') }}">All Items</a></li>
+              <li>
+                <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
+              </li>
+            </ul>
+          </details>
         </li>
         <li>
-          <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
+          <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
         </li>
         <li>
           <a href="{{ url_for('get_credits') }}">Credits</a>
