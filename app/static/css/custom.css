@@ -101,3 +101,7 @@ article > footer {
 .htmx-request.htmx-indicator{
         display:block;
     }
+    
+nav details.dropdown {
+  display: inline-block;
+}
