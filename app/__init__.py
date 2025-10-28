@@ -1,6 +1,6 @@
 from flask import Flask, Response, render_template
 
-from app.blueprints import items, units
+from app.blueprints import items, skills, units
 
 
 def page_not_found(e):
@@ -32,5 +32,6 @@ def create_app() -> Flask:
 
     app.register_blueprint(units.bp)
     app.register_blueprint(items.bp)
+    app.register_blueprint(skills.bp)
 
     return app
