@@ -97,15 +97,16 @@ init_lists()
 
 @bp.route("/")
 def get_fe_skill_index() -> str:
-    if skill_id := request.args.get("skillSelect"):
+    if skill_nid := request.args.get("skillSelect"):
         template = "skill_sheet.html.jinja2"
     else:
-        skill_id = "Frightening_Debuff"
+        skill_nid = "Frightening_Debuff"
         template = "skill_index.html.jinja2"
-    return render_template(template, skill_data=SKILLS[skill_id], skill_cats=SKILL_CATS)
+    return render_template(
+        template, skill_data=SKILLS[skill_nid], skill_cats=SKILL_CATS
+    )
 
 
 @bp.route("/<string:fe_skill_nid>")
 def get_fe_skill_sheet(fe_skill_nid="Frightening_Debuff") -> str:
-    skill_data = SKILLS[fe_skill_nid]
-    return render_template("skill_sheet.html.jinja2", skill_data=skill_data)
+    return render_template("skill_sheet.html.jinja2", skill_data=SKILLS[fe_skill_nid])
