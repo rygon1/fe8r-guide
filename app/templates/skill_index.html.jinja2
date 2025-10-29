@@ -1,0 +1,37 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}Skills | {% endblock %}
+{% block content %}
+<h1>Skills</h1>
+<section>
+    <form>
+        <fieldset class="grid">
+            <div>
+                <select name="skillCategory" id="skillCategory" aria-label="Select category" required
+                    _="on change set myFilter to me.value then show <select/> in #skillSelector when its.getAttribute('data-category') is myFilter then set .skillSelect.value to 'default' then
+                    on load set myFilter to me.value then show <select/> in #skillSelector when its.getAttribute('data-category') is myFilter then set .skillSelect.value to 'default'">
+                    {% for skill_cat in skill_cats%}
+                    <option value="{{ skill_cat }}">{{ skill_cat }}</option>
+                    {% endfor %}
+                    </option>
+                </select>
+            </div>
+            <div id="skillSelector">
+                {% for skill_cat,skills in skill_cats.items() %}
+                <select class="skillSelect" name="skillSelect" aria-label="Select skill" data-category="{{ skill_cat }}"
+                    required hx-get="/skills" hx-target="#skillsheet" hx-indicator="#skillsheet">
+                    <option value="default" selected disabled>Select a skill</option>
+                    {% for skill_nid,skill in skills.items() %}
+                    <option value="{{ skill['nid'] }}">{{ skill["name"] }}</option>
+                    {% endfor %}
+                </select>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </form>
+</section>
+<div id="skillsheet">
+    <div aria-busy="true" class="htmx-indicator"></div>
+</div>
+{% endblock content %}

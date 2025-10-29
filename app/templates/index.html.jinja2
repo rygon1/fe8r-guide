@@ -1,6 +1,7 @@
 {% if not request.headers.hx_request %}
 {% extends "layout.html.jinja2" %}
 {% endif %}
+{% block title %}Home | {% endblock %}
 {% block content %}
 <hgroup>
   <h1>FE8R Reference Guide</h1>
@@ -8,7 +9,8 @@
 <section>
   <p>This is a simple reference guide for <a href="https://github.com/FE8Dev/FE8RProject">Fire Emblem 8R</a> using the
     <a href="https://lex-talionis.net/">Lex Talionis
-      Engine</a></p>
+      Engine</a>
+  </p>
   <ul>
     <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
   </ul>

@@ -89,20 +89,18 @@ def process_styled_text(raw_text) -> str:
 
 
 def make_valid_class_name(s):
-    # Remove invalid characters and replace spaces with underscores
-    cleaned_s = "".join(c for c in s if c.isalnum() or c == " ").replace(" ", "_")
-
+    # Remove invalid characters and replace underscores with dashes and spaces with underscores
+    cleaned_s = (
+        "".join(c for c in s if c.isalnum() or c in (" ", "_", "-"))
+        .replace("_", "-")
+        .replace(" ", "_")
+    )
     # Ensure it starts with a letter or underscore
-    if cleaned_s and not cleaned_s[0].isalpha() and cleaned_s[0] != "_":
-        cleaned_s = "_" + cleaned_s
-
+    if cleaned_s and not cleaned_s[0].isalpha():
+        cleaned_s = "xx" + cleaned_s
     # Convert to PascalCase (optional, but common for Python class names)
     parts = cleaned_s.split("_")
-    pascal_case_name = "".join(part.capitalize() for part in parts)
-
-    if pascal_case_name[0] in "1234567890":
-        pascal_case_name = "x" + pascal_case_name
-
+    pascal_case_name = "-".join(part.capitalize() for part in parts)
     return pascal_case_name
 
 

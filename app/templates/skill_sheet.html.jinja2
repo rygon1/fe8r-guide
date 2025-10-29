@@ -1,0 +1,14 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}{{ skill_data.name }} &mdash; Skills | {% endblock %}
+{% block content %}
+<article>
+    <header>
+        <strong>{{ skill_data.name }} <span class="{{ skill_data.icon_class }}"></span></strong>
+        <a class="secondary align-right clickable"
+            _="on click call navigator.clipboard.writeText('[{{skill_data.name}}](https://fe8r-guide.onrender.com/skills/{{skill_data.nid}})') put 'Copied!' into me wait 1s put 'Copy' into me"">Copy</a>
+    </header>
+            <p>{{ skill_data.desc }}</p>
+</article>
+{% endblock content %}

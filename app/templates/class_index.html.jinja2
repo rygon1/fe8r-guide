@@ -1,0 +1,37 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}Classes | {% endblock %}
+{% block content %}
+<h1>Classes</h1>
+<section>
+    <form>
+        <fieldset class="grid">
+            <div>
+                <select name="classCategory" id="classCategory" aria-label="Select category" required
+                    _="on change set myFilter to me.value then show <select/> in #classSelector when its.getAttribute('data-category') is myFilter then set .classSelect.value to 'default' then
+                    on load set myFilter to me.value then show <select/> in #classSelector when its.getAttribute('data-category') is myFilter then set .classSelect.value to 'default'">
+                    {% for class_cat in class_cats%}
+                    <option value="{{ class_cat }}">{{ class_cat }}</option>
+                    {% endfor %}
+                    </option>
+                </select>
+            </div>
+            <div id="classSelector">
+                {% for class_cat,classes in class_cats.items() %}
+                <select class="classSelect" name="classSelect" aria-label="Select class" data-category="{{ class_cat }}"
+                    required hx-get="/classes" hx-target="#classSheet" hx-indicator="#classSheet">
+                    <option value="default" selected disabled>Select a class</option>
+                    {% for class_nid,class_data in classes.items() %}
+                    <option value="{{ class_data['nid'] }}">{{ class_data['nid'] }}</option>
+                    {% endfor %}
+                </select>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </form>
+</section>
+<div id="classSheet">
+    <div aria-busy="true" class="htmx-indicator"></div>
+</div>
+{% endblock content %}

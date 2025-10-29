@@ -61,20 +61,18 @@ def get_comp(entry, comp_name: str, comp_type: type) -> Any:
 
 
 def make_valid_class_name(s):
-    # Remove invalid characters and replace spaces with underscores
-    cleaned_s = "".join(c for c in s if c.isalnum() or c == " ").replace(" ", "_")
-
+    # Remove invalid characters and replace underscores with dashes and spaces with underscores
+    cleaned_s = (
+        "".join(c for c in s if c.isalnum() or c in (" ", "_", "-"))
+        .replace("_", "-")
+        .replace(" ", "_")
+    )
     # Ensure it starts with a letter or underscore
-    if cleaned_s and not cleaned_s[0].isalpha() and cleaned_s[0] != "_":
-        cleaned_s = "_" + cleaned_s
-
+    if cleaned_s and not cleaned_s[0].isalpha():
+        cleaned_s = "xx" + cleaned_s
     # Convert to PascalCase (optional, but common for Python class names)
     parts = cleaned_s.split("_")
-    pascal_case_name = "".join(part.capitalize() for part in parts)
-
-    if pascal_case_name[0] in "1234567890":
-        pascal_case_name = "x" + pascal_case_name
-
+    pascal_case_name = "-".join(part.capitalize() for part in parts)
     return pascal_case_name
 
 
@@ -291,6 +289,7 @@ def make_icon_css():
     css_path = GUIDE_CSS_DIR / "iconsheet.css"
     icons_json = ICONS_16_DIR / "icons16.json"
     items_json = JSON_DIR / "items.json"
+    skills_json = JSON_DIR / "skills.json"
     css_str = ""
     icon_height, icon_width = 16, 16
     added_icon_sheet = []
@@ -312,8 +311,28 @@ def make_icon_css():
                 css_str += f"""
                 .{make_valid_class_name(entry["nid"])}-icon {{
                     background-position: -{entry["icon_index"][0]*icon_width}px -{entry["icon_index"][1]*icon_height}px;
-                    width: 16px;
-                    height: 16px;
+                    margin: 0px 4px;
+                    transform: scale(1.5);
+                }}\n
+                """
+    with skills_json.open("r") as fp:
+        for entry in json.load(fp):
+            if entry["icon_nid"]:
+                if entry["icon_nid"] not in added_icon_sheet:
+                    new_sheet_css = f"""
+                    .{make_valid_class_name(entry["icon_nid"])}-icon {{
+                        background-image: url(\'/static/images/icons/{quote(entry["icon_nid"]+".png")}\');
+                        background-repeat: no-repeat;
+                        width: 16px;
+                        height: 16px;
+                        display: inline-block;
+                    }}\n
+                    """
+                    css_str += new_sheet_css
+                    added_icon_sheet.append(entry["icon_nid"])
+                css_str += f"""
+                .{make_valid_class_name(entry["nid"])}-icon {{
+                    background-position: -{entry["icon_index"][0]*icon_width}px -{entry["icon_index"][1]*icon_height}px;
                     margin: 0px 4px;
                     transform: scale(1.5);
                 }}\n
@@ -340,8 +359,6 @@ def make_icon_css():
                     css_str += f"""
                         .{make_valid_class_name(subicon_nid)}-subIcon {{
                             background-position: -{subicon_index[0]*icon_width}px -{subicon_index[1]*icon_height}px;
-                            width: 16px;
-                            height: 16px;
                             margin: 0px 4px;
                             transform: scale(1.5);
                         }}\n
