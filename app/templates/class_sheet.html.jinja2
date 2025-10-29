@@ -1,6 +1,7 @@
 {% if not request.headers.hx_request %}
 {% extends "layout.html.jinja2" %}
 {% endif %}
+{% block title %}{{ class_data.name }} &mdash; Classes | {% endblock %}
 {% block content %}
 <article>
     <header>
