@@ -3,105 +3,93 @@
 {% block title %}{{ class_data.name }} &mdash; Classes | {% endblock %}
 {% endif %}
 {% block content %}
-<article>
-    <header>
-        <hgroup>
-            <h3>{{ class_data.name }}</h3>
-            <p>{{ class_data.desc }}</p>
-        </hgroup>
-    </header>
-    <div class="grid">
-        <div>
+<div id="classSheet">
+    <article>
+        <header>
+            <hgroup>
+                <h3>{{ class_data.name }}</h3>
+                <p>{{ class_data.desc }}</p>
+            </hgroup>
+            <a class="secondary align-right clickable"
+                _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') put 'Copied!' into me wait 1s put 'Copy' into me">Copy</a>
+        </header>
+        <div class="overflow-auto">
             <h4>Stats</h4>
             <table class="striped">
+                {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
                 <thead>
                     <tr>
                         <th scope="col">Stat</th>
-                        <th scope="col">
-                            On Promo
-                        </th>
-                        <th scope="col">
-                            Growth
-                        </th>
-                        <th scope="col">
-                            Cap
-                        </th>
+                        {% for stat_name in stat_names %}
+                        <th scope="col">{{ stat_name }}</th>
+                        {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">HP</th>
-                        <td>+{{ class_data.promotion.hp }}</td>
-                        <td>+{{ class_data.growth_bonus.hp}}%</td>
-                        <td>{{ class_data.max_stats.hp }}</td>
+                        <th scope="row">On Promo</th>
+                        {% for stat_name in stat_names[:-1] %}
+                        <td>+{{ class_data.promotion[stat_name] }}</td>
+                        {% endfor %}
+                        <td>{{ class_data.bases['MOV'] }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">STR</th>
-                        <td>+{{ class_data.promotion.str }}</td>
-                        <td>+{{ class_data.growth_bonus.str}}%</td>
-                        <td>{{ class_data.max_stats.str }}</td>
+                        <th scope="row">Growth</th>
+                        {% for stat_name in stat_names %}
+                        <td>+{{ class_data.growth_bonus[stat_name] }}%</td>
+                        {% endfor %}
                     </tr>
                     <tr>
-                        <th scope="row">MAG</th>
-                        <td>+{{ class_data.promotion.mag }}</td>
-                        <td>+{{ class_data.growth_bonus.mag}}%</td>
-                        <td>{{ class_data.max_stats.mag }}</td>
+                        <th scope="row">Cap</th>
+                        {% for stat_name in stat_names %}
+                        <td>{{ class_data.max_stats[stat_name] }}</td>
+                        {% endfor %}
                     </tr>
-                    <tr>
-                        <th scope="row">SKL</th>
-                        <td>+{{ class_data.promotion.skl }}</td>
-                        <td>+{{ class_data.growth_bonus.skl}}%</td>
-                        <td>{{ class_data.max_stats.skl }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">SPD</th>
-                        <td>+{{ class_data.promotion.spd }}</td>
-                        <td>+{{ class_data.growth_bonus.spd}}%</td>
-                        <td>{{ class_data.max_stats.spd }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">LCK</th>
-                        <td>+{{ class_data.promotion.lck }}</td>
-                        <td>+{{ class_data.growth_bonus.lck}}%</td>
-                        <td>{{ class_data.max_stats.lck }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">DEF</th>
-                        <td>+{{ class_data.promotion.df }}</td>
-                        <td>+{{ class_data.growth_bonus.df}}%</td>
-                        <td>{{ class_data.max_stats.df }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">RES</th>
-                        <td>+{{ class_data.promotion.res }}</td>
-                        <td>+{{ class_data.growth_bonus.res}}%</td>
-                        <td>{{ class_data.max_stats.res }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">CON</th>
-                        <td>+{{ class_data.promotion.con }}</td>
-                        <td>+{{ class_data.growth_bonus.con}}%</td>
-                        <td>{{ class_data.max_stats.con }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">MOV</th>
-                        <td>{{ class_data.bases.mov }}</td>
-                        <td>+{{ class_data.growth_bonus.mov}}%</td>
-                        <td>{{ class_data.max_stats.mov }}</td>
-                    </tr>
-                </tbody>
             </table>
         </div>
-        {% if class_data.turns_into %}
+
+        {% if class_data.learned_skills %}
         <div>
-            <h4>Promotions</h4>
-            <ul>
-                {% for next_class_data in class_data.turns_into %}
-                <li><a href="/classes/{{next_class_data.nid}}">{{next_class_data.name}}</a></li>
-                {% endfor %}
-            </ul>
+            <h4>Skills</h4>
+            {% for skill_lvl,skill_nid in class_data.learned_skills %}
+            <p><strong>
+                    Level {{skill_lvl}}
+                </strong></p>
+            <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+            </div>
+            {% endfor %}
         </div>
         {% endif %}
-    </div>
-</article>
+
+
+        {% if class_promo_data.turns_into or class_promo_data.turns_from%}
+        <div class="grid">
+            {% if class_promo_data.turns_from %}
+            <div>
+                <h4>Promotes From</h4>
+                <ul>
+                    {% for prev_class_data in class_promo_data.turns_from %}
+                    <li><a href="#" hx-get="/classes/{{prev_class_data.nid}}" hx-target="#classSheet"
+                            hx-swap="outerHTML">{{prev_class_data.name}} ({{prev_class_data.nid}})</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% if class_promo_data.turns_into %}
+            <div>
+                <h4>Promotes To</h4>
+                <ul>
+                    {% for next_class_data in class_promo_data.turns_into %}
+                    <li><a href="#" hx-get="/classes/{{next_class_data.nid}}" hx-target="#classSheet"
+                            hx-swap="outerHTML">{{next_class_data.name}} ({{next_class_data.nid}})</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </article>
+</div>
 {% endblock content %}
