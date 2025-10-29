@@ -367,8 +367,24 @@ def make_icon_css():
         fp.write(css_str)
 
 
+def make_unit_promo_json() -> None:
+    unit_promos = {}
+    with (JSON_DIR / "classes.json").open("r") as fp:
+        for data_entry in sorted(json.load(fp), key=lambda x: x["tier"], reverse=True):
+            if data_entry["nid"] not in unit_promos:
+                unit_promos[data_entry["nid"]] = {
+                    "turns_into": data_entry["turns_into"],
+                    "turns_from": [],
+                }
+            for class_nid in data_entry["turns_into"]:
+                unit_promos[class_nid]["turns_from"].append(data_entry["nid"])
+    with (GUIDE_JSON_DIR / "classes.promos.json").open("w+") as fp:
+        json.dump(unit_promos, fp, indent=2)
+
+
 def main():
     make_arsenal_json()
+    make_unit_promo_json()
     minify_json()
     get_icons()
     make_icon_css()
