@@ -24,7 +24,7 @@ class FEClass:
     promotion: dict
     max_stats: dict
     learned_skills: list
-    wexp_gain: list
+    weapons: list
     icon_nid: str
     icon_index: str
     map_sprite_nid: str
@@ -110,7 +110,7 @@ def init_lists() -> None:
                     for x in data_entry["learned_skills"]
                     if x and not x[1].endswith("_hide")
                 ],
-                wexp_gain=data_entry["wexp_gain"],
+                weapons=[x for x, y in data_entry["wexp_gain"].items() if y[0]],
                 icon_nid=data_entry["icon_nid"],
                 icon_index=data_entry["icon_index"],
                 map_sprite_nid=data_entry["map_sprite_nid"],
