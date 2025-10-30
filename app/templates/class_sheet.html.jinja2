@@ -8,10 +8,18 @@
         <header>
             <hgroup>
                 <h3>{{ class_data.name }}</h3>
+                <a class="secondary align-right clickable"
+                    _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') put 'Copied!' into me wait 1s put 'Copy' into me">Copy</a>
                 <p>{{ class_data.desc }}</p>
+                {% if class_data.weapons%}
+                <p>
+                    <span class="pico-color-red-500">Prof:</span>
+                    {% for weapon_type in class_data.weapons%}
+                    <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+                    {% endfor %}
+                </p>
+                {% endif %}
             </hgroup>
-            <a class="secondary align-right clickable"
-                _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') put 'Copied!' into me wait 1s put 'Copy' into me">Copy</a>
         </header>
         <div class="overflow-auto">
             <h4>Stats</h4>
@@ -51,13 +59,17 @@
         {% if class_data.learned_skills %}
         <div>
             <h4>Skills</h4>
-            {% for skill_lvl,skill_nid in class_data.learned_skills %}
-            <p><strong>
-                    Level {{skill_lvl}}
-                </strong></p>
-            <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+            <div class="grid">
+                {% for skill_lvl,skill_nid in class_data.learned_skills %}
+                <div>
+                    <p><strong>
+                            Level {{skill_lvl}}
+                        </strong></p>
+                    <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
         {% endif %}
 
