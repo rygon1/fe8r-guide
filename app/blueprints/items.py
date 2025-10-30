@@ -22,6 +22,7 @@ class FEItem:
     hit: int
     min_range: int
     max_range: int
+    status_on_equip: list
     icon_class: str
 
 
@@ -86,6 +87,30 @@ def process_styled_text(raw_text) -> str:
     for pattern, replacement in replacements:
         new_text = re.sub(pattern, replacement, new_text)
     return new_text
+
+
+def get_status_equip(data_entry) -> list:
+    exclude: tuple = (
+        "_hide",
+        "_Penalty",
+        "_Buff",
+        "_Effect",
+        "_Gain",
+        "_Proc",
+        "_Weapon",
+        "_AOE_Splash",
+        "Drench",
+        "Avo_Ddg_",
+    )
+    wp_status = []
+    if s1 := get_comp(data_entry, "status_on_equip"):
+        if not any(sub in s1 for sub in exclude):
+            wp_status.append(s1)
+    if s2 := get_comp(data_entry, "multi_status_on_equip"):
+        for entry in s2:
+            if not any(sub in entry for sub in exclude):
+                wp_status.append(entry)
+    return wp_status
 
 
 def make_valid_class_name(s):
@@ -165,6 +190,7 @@ def init_lists() -> None:
                     if get_comp(data_entry, "max_range")
                     else 0
                 ),
+                status_on_equip=get_status_equip(data_entry),
                 target=target,
                 icon_class=(
                     f"{make_valid_class_name(data_entry["nid"])}-icon {make_valid_class_name(data_entry["icon_nid"])}-icon"
@@ -172,10 +198,10 @@ def init_lists() -> None:
                     else ""
                 ),
             )
-    # Make item categories
-    ITEM_CATS["Dragon's Gate"] = {
-        x: x_val for x, x_val in ITEMS.items() if x.endswith("_DG")
-    }
+
+    with bp.open_resource("../static/json/items.category.new.json", "r") as fp:
+        for x, x_val in json.load(fp).items():
+            ITEM_CATS[x] = x_val
 
 
 init_lists()

@@ -20,10 +20,10 @@
             <div id="classSelector">
                 {% for class_cat,classes in class_cats.items() %}
                 <select class="classSelect" name="classSelect" aria-label="Select class" data-category="{{ class_cat }}"
-                    required hx-get="/classes" hx-target="#classSheet" hx-indicator="#classSheet">
+                    required hx-get="/classes" hx-target="#classSheet" hx-indicator="#classSheet" hx-swap="outerHTML">
                     <option value="default" selected disabled>Select a class</option>
                     {% for class_nid,class_data in classes.items() %}
-                    <option value="{{ class_data['nid'] }}">{{ class_data['nid'] }}</option>
+                    <option value="{{ class_data['nid'] }}">{{ class_data['name'] }} ({{ class_data['nid'] }})</option>
                     {% endfor %}
                 </select>
                 {% endfor %}

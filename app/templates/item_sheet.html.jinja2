@@ -1,13 +1,15 @@
 {% if not request.headers.hx_request %}
 {% extends "layout.html.jinja2" %}
-{% endif %}
 {% block title %}{{ item_data.name }} &mdash; Items | {% endblock %}
+{% endif %}
 {% block content %}
 <article>
     <header>
         <strong>{{ item_data.name }} <span class="{{ item_data.icon_class }}"></span></strong>
+        {% if not request.headers.hx_request or '/items' in request.headers.hx_current_url %}
         <a class="secondary align-right clickable"
             _="on click call navigator.clipboard.writeText('[{{item_data.name}}](https://fe8r-guide.onrender.com/items/{{item_data.nid}})') put 'Copied!' into me wait 1s put 'Copy' into me"">Copy</a>
+        {% endif %}
     </header>
     {% if item_data.weapon_type %}
     <span class=" Wexpicons-icon {{ item_data.weapon_type }}-subIcon"></span>{% if
@@ -40,5 +42,11 @@
             {% if item_data.desc %}
             <p>{{ item_data.desc }}</p>
             {% endif %}
+            <div class="grid">
+                {% for skill_nid in item_data.status_on_equip %}
+                <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                </div>
+                {% endfor %}
+            </div>
 </article>
 {% endblock content %}

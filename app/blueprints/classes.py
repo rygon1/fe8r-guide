@@ -12,67 +12,19 @@ bp = Blueprint(
 
 
 @dataclass
-class FEStat:
-    hp: int
-    str: int
-    mag: int
-    skl: int
-    spd: int
-    lck: int
-    df: int
-    res: int
-    con: int
-    mov: int
-
-
-def add_fe_stat(stat1: FEStat, stat2: FEStat) -> FEStat:
-    return FEStat(
-        hp=stat1.hp + stat2.hp,
-        str=stat1.str + stat2.str,
-        mag=stat1.mag + stat2.mag,
-        skl=stat1.skl + stat2.skl,
-        spd=stat1.spd + stat2.spd,
-        lck=stat1.lck + stat2.lck,
-        df=stat1.df + stat2.df,
-        res=stat1.res + stat2.res,
-        con=stat1.con + stat2.con,
-        mov=stat1.mov + stat2.mov,
-    )
-
-
-def to_fe_stat(stat_data: dict) -> FEStat:
-    try:
-        return FEStat(
-            hp=stat_data["HP"],
-            str=stat_data["STR"],
-            mag=stat_data["MAG"],
-            skl=stat_data["SKL"],
-            spd=stat_data["SPD"],
-            lck=stat_data["LCK"],
-            df=stat_data["DEF"],
-            res=stat_data["RES"],
-            con=stat_data["CON"],
-            mov=stat_data["MOV"],
-        )
-    except KeyError:
-        return FEStat(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-
-@dataclass
 class FEClass:
     nid: str
     name: str
     desc: str
     tier: int
-    turns_into: list
     tags: list
-    bases: FEStat
-    growths: FEStat
-    growth_bonus: FEStat
-    promotion: FEStat
-    max_stats: FEStat
+    bases: dict
+    growths: dict
+    growth_bonus: dict
+    promotion: dict
+    max_stats: dict
     learned_skills: list
-    wexp_gain: list
+    weapons: list
     icon_nid: str
     icon_index: str
     map_sprite_nid: str
@@ -86,6 +38,7 @@ CLASS_CATS: dict = {
     "Tier 2": {},
     "Tier 3": {},
 }
+CLASS_PROMOS = {}
 
 
 def make_valid_class_name(s):
@@ -146,20 +99,34 @@ def init_lists() -> None:
                 name=data_entry["name"],
                 desc=process_styled_text(data_entry["desc"]),
                 tier=data_entry["tier"],
-                turns_into=[CLASSES[x] for x in data_entry["turns_into"] if x],
                 tags=data_entry["tags"],
-                bases=to_fe_stat(data_entry["bases"]),
-                growths=to_fe_stat(data_entry["growths"]),
-                growth_bonus=to_fe_stat(data_entry["growth_bonus"]),
-                promotion=to_fe_stat(data_entry["promotion"]),
-                max_stats=to_fe_stat(data_entry["max_stats"]),
-                learned_skills=data_entry["learned_skills"],
-                wexp_gain=data_entry["wexp_gain"],
+                bases=data_entry["bases"],
+                growths=data_entry["growths"],
+                growth_bonus=data_entry["growth_bonus"],
+                promotion=data_entry["promotion"],
+                max_stats=data_entry["max_stats"],
+                learned_skills=[
+                    x
+                    for x in data_entry["learned_skills"]
+                    if x and not x[1].endswith("_hide")
+                ],
+                weapons=[x for x, y in data_entry["wexp_gain"].items() if y[0]],
                 icon_nid=data_entry["icon_nid"],
                 icon_index=data_entry["icon_index"],
                 map_sprite_nid=data_entry["map_sprite_nid"],
                 combat_anim_nid=data_entry["combat_anim_nid"],
             )
+    with bp.open_resource("../static/json/classes.promos.json", "r") as fp:
+        for class_nid, class_promo_data in json.load(fp).items():
+            if class_nid not in CLASS_PROMOS:
+                CLASS_PROMOS[class_nid] = {"turns_from": [], "turns_into": []}
+            CLASS_PROMOS[class_nid]["turns_into"] = [
+                CLASSES[x] for x in class_promo_data["turns_into"]
+            ]
+            CLASS_PROMOS[class_nid]["turns_from"] = [
+                CLASSES[x] for x in class_promo_data["turns_from"]
+            ]
+
     for class_nid, class_data in CLASSES.items():
         match (class_data.tier):
             case 1:
@@ -185,7 +152,10 @@ def get_fe_class_index() -> str:
         class_nid = "Eirika_Lord"
         template = "class_index.html.jinja2"
     return render_template(
-        template, class_data=CLASSES[class_nid], class_cats=CLASS_CATS
+        template,
+        class_data=CLASSES[class_nid],
+        class_promo_data=CLASS_PROMOS[class_nid],
+        class_cats=CLASS_CATS,
     )
 
 
@@ -194,4 +164,5 @@ def get_fe_class_sheet(fe_class_nid="Eirika_Lord") -> str:
     return render_template(
         "class_sheet.html.jinja2",
         class_data=CLASSES[fe_class_nid],
+        class_promo_data=CLASS_PROMOS[fe_class_nid],
     )
