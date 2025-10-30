@@ -8,27 +8,29 @@ from urllib.parse import quote
 
 from PIL import Image
 
+LTPROJ_DIR = Path("")
 try:
     with Path("ltprojpath.txt").open("r", encoding="utf-8") as f:
         LTPROJ_DIR = Path(f.read())
 except FileNotFoundError:
-    print("Error: The file 'my_file.txt' was not found.")
+    print("Error: The file 'ltprojpath.txt' was not found.")
+
 
 if not LTPROJ_DIR.exists():
     raise FileNotFoundError(f"The directory {LTPROJ_DIR} does not exist.")
 
 JSON_DIR: Path = LTPROJ_DIR / "game_data"
+ICONS_16_DIR = LTPROJ_DIR / "resources/icons16"
 GUIDE_JSON_DIR: Path = Path.cwd() / "app/static/json"
 GUIDE_IMG_DIR: Path = Path.cwd() / "app/static/images"
 GUIDE_CSS_DIR: Path = Path.cwd() / "app/static/css"
-ICONS_16_DIR = LTPROJ_DIR / "resources/icons16"
 
 
 def minify_json() -> None:
     """
     Removes JSON whitespace to save some bandwidth. Not necessary if running locally.
     """
-    print(f"Creating minified JSON files in {GUIDE_JSON_DIR} ...")
+    print("Minifying JSON files ...")
     for json_fpath in GUIDE_JSON_DIR.iterdir():
         if json_fpath.suffix == ".json":
             with json_fpath.open("r") as fp:
@@ -97,7 +99,7 @@ def process_styled_text(raw_text) -> str:
     ] = (
         (
             r"\<icon\>(.*?)\</\>",
-            convert_func,
+            convert_func,  # pyright: ignore[reportAssignmentType]
         ),
         (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="pico-color-\1-500">\2</span>'),
         (r"{e:(.*?)}", r""),
@@ -261,7 +263,27 @@ def make_arsenal_json() -> None:
     print("Done.")
 
 
+def make_item_cat_new_json():
+    print("Creating items.category.new.json ...")
+    item_cats = {"Dragon's Gate": {}, "Accessories": {}}
+    with (JSON_DIR / "items.json").open("r") as fp:
+        for data_entry in sorted(json.load(fp), key=lambda x: x["name"]):
+            if data_entry["nid"].endswith("_DG"):
+                item_cats["Dragon's Gate"][data_entry["nid"]] = data_entry["name"]
+            if get_comp(data_entry, "equippable_accessory", bool):
+                item_cats["Accessories"][data_entry["nid"]] = data_entry["name"]
+            if wtype := get_comp(data_entry, "weapon_type", str):
+                if wtype not in item_cats:
+                    item_cats[wtype] = {}
+                item_cats[wtype][data_entry["nid"]] = data_entry["name"]
+
+    with (GUIDE_JSON_DIR / "items.category.new.json").open("w+") as fp:
+        json.dump(item_cats, fp, indent=2)
+    print("Done.")
+
+
 def get_icons():
+    print("Copying icons ...")
     new_icons_path = GUIDE_IMG_DIR / "icons"
     for entry in ICONS_16_DIR.iterdir():
         if entry.suffix == ".png":
@@ -272,9 +294,9 @@ def get_icons():
             target_color = (128, 160, 128)
             for item in datas:
                 if (
-                    item[0] == target_color[0]
-                    and item[1] == target_color[1]
-                    and item[2] == target_color[2]
+                    item[0] == target_color[0]  # pyright: ignore[reportIndexIssue]
+                    and item[1] == target_color[1]  # pyright: ignore[reportIndexIssue]
+                    and item[2] == target_color[2]  # pyright: ignore[reportIndexIssue]
                 ):
                     new_img_data.append(
                         (255, 255, 255, 0)
@@ -283,9 +305,11 @@ def get_icons():
                     new_img_data.append(item)
             img.putdata(new_img_data)
             img.save(new_icons_path / entry.name)
+    print("Done.")
 
 
 def make_icon_css():
+    print("Creating iconsheet.css ...")
     css_path = GUIDE_CSS_DIR / "iconsheet.css"
     icons_json = ICONS_16_DIR / "icons16.json"
     items_json = JSON_DIR / "items.json"
@@ -365,9 +389,11 @@ def make_icon_css():
                         """
     with css_path.open("w") as fp:
         fp.write(css_str)
+    print("Done.")
 
 
 def make_unit_promo_json() -> None:
+    print("Creating classes.promos.json ...")
     unit_promos = {}
     with (JSON_DIR / "classes.json").open("r") as fp:
         for data_entry in sorted(json.load(fp), key=lambda x: x["tier"], reverse=True):
@@ -380,11 +406,13 @@ def make_unit_promo_json() -> None:
                 unit_promos[class_nid]["turns_from"].append(data_entry["nid"])
     with (GUIDE_JSON_DIR / "classes.promos.json").open("w+") as fp:
         json.dump(unit_promos, fp, indent=2)
+    print("Done.")
 
 
 def main():
     make_arsenal_json()
     make_unit_promo_json()
+    make_item_cat_new_json()
     minify_json()
     get_icons()
     make_icon_css()
