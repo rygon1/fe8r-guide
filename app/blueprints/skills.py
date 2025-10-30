@@ -16,7 +16,11 @@ class FESkill:
 
 
 SKILLS = {}
-SKILL_CATS = {}
+SKILL_CATS = {
+    "Feats (Tier 1)": {},
+    "Feats (Tier 2)": {},
+    "Feats (Tier 3)": {},
+}
 
 
 def convert_func(matchobj):
@@ -83,13 +87,13 @@ def init_lists() -> None:
             )
             SKILLS[data_entry["nid"]] = new_skill_data
     with bp.open_resource("../static/json/skills.category.json", "r") as fp:
-        for skill_nid, skill_cat in json.load(fp).items():
-            if skill_cat not in SKILL_CATS:
-                SKILL_CATS[skill_cat] = {}
-            SKILL_CATS[skill_cat][skill_nid] = {
-                "nid": SKILLS[skill_nid].nid,
-                "name": SKILLS[skill_nid].name,
-            }
+        for skill_nid, _ in json.load(fp).items():
+            if skill_nid[-3:-1] == "_T" and "_Pair_Up" not in skill_nid:
+                feat_tier = skill_nid[-1]
+                SKILL_CATS[f"Feats (Tier {feat_tier})"][skill_nid] = {
+                    "nid": SKILLS[skill_nid].nid,
+                    "name": SKILLS[skill_nid].name,
+                }
 
 
 init_lists()
