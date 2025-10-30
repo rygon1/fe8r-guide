@@ -26,7 +26,7 @@
   <header class="container-fluid">
     <nav>
       <ul>
-        <li><strong><a href="{{ url_for('index') }}">FE8R Reference Guide</a></strong></li>
+        <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Reference Guide</a></strong></li>
       </ul>
       <ul>
         <li>
@@ -39,6 +39,12 @@
               </li>
             </ul>
           </details>
+        </li>
+        {# <li>
+          <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
+        </li> #}
+        <li>
+          <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
         </li>
         <li>
           <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
