@@ -24,6 +24,7 @@ class FEItem:
     max_range: int
     status_on_equip: list
     icon_class: str
+    sub_items: list
 
 
 @dataclass
@@ -196,6 +197,11 @@ def init_lists() -> None:
                     f"{make_valid_class_name(data_entry["nid"])}-icon {make_valid_class_name(data_entry["icon_nid"])}-icon"
                     if data_entry["icon_nid"]
                     else ""
+                ),
+                sub_items=(
+                    get_comp(data_entry, "multi_item")
+                    if get_comp(data_entry, "multi_item")
+                    else []
                 ),
             )
 

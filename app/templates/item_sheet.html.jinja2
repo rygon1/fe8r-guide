@@ -48,5 +48,13 @@
                 </div>
                 {% endfor %}
             </div>
+            {% if item_data.nid == 'Crystal_Ring_DG' %}
+            <div class="grid">
+                {% for subitem_nid in item_data.sub_items %}
+                <div hx-get=/items/{{subitem_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 </article>
 {% endblock content %}
