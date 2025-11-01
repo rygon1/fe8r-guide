@@ -127,15 +127,13 @@ def make_arsenal_json() -> None:
                 arsenals[unit_nid] = {}
     # Add arsenal details
     with (JSON_DIR / "items.json").open("r") as fp:
+        arsenal_marks = ("_Arsenal", "bending", "_Studies", "_Stash")
+        arsenal_exclude = ("Davius_Arsenal_Old",)
         for item_data in json.load(fp):
             if (
-                get_comp(item_data, "multi_item_hides_unavailable", bool)
-                or item_data["nid"]
-                in (
-                    "Vector_Arsenal",
-                    "Andre_Arsenal",
-                )  # Have no multi_item_hides_unavailable
-            ) and item_data["nid"] not in ("Davius_Arsenal_Old",):
+                any(item_data["nid"].endswith(x) for x in arsenal_marks)
+                and item_data["nid"] not in arsenal_exclude
+            ):
                 if prf_list := get_comp(item_data, "prf_unit", list):
                     if prf_list[0] in arsenals:
                         arsenals[prf_list[0]][item_data["nid"]] = {
@@ -162,14 +160,15 @@ def make_arsenal_json() -> None:
     with (JSON_DIR / "items.json").open("r") as fp:
         all_items: dict[Any, Any] = {x["nid"]: x for x in json.load(fp)}
     # Add items to arsenals
-    arsenal_data: dict[Any, Any] = {}
     with (JSON_DIR / "items.category.json").open("r") as fp:
         for item_nid, items_cat in json.load(fp).items():
+            arsenal_data: dict[Any, Any] = {}
             if (
                 items_cat.startswith("Personal Weapons")
                 and item_nid not in arsenal_nid_list
                 and not item_nid.endswith("_Old")
-                and (arsenal_unit := items_cat.split("/")[1]) not in ("Davius Old")
+                and all_items[item_nid]["desc"]
+                and (arsenal_unit := items_cat.split("/")[1]) not in ("Davius Old",)
             ):
                 if arsenal_unit == "L'arachel":
                     arsenal_unit = "Larachel"
@@ -195,13 +194,21 @@ def make_arsenal_json() -> None:
                             else:
                                 arsenal_nid = "Tanas_Arsenal"
                             arsenal_data = arsenals[arsenal_unit][arsenal_nid]
-
+                    # Filter Summon Weapons
+                    case "Lindsey":
+                        if not item_nid.endswith("_D"):
+                            arsenal_nid = list(arsenals[arsenal_unit].keys())[0]
+                            arsenal_data = arsenals[arsenal_unit][arsenal_nid]
+                    case "Azuth":
+                        if not item_nid.endswith("_A"):
+                            arsenal_nid = list(arsenals[arsenal_unit].keys())[0]
+                            arsenal_data = arsenals[arsenal_unit][arsenal_nid]
                     case _:
                         if arsenal_unit in arsenals:
                             if item_nid not in arsenals[arsenal_unit]:
                                 arsenal_nid = list(arsenals[arsenal_unit].keys())[0]
                                 arsenal_data = arsenals[arsenal_unit][arsenal_nid]
-                if item_data := all_items[item_nid]:
+                if arsenal_data and (item_data := all_items[item_nid]):
                     weapon_type = get_comp(item_data, "weapon_type", str)
                     if weapon_type == "":
                         weapon_type = "Misc"
