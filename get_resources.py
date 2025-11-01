@@ -169,8 +169,8 @@ def make_arsenal_json() -> None:
                 items_cat.startswith("Personal Weapons")
                 and item_nid not in arsenal_nid_list
                 and not item_nid.endswith("_Old")
+                and (arsenal_unit := items_cat.split("/")[1]) not in ("Davius Old")
             ):
-                arsenal_unit = items_cat.split("/")[1]
                 if arsenal_unit == "L'arachel":
                     arsenal_unit = "Larachel"
                 elif arsenal_unit == "Pro":
@@ -278,7 +278,7 @@ def make_item_cat_new_json():
                 item_cats[wtype][data_entry["nid"]] = data_entry["name"]
 
     with (GUIDE_JSON_DIR / "items.category.new.json").open("w+") as fp:
-        json.dump(item_cats, fp, indent=2)
+        json.dump(item_cats, fp)
     print("Done.")
 
 
