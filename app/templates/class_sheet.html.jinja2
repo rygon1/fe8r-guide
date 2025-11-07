@@ -4,104 +4,110 @@
 {% endif %}
 {% block content %}
 <div id="classSheet">
-    <article>
-        <header>
-            <hgroup>
-                <h3>{{ class_data.name }}</h3>
-                <a class="secondary align-right clickable"
-                    _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') put 'Copied!' into me wait 1s put 'Copy' into me">Copy</a>
-                <p>{{ class_data.desc }}</p>
-                {% if class_data.weapons%}
-                <p>
-                    <span class="pico-color-red-500">Prof:</span>
-                    {% for weapon_type in class_data.weapons%}
-                    <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
-                    {% endfor %}
-                </p>
-                {% endif %}
-            </hgroup>
-        </header>
-        <div class="overflow-auto">
-            <h4>Stats</h4>
-            <table class="striped">
-                {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
-                <thead>
-                    <tr>
-                        <th scope="col">Stat</th>
-                        {% for stat_name in stat_names %}
-                        <th scope="col">{{ stat_name }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">On Promo</th>
-                        {% for stat_name in stat_names[:-1] %}
-                        <td>+{{ class_data.promotion[stat_name] }}</td>
-                        {% endfor %}
-                        <td>{{ class_data.bases['MOV'] }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Growth</th>
-                        {% for stat_name in stat_names %}
-                        <td>+{{ class_data.growth_bonus[stat_name] }}%</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <th scope="row">Cap</th>
-                        {% for stat_name in stat_names %}
-                        <td>{{ class_data.max_stats[stat_name] }}</td>
-                        {% endfor %}
-                    </tr>
-            </table>
-        </div>
+    <hgroup>
+        <h3>
+            <span>{{ class_data.name }}</span><span class="feClassImg">
+                <img
+                    src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}" />
+            </span>
 
-        {% if class_data.learned_skills %}
-        <div>
-            <h4>Skills</h4>
-            <div class="grid">
-                {% for skill_lvl,skill_nid in class_data.learned_skills %}
-                <div>
-                    <p><strong>
-                            Level {{skill_lvl}}
-                        </strong></p>
-                    <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+        </h3>
+        {% if not request.headers.hx_request or request.args.get('addCopy') == 'True'%}
+        <a class="secondary align-right clickable"
+            _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') put 'Copied!' into me wait 1s put 'Copy' into me">Copy</a>
         {% endif %}
+        <p>{{ class_data.desc }}
+            {% if class_data.weapons%}
+            <br />
+            <span class="lt-color-red">Prof:</span>
+            {% for weapon_type in class_data.weapons%}
+            <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+            {% endfor %}
+        </p>
+        {% endif %}
+    </hgroup>
 
+    <div class="overflow-auto">
+        <table class="striped">
+            {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
+            <thead>
+                <tr>
+                    <th scope="col">Stat</th>
+                    {% for stat_name in stat_names %}
+                    <th scope="col">{{ stat_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">On Promo</th>
+                    {% for stat_name in stat_names[:-1] %}
+                    <td>+{{ class_data.promotion[stat_name] }}</td>
+                    {% endfor %}
+                    <td>{{ class_data.bases['MOV'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Growth</th>
+                    {% for stat_name in stat_names %}
+                    <td>+{{ class_data.growth_bonus[stat_name] }}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th scope="row">Cap</th>
+                    {% for stat_name in stat_names %}
+                    <td>{{ class_data.max_stats[stat_name] }}</td>
+                    {% endfor %}
+                </tr>
+        </table>
+    </div>
 
-        {% if class_promo_data.turns_into or class_promo_data.turns_from%}
+    {% if class_data.learned_skills %}
+    <details open>
+        <summary>Skills</summary>
         <div class="grid">
-            {% if class_promo_data.turns_from %}
+            {% for skill_lvl,skill_nid in class_data.learned_skills %}
             <div>
-                <h4>Promotes From</h4>
-                <ul>
-                    {% for prev_class_data in class_promo_data.turns_from %}
-                    <li><a href="#" hx-get="/classes/{{prev_class_data.nid}}" hx-target="#classSheet"
-                            hx-swap="outerHTML">{{prev_class_data.name}} ({{prev_class_data.nid}})</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <p>Level {{skill_lvl}}</p>
+                <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                </div>
             </div>
-            {% endif %}
-            {% if class_promo_data.turns_into %}
-            <div>
-                <h4>Promotes To</h4>
-                <ul>
-                    {% for next_class_data in class_promo_data.turns_into %}
-                    <li><a href="#" hx-get="/classes/{{next_class_data.nid}}" hx-target="#classSheet"
-                            hx-swap="outerHTML">{{next_class_data.name}} ({{next_class_data.nid}})</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+            {% endfor %}
         </div>
+    </details>
+    <hr />
+    {% endif %}
+
+
+    {% if class_promo_data.turns_into or class_promo_data.turns_from%}
+    <div class="grid">
+        {% if class_promo_data.turns_from %}
+        <details open>
+            <summary>Promotes From</summary>
+            <ul>
+                {% for prev_class_data in class_promo_data.turns_from %}
+                <li><a href="#" hx-get="/classes/{{prev_class_data.nid}}" hx-target="#classSheet"
+                        hx-swap="outerHTML">{{prev_class_data.name}} {% if prev_class_data.alt_name %}({{
+                        prev_class_data.alt_name }}){% endif %}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </details>
         {% endif %}
-    </article>
+        {% if class_promo_data.turns_into %}
+        <details open>
+            <summary>Promotes To</summary>
+            <ul>
+                {% for next_class_data in class_promo_data.turns_into %}
+                <li><a href="#" hx-get="/classes/{{next_class_data.nid}}" hx-target="#classSheet"
+                        hx-swap="outerHTML">{{next_class_data.name}} {% if next_class_data.alt_name %}({{
+                        next_class_data.alt_name }}){% endif %}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </details>
+        {% endif %}
+    </div>
+    {% endif %}
+
 </div>
 {% endblock content %}
