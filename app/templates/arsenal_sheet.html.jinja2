@@ -6,6 +6,10 @@
 <div id="arsenalSheet">
     <div aria-busy="true" class="htmx-indicator"></div>
     <h2>{{ unit_data["name"] }}</h2>
+    {% if not request.headers.hx_request or request.args.get('addCopy') == 'True'%}
+    <a class="secondary align-right clickable"
+        _="on click call navigator.clipboard.writeText('[{{ unit_data['name'] }} Arsenals](https://fe8r-guide.onrender.com/arsenals/{{ unit_data['nid'] }})') put 'Copied!' into me wait 1s put 'Copy' into me">Copy</a>
+    {% endif %}
     {% for arsenal_nid, arsenal in unit_arsenals.items() %}
     <section>
         <hgroup>
