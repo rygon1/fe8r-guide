@@ -20,7 +20,8 @@
             <div id="skillSelector">
                 {% for skill_cat,skills in skill_cats.items() %}
                 <select class="skillSelect" name="skillSelect" aria-label="Select skill" data-category="{{ skill_cat }}"
-                    required hx-get="/skills" hx-target="#skillsheet" hx-indicator="#skillsheet">
+                    required hx-get="/skills" hx-vals='{"addCopy": "True"}' hx-target="#skillsheet"
+                    hx-indicator="#skillsheet">
                     <option value="default" selected disabled>Select a skill</option>
                     {% for skill_nid,skill in skills.items() %}
                     <option value="{{ skill['nid'] }}">{{ skill["name"] }}</option>

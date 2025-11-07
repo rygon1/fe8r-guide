@@ -20,7 +20,8 @@
             <div id="itemSelector">
                 {% for item_cat,items in item_cats.items() %}
                 <select class="itemSelect" name="itemSelect" aria-label="Select item" data-category="{{ item_cat }}"
-                    required hx-get="/items" hx-target="#itemSheet" hx-indicator="#itemSheet">
+                    required hx-get="/items" hx-vals='{"addCopy": "True"}' hx-target="#itemSheet"
+                    hx-indicator="#itemSheet">
                     <option value="default" selected disabled>Select an item</option>
                     {% for item_nid,item_name in items.items() %}
                     <option value="{{ item_nid }}">{{ item_name }}</option>
