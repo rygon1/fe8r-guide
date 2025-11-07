@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-16" />
@@ -8,31 +8,70 @@
   <meta name="keywords" content="gaming, fire emblem">
   <meta name="description" content="Reference Guide for FE8R">
   <title>{% block title %}{% endblock %}FE8R Reference Guide</title>
-
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
   <script src="https://unpkg.com/hyperscript.org@0.9.14"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/open-props" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/iconsheet.css') }}">
 </head>
 
 <body>
   <header class="container-fluid">
-    <nav>
+    <nav role="burger">
       <ul>
         <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Reference Guide</a></strong></li>
       </ul>
       <ul>
         <li>
           <details class="dropdown">
-            <summary>Items</summary>
-            <ul>
+            <summary role="button" class="primary outline">Menu</summary>
+            <ul dir="rtl">
+              <li>
+                <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
+              </li>
+              <li>
+                <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
+              </li>
+              <li>
+                <details class="dropdown">
+                  <summary role="button" class="outline">Items</summary>
+                  <ul dir="rtl">
+                    <li><a href="{{ url_for('items.get_fe_item_index') }}">All</a></li>
+                    <li>
+                      <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
+              </li>
+            </ul>
+          </details>
+        </li>
+      </ul>
+    </nav>
+    <nav role="menu">
+      <ul>
+        <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Reference Guide</a></strong></li>
+      </ul>
+      <ul>
+        <li>
+          <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
+        </li>
+        <li>
+          <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
+        </li>
+        <li>
+          <details class="dropdown">
+            <summary role="button" class="primary outline">Items</summary>
+            <ul dir="rtl">
               <li><a href="{{ url_for('items.get_fe_item_index') }}">All</a></li>
               <li>
                 <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
@@ -40,17 +79,8 @@
             </ul>
           </details>
         </li>
-        {# <li>
-          <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
-        </li> #}
-        <li>
-          <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
-        </li>
         <li>
           <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
-        </li>
-        <li>
-          <a href="{{ url_for('get_credits') }}">Credits</a>
         </li>
       </ul>
     </nav>
@@ -60,6 +90,7 @@
     {% endblock content %}
   </main>
   <footer class="container-fluid">
+    <span><a href="{{ url_for('get_credits') }}">Credits</a></span> •
     <span><a href="https://github.com/rygon1/fe8r-guide">Github</a></span> •
     <span><a href="https://github.com/FE8Dev/FE8RProject">FE8R</a></span> •
     <span><a href="https://lex-talionis.net/">Lex Talionis</a></span>
