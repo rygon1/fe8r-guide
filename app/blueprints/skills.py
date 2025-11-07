@@ -1,8 +1,9 @@
 import json
-import re
 from dataclasses import dataclass
 
 from flask import Blueprint, render_template, request
+
+from app.blueprints.utils import make_valid_class_name, process_styled_text
 
 bp = Blueprint("skills", __name__, url_prefix="/skills", static_folder="../static/")
 
@@ -21,55 +22,6 @@ SKILL_CATS = {
     "Feats (Tier 2)": {},
     "Feats (Tier 3)": {},
 }
-
-
-def convert_func(matchobj):
-    if m := matchobj.group(1):
-        return f'<span class="{make_valid_class_name(m)}-subIcon"></span>'
-    return ""
-
-
-def process_styled_text(raw_text) -> str:
-    """
-    Converts in-game desc tags to html. Note that this uses pico.css, so remember to change the
-    classes to get proper colors.
-    """
-    new_text = raw_text
-    replacements: tuple[
-        tuple[str, str],
-        tuple[str, str],
-        tuple[str, str],
-        tuple[str, str],
-        tuple[str, str],
-    ] = (
-        (
-            r"\<icon\>(.*?)\</\>",
-            convert_func,
-        ),
-        (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="pico-color-\1-500">\2</span>'),
-        (r"{e:(.*?)}", r""),
-        (r" \(<span class=\"pico-color-red-500\"></span>\)", r""),
-        (r"\n", r"<br/>"),
-    )
-    for pattern, replacement in replacements:
-        new_text = re.sub(pattern, replacement, new_text)
-    return new_text
-
-
-def make_valid_class_name(s):
-    # Remove invalid characters and replace underscores with dashes and spaces with underscores
-    cleaned_s = (
-        "".join(c for c in s if c.isalnum() or c in (" ", "_", "-"))
-        .replace("_", "-")
-        .replace(" ", "_")
-    )
-    # Ensure it starts with a letter or underscore
-    if cleaned_s and not cleaned_s[0].isalpha():
-        cleaned_s = "xx" + cleaned_s
-    # Convert to PascalCase (optional, but common for Python class names)
-    parts = cleaned_s.split("_")
-    pascal_case_name = "-".join(part.capitalize() for part in parts)
-    return pascal_case_name
 
 
 def init_lists() -> None:
