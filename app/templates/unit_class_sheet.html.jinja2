@@ -1,0 +1,86 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% block title %}{{ class_data.name }} &mdash; Classes | {% endblock %}
+{% endif %}
+{% block content %}
+<article>
+    <header>
+        <hgroup>
+            <h5><span>{{ class_data.name }}</span><span class="feClassImg">
+                    <img
+                        src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}" />
+                </span></h5>
+            <p>{{ class_data.desc }}<br />
+                {% if class_data.weapons%}
+                <span class="lt-color-red">Prof:</span>
+                {% for weapon_type in class_data.weapons%}
+                <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+                {% endfor %}
+            </p>
+            {% endif %}
+        </hgroup>
+    </header>
+    <div class="overflow-auto">
+        <table class="striped">
+            {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
+            <thead>
+                <tr>
+                    <th scope="col">Stat</th>
+                    {% for stat_name in stat_names %}
+                    <th scope="col">{{ stat_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">On Promo</th>
+                    {% for stat_name in stat_names[:-1] %}
+                    <td>+{{ class_data.promotion[stat_name] }}</td>
+                    {% endfor %}
+                    <td>{{ class_data.bases['MOV'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Total Growth</th>
+                    {% for stat_name in stat_names %}
+                    <td>{{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th scope="row">Cap</th>
+                    {% for stat_name in stat_names %}
+                    <td>{{ unit_data.stat_cap_modifiers[stat_name] + class_data.max_stats[stat_name] }}</td>
+                    {% endfor %}
+                </tr>
+        </table>
+    </div>
+
+    {% if class_data.learned_skills %}
+    <div>
+        <p><strong>Skills</strong></p>
+        <div class="grid">
+            {% for skill_lvl,skill_nid in class_data.learned_skills %}
+            <div>
+                <p>Level {{skill_lvl}}</p>
+                <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</article>
+{% if class_promo_data.turns_into %}
+<div class="classT{{ class_data.tier + 1 }}Selector">
+    <label>Tier {{ class_data.tier + 1 }}</label>
+    <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
+        hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT{{ class_data.tier + 1 }}Sheet"
+        hx-indicator="#unitClassT{{ class_data.tier + 1 }}Sheet" hx-swap="innerHTML" {% if class_data.tier==1 %}
+        _="on change set #unitClassT3Sheet.innerHTML to ''" {% endif %}>
+        <option value="default" selected disabled>Select a tier {{ class_data.tier + 1 }} class</option>
+        {% for next_class_data in class_promo_data.turns_into %}
+        <option value="{{ next_class_data.nid }}">{{ next_class_data.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+{% endblock content %}
