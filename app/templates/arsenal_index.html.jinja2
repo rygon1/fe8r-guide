@@ -19,8 +19,8 @@
             <div id="unitSelector">
                 {% for unit_category,units in arsenal_units.items() %}
                 <select class="unitSelect" name="unitSelect" aria-label="Select unit"
-                    data-category="{{ unit_category }}" required hx-get="/items/arsenals" hx-target="#arsenalSheet"
-                    hx-swap="outerHTML" hx-indicator="#arsenalSheet">
+                    data-category="{{ unit_category }}" required hx-get="/items/arsenals" hx-vals='{"addCopy": "True"}'
+                    hx-target="#arsenalSheet" hx-swap="outerHTML" hx-indicator="#arsenalSheet">
                     <option value="default" selected disabled>Select a unit</option>
                     {% for unit in units %}
                     <option value="{{ unit.nid }}">{{ unit.name }}</option>
@@ -31,37 +31,7 @@
         </fieldset>
     </form>
 </section>
+<div aria-busy="true" class="htmx-indicator"></div>
 <div id="arsenalSheet">
-    <div aria-busy="true" class="htmx-indicator"></div>
-    <h2>{{ unit_data["name"] }}</h2>
-    {% for arsenal_nid, arsenal in unit_arsenals.items() %}
-    <section>
-        <hgroup>
-            <h3>{{ arsenal["name"] }}</h3>
-            <p>{{ arsenal["desc"] }}</p>
-        </hgroup>
-        <select name="arsenalItemType" aria-label="Select weapon type" required
-            _="on change set myFilter to me.value then show .arsenalItemType in #arsenalItems when its.getAttribute('data-category') is myFilter or myFilter=='all'">
-            <option selected disabled value="">
-                Select weapon type
-            </option>
-            <option value="all">All</option>
-            {% for item_type in arsenal["items"]%}
-            <option value="{{item_type}}">{{ item_type }}</option>
-            {% endfor %}
-        </select>
-
-        <div id="arsenalItems">
-            {% for item_type,item_nids in arsenal["items"].items() %}
-            <div class="arsenalItemType" data-category="{{ item_type }}">
-                {% for item_nid in item_nids %}
-                <div hx-get="/items/{{ item_nid }}" hx-trigger="load" hx-target="this">
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-    {% endfor %}
 </div>
 {% endblock content %}
