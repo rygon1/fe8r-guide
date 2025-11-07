@@ -21,6 +21,8 @@ if not LTPROJ_DIR.exists():
 
 JSON_DIR: Path = LTPROJ_DIR / "game_data"
 ICONS_16_DIR = LTPROJ_DIR / "resources/icons16"
+PORTRAITS_DIR: Path = LTPROJ_DIR / "resources/portraits"
+MAP_SPRITES_DIR: Path = LTPROJ_DIR / "resources/map_sprites"
 GUIDE_JSON_DIR: Path = Path.cwd() / "app/static/json"
 GUIDE_IMG_DIR: Path = Path.cwd() / "app/static/images"
 GUIDE_CSS_DIR: Path = Path.cwd() / "app/static/css"
@@ -101,9 +103,9 @@ def process_styled_text(raw_text) -> str:
             r"\<icon\>(.*?)\</\>",
             convert_func,  # pyright: ignore[reportAssignmentType]
         ),
-        (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="pico-color-\1-500">\2</span>'),
+        (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="lt-color-\1">\2</span>'),
         (r"{e:(.*?)}", r""),
-        (r" \(<span class=\"pico-color-red-500\"></span>\)", r""),
+        (r" \(<span class=\"lt-color-red\"></span>\)", r""),
         (r"\n", r"<br/>"),
     )
     for pattern, replacement in replacements:
@@ -277,12 +279,16 @@ def make_item_cat_new_json():
         for data_entry in sorted(json.load(fp), key=lambda x: x["name"]):
             if data_entry["nid"].endswith("_DG"):
                 item_cats["Dragon's Gate"][data_entry["nid"]] = data_entry["name"]
-            if get_comp(data_entry, "equippable_accessory", bool):
+            if (
+                get_comp(data_entry, "equippable_accessory", bool)
+                and data_entry["name"] not in item_cats["Accessories"].values()
+            ):
                 item_cats["Accessories"][data_entry["nid"]] = data_entry["name"]
             if wtype := get_comp(data_entry, "weapon_type", str):
                 if wtype not in item_cats:
                     item_cats[wtype] = {}
-                item_cats[wtype][data_entry["nid"]] = data_entry["name"]
+                if data_entry["name"] not in item_cats[wtype].values():
+                    item_cats[wtype][data_entry["nid"]] = data_entry["name"]
 
     with (GUIDE_JSON_DIR / "items.category.new.json").open("w+") as fp:
         json.dump(item_cats, fp)
@@ -312,6 +318,33 @@ def get_icons():
                     new_img_data.append(item)
             img.putdata(new_img_data)
             img.save(new_icons_path / entry.name)
+    print("Done.")
+
+
+def get_portraits():
+    print("Copying portraits ...")
+    new_portraits_path = GUIDE_IMG_DIR / "portraits"
+    for entry in PORTRAITS_DIR.iterdir():
+        if entry.suffix == ".png":
+            base_img = Image.open(entry)
+            img = base_img.crop((0, 0, 96, 80))
+            img = img.convert("RGBA")
+            datas = img.getdata()
+            new_img_data = []
+            target_color = (128, 160, 128)
+            for item in datas:
+                if (
+                    item[0] == target_color[0]  # pyright: ignore[reportIndexIssue]
+                    and item[1] == target_color[1]  # pyright: ignore[reportIndexIssue]
+                    and item[2] == target_color[2]  # pyright: ignore[reportIndexIssue]
+                ):
+                    new_img_data.append(
+                        (255, 255, 255, 0)
+                    )  # Replace with transparent white
+                else:
+                    new_img_data.append(item)
+            img.putdata(new_img_data)
+            img.save(new_portraits_path / entry.name)
     print("Done.")
 
 
@@ -399,7 +432,7 @@ def make_icon_css():
     print("Done.")
 
 
-def make_unit_promo_json() -> None:
+def make_class_promo_json() -> None:
     print("Creating classes.promos.json ...")
     unit_promos = {}
     with (JSON_DIR / "classes.json").open("r") as fp:
@@ -416,12 +449,64 @@ def make_unit_promo_json() -> None:
     print("Done.")
 
 
+def remove_bg(entry: Path):
+    img = Image.open(entry)
+    img = img.convert("RGBA")
+    datas = img.getdata()
+    new_data = []
+    target_color = (128, 160, 128)  # Example: black color
+    for item in datas:
+        if (
+            item[0] == target_color[0]  # pyright: ignore[reportIndexIssue]
+            and item[1] == target_color[1]  # pyright: ignore[reportIndexIssue]
+            and item[2] == target_color[2]  # pyright: ignore[reportIndexIssue]
+        ):
+            new_data.append((255, 255, 255, 0))  # Replace with transparent white
+        else:
+            new_data.append(item)
+    img.putdata(new_data)
+    return img
+
+
+def get_map_sprites():
+    with (JSON_DIR / "classes.json").open("r") as fp:
+        fe_classes = json.load(fp)
+    des_dir = GUIDE_IMG_DIR / "map_sprites"
+    for data_entry in fe_classes:
+        if data_entry["map_sprite_nid"]:
+            sprite_path = MAP_SPRITES_DIR / f"{data_entry['map_sprite_nid']}-stand.png"
+            sprite_sheet = remove_bg(sprite_path)
+            frame_width = 192 / 3
+            frame_height = 144 / 3
+            num_columns = int(sprite_sheet.width // frame_width)
+            # num_rows = int(sprite_sheet.height // frame_height)
+            frames = []
+            # for row in range(num_rows):
+            row = 2
+            for col in range(num_columns):
+                left = col * frame_width
+                upper = row * frame_height
+                right = left + frame_width
+                lower = upper + frame_height
+                frame = sprite_sheet.crop((left, upper, right, lower))
+                frames.append(frame)
+            frames[0].save(
+                des_dir / f"{data_entry['map_sprite_nid']}-stand.webp",
+                save_all=True,
+                append_images=frames[1:],
+                duration=200,
+                loop=0,
+            )
+
+
 def main():
     make_arsenal_json()
-    make_unit_promo_json()
+    make_class_promo_json()
     make_item_cat_new_json()
     minify_json()
     get_icons()
+    get_portraits()
+    get_map_sprites()
     make_icon_css()
 
 

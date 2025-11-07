@@ -1,0 +1,65 @@
+import re
+
+
+def make_valid_class_name(s):
+    # Remove invalid characters and replace underscores with dashes and spaces with underscores
+    cleaned_s = (
+        "".join(c for c in s if c.isalnum() or c in (" ", "_", "-"))
+        .replace("_", "-")
+        .replace(" ", "_")
+    )
+    # Ensure it starts with a letter or underscore
+    if cleaned_s and not cleaned_s[0].isalpha():
+        cleaned_s = "xx" + cleaned_s
+    # Convert to PascalCase (optional, but common for Python class names)
+    parts = cleaned_s.split("_")
+    pascal_case_name = "-".join(part.capitalize() for part in parts)
+    return pascal_case_name
+
+
+def convert_func(matchobj):
+    if m := matchobj.group(1):
+        return f'<span class="{make_valid_class_name(m)}-subIcon"></span>'
+    return ""
+
+
+def process_styled_text(raw_text) -> str:
+    """
+    Converts in-game desc tags to html. Note that this uses pico.css, so remember to change the
+    classes to get proper colors.
+    """
+    new_text = raw_text
+    replacements: tuple[
+        tuple[str, str],
+        tuple[str, str],
+        tuple[str, str],
+        tuple[str, str],
+        tuple[str, str],
+    ] = (
+        (
+            r"\<icon\>(.*?)\</\>",
+            convert_func,  # pyright: ignore[reportAssignmentType]
+        ),
+        (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="lt-color-\1">\2</span>'),
+        (r"{e:(.*?)}", r""),
+        (r" \(<span class=\"lt-color-red\"></span>\)", r""),
+        (r"\n", r"<br/>"),
+    )
+    for pattern, replacement in replacements:
+        new_text = re.sub(pattern, replacement, new_text)
+    return new_text
+
+
+def get_alt_name(orig_name: str, orig_nid: str) -> str:
+    if orig_nid == orig_name:
+        return ""
+    alt_name = orig_nid
+    replacements = (
+        (r"_", r" "),
+        (r"T\d", r""),
+        (r"Leg ", r""),
+    )
+    for pattern, replacement in replacements:
+        alt_name = re.sub(pattern, replacement, alt_name)
+    alt_name = alt_name.replace(orig_name, "").lstrip().rstrip()
+    return alt_name

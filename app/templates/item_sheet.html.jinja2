@@ -6,7 +6,7 @@
 <article>
     <header>
         <strong>{{ item_data.name }} <span class="{{ item_data.icon_class }}"></span></strong>
-        {% if not request.headers.hx_request or '/items' in request.headers.hx_current_url %}
+        {% if not request.headers.hx_request or request.args.get('addCopy') == 'True'%}
         <a class="secondary align-right clickable"
             _="on click call navigator.clipboard.writeText('[{{item_data.name}}](https://fe8r-guide.onrender.com/items/{{item_data.nid}})') put 'Copied!' into me wait 1s put 'Copy' into me"">Copy</a>
         {% endif %}
@@ -18,26 +18,26 @@
             {% endif %}
             {% if item_data.min_range %}
             {% if item_data.min_range == item_data.max_range %}
-            <span class="pico-color-amber-150">Rng: </span>{{ item_data.min_range }}<br />
+            <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}<br />
             {% else %}
-            <span class="pico-color-amber-150">Rng: </span>{{ item_data.min_range }}&ndash;{{ item_data.max_range
+            <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}&ndash;{{ item_data.max_range
             }}<br />
             {% endif %}
             {% endif %}
             {% if item_data.weight %}
-            <span class="pico-color-amber-150">Wt: </span>{{ item_data.weight }}<br />
+            <span class="lt-color-yellow">Wt: </span>{{ item_data.weight }}<br />
             {% endif %}
             {% if item_data.damage %}
-            <span class="pico-color-amber-150">Mt: </span>{{ item_data.damage }}<br />
+            <span class="lt-color-yellow">Mt: </span>{{ item_data.damage }}<br />
             {% endif %}
             {% if item_data.hit %}
-            <span class="pico-color-amber-150">Hit: </span>{{ item_data.hit }}<br />
+            <span class="lt-color-yellow">Hit: </span>{{ item_data.hit }}<br />
             {% endif %}
             {% if item_data.crit %}
-            <span class="pico-color-amber-150">Crit: </span>{{ item_data.crit }}<br />
+            <span class="lt-color-yellow">Crit: </span>{{ item_data.crit }}<br />
             {% endif %}
             {% if item_data.value %}
-            <span class="pico-color-amber-150">Value: </span>{{ item_data.value }}<br />
+            <span class="lt-color-yellow">Value: </span>{{ item_data.value }}<br />
             {% endif %}
             {% if item_data.desc %}
             <p>{{ item_data.desc }}</p>

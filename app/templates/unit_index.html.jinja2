@@ -1,0 +1,37 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}Units | {% endblock %}
+{% block content %}
+<h1>Units</h1>
+<section>
+    <form>
+        <fieldset class="grid">
+            <div>
+                <select name="Category" id="Category" aria-label="Select category" required
+                    _="on change set myFilter to me.value then show <select/> in #unitSelector when its.getAttribute('data-category') is myFilter then set .unitSelect.value to 'default' then
+                    on load set myFilter to me.value then show <select/> in #unitSelector when its.getAttribute('data-category') is myFilter then set .unitSelect.value to 'default'">
+                    {% for unit_cat in unit_cats%}
+                    <option value="{{ unit_cat }}">{{ unit_cat }}</option>
+                    {% endfor %}
+                    </option>
+                </select>
+            </div>
+            <div id="unitSelector">
+                {% for unit_cat,units in unit_cats.items() %}
+                <select class="unitSelect" name="unitSelect" aria-label="Select unit" data-category="{{ unit_cat }}"
+                    required hx-get="/units" hx-vals='{"addCopy": "True"}' hx-target="#unitSheet" hx-swap="outerHTML">
+                    <option value="default" selected disabled>Select a unit</option>
+                    {% for unit_nid,unit_name in units.items() %}
+                    <option value="{{ unit_nid }}">{{ unit_name }}</option>
+                    {% endfor %}
+                </select>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </form>
+</section>
+<div aria-busy="true" class="htmx-indicator"></div>
+<div id="unitSheet">
+</div>
+{% endblock content %}

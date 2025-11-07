@@ -950,3 +950,340 @@
 - {Zelix} PoisonAxe
 - {Zelix} ShortAxe
 - {Zoramine} Cavalier (M) Promoted Spider Rider
+
+## Portraits
+
+- {7743} Neimi (Dancer)
+- {Alice} Amelia (Murdock General) [F2E]
+- {AmBrosiac} Mage (No face, version 6)
+- {Azra, Jey_The_Count} Marisa (Assassin)
+- {BeeperoniThe3rd} Lute
+- {Corninin} Esperanza Portrait; {Sphealnuke, Thorn VelvetKistune, and Levin64} Spliced assets
+- {DarkJaden} Amelia (Alt armor 1) [F2E]
+- {DarkJaden} Amelia (Alt armor 2) [F2E]
+- {DarkJaden} Duessel (Alt armor) [F2E]
+- {DarkJaden} Eirika (Alt armor) [F2E]
+- {DarkJaden} Ephraim (Alt armor) [F2E]
+- {DarkJaden} Forde (Alt armor) [F2E]
+- {DarkJaden} Franz (Alt armor 1) [F2E]
+- {DarkJaden} Franz (Alt armor 2) [F2E]
+- {DarkJaden} Garcia (Alt armor) [F2E]
+- {DarkJaden} Innes (Alt armor) [F2E]
+- {DarkJaden} Joshua (Alt armor) [F2E]
+- {DarkJaden} Kyle (Alt armor 1) [F2E]
+- {DarkJaden} Kyle (Alt armor 2) [F2E]
+- {DarkJaden} L'Arachel (Alt armor 1) [F2E]
+- {DarkJaden} L'Arachel (Alt armor 2) [F2E]
+- {DarkJaden} Lute (Alt armor) [F2E]
+- {DarkJaden} Marisa (Alt armor) [F2E]
+- {DarkJaden} Neimi (Alt armor 1) [F2E]
+- {DarkJaden} Ross (Alt armor 1) [F2E]
+- {DarkJaden} Ross (Alt armor 2) [F2E]
+- {DarkJaden} Ross (Alt armor 3) [F2E]
+- {DarkJaden} Ross (Alt armor 4) [F2E]
+- {DarkJaden} Seth (Alt armor) [F2E]
+- {DarkJaden} Syrene (Alt armor) [F2E]
+- {DarkJaden} Tana (Alt armor 1) [F2E]
+- {DarkJaden} Tana (Alt armor 2) [F2E]
+- {DarkJaden} Vanessa (Alt armor 1) [F2E]
+- {DarkJaden} Vanessa (Alt armor 2) [F2E]
+- {DarkJaden} Vanessa (Alt armor 3) [F2E]
+- {DrGreen3339} Ephraim (Brave)
+- {Dutch Introvert} Mogall
+- {Dutch Introvert} Spider
+- {Dutch introvert} Treant
+- {Eden} Eubans (Version 3)
+- {Fenriel} Alm (Conqueror)
+- {Fenriel} Arcane Knight
+- {Fenriel} Ifrit
+- {FuriousHaunter} Eirika (Thief) [F2E]
+- {Garytop} Camilla [F2E]
+- {Garytop} Ephraim (Great Knight) [F2E]
+- {Generic Pretsel} Skeleton (Armour version 2)
+- {GoldenMakoto} Seth (Great Knight)
+- {Grated Shtick} Forde (Axeman)
+- {JeyTheCount} Eirika (Dancer) [F2E]
+- {JeyTheCount} Forde (Beta version)  [F2E]
+- {JeyTheCount} Forde (Mix between beta and vanilla versions) [F2E]
+- {JeyTheCount} Pirate Camilla
+- {L95, Alexsplode} Cyclops (recolor)
+- {L95, Wasdye} Myrrh (Older, wings)
+- {L95} Mogall
+- {Lonkfromcalifornia} Joshua (Cav) [F2E]
+- {Lonkfromcalifornia} Rennac (Shirtless) [F2E]
+- {MeatOfJustice} Joshua Bard
+- {MegaCowsamMan} Colm (Older)
+- {Mel} Gargoyle
+- {NickT,Stitch} Gareth (Part 1)
+- {Obsidian Daddy} OC 6 (Version 1)
+- {Redbean} Amelia (Resplendent) [F2E]
+- {Redbean} Eirika (Brave) [F2E]
+- {Redbean} Marisa (alt 1) [F2E]
+- {Redbean} Marisa (alt 2) [F2E]
+- {Redbean} Neimi [F2E]
+- {RedBean} Tana [F2E]
+- {SaintRubenio} Moulder (Beta style) [F2E]
+- {SaintRubenio} Zombie
+- {SatoshiKura} Sword Art Online, Kirito
+- {SD9k} Eirika (Hat)
+- {SD9k} Moulder (Hat)
+- {Sme}
+- {Smokeyguy77} Samurai
+- {Smokeyguy77} Syrene (Hero) [F2E]
+- {Sphealnuke} Harpy (Version 1) [F2E]
+- {Sterling Glovner} Innes (Cipher version)
+- {Sterling Glovner} Joshua (Cipher version)
+- {Sterling Glovner} Neimi (Long hair)
+- {UltraFenix, RedBean} Amelia (Knight) [F2E]
+- {VelvetKitsune} Generic Kitsune
+- {VelvetKitsune} Shiro Portrait
+- {VelvetKitsune} Wolfskin (Female)
+- {XPGamesNL} Soldier (Girl)
+- {ZessDynamite} OC (For FE8R Submission)
+- {Zorua} Gawain
+
+## Map Sprites
+
+- {Agro} Cavalier (F) Sword {Agro}-stand.png
+- {Agro} Cavalier (M) Sword {Agro}-stand.png
+- {Agro} Knight (U) Axe {Agro}-stand
+- {Agro} Knight (U) Sword {Agro}-stand
+- {Alexsplode} Bonewalker (U) Specter {Alexsplode}-stand
+- {Alexsplode} Cyclops (U) Ronin {Alexsplode}-stand
+- {Alexsplode} Djinn (M) Supply {Alexsplode}-walk.png
+- {Alexsplode} Gore (U) {Alexsplode}-stand.png
+- {Alexsplode} Mogall (U) Watcher {Alexsplode}-stand
+- {Alusq} Fighter (F) Axe {Alusq}-stand-move
+- {Alusq} Fighter (F) Axe {Alusq}-stand-stand
+- {Apolo15} [FE7 Hector-Reskin] [M] T2 Legendary
+- {Archerbias} _Master of Arms (M) {Archerbias}-stand-move
+- {ArcherBias} Assassin (M) Novistador Lance {ArcherBias}-walk.png
+- {ArcherBias} Marksman (F) Nuramon-style {ArcherBias}-stand.png
+- {ArcherBias} Marksman (M) Nuramon-style {ArcherBias}-stand.png
+- {Aruka, Kenpuhu} Ballista Yggdra-Style (U) {Aruka, Kenpuhu}-stand.png
+- {Aruka, Kenpuhu} Great Lord (M) Hector-Chain Axe Axe {Aruka, Kenpuhu}-stand.png
+- {Aruka, Kenpuhu} Halberdier (M) Alt A Lance {Aruka, Kenpuhu}-stand
+- {Aruka, Kenpuhu} Rogue (F) Trickster-Valkyrie {Aruka, Kenpuhu}-stand
+- {Aruka, Kenpuhu} Witch (F) {Aruka, Kenpuhu}-stand-stand-stand
+- {Aruka, Yggdra} Swordmaster (M) Joshua {Aruka, Yggdra}-stand.png
+- {Ayr} [Peg Custom] [F] Deva
+- {Ayr} [Peg Custom] [F] Nephilim
+- {Ayr} Custom Flier Harrier (F) {Ayr}-stand.png
+- {Ayr} Custom Flier Harrier (F) {Ayr}-stand.png
+- {BatimaTheBat} Archsage (F) Lilina {BatimaTheBat}-stand.png
+- {BatimaTheBat} Lord Lucina Sword (F)
+- {BBHood217} Sage (F) Magician {BBHood217}-stand.png
+- {blood, Dei, dondon151} Halberdier (F) Amelia 16x16 {blood, Dei, dondon151}-stand.png
+- {Blood} Amelia (F) T1 (Spud's Infantry) {Blood}-stand
+- {blood} Blade Lord (F) Kawaii Blader Sword {blood}-stand
+- {Blood} Lord (F) Red Bean's Celica {Blood}-stand.png
+- {Blood} Tarvos (F) (Alfred Kamon's Anim) {Blood}-stand
+- {Bowgun} Necromancer (F) Skirt {Bowgun}-stand-stand
+- {CamusZekeSirius, flasuban} Seraph Knight (F) Lance v2 {CamusZekeSirius, flasuban}-stand
+- {CamusZekeSirius, SHYUTERz, Orihara_Saki,Dat} Grand Mahout Edit (U) {CamusZekeSirius, SHYUTERz, Orihara_Saki,Dat}-walk
+- {CamusZekeSirius, SHYUTERz, Orihara_Saki} Grand Mahout (U) {CamusZekeSirius, SHYUTERz, Orihara_Saki}-stand.png
+- {CelestiaHeart} Mage Knight (U) Generic {CelestiaHeart}-stand
+- {DATonDemand, Tanakakiri} Zombie (U) Drowned {DATonDemand, Tanakakiri}- stand
+- {DATonDemand} Tarvos (F) Centaur Sword {DATonDemand}-stand
+- {Dellhonne} Great Lord (M) Ephraim-Infantry Alt Lance {Dellhonne}-stand.png
+- {Dellhonne} Wolf (U) Hellhound {Dellhonne}-stand.png
+- {Der, Pikmin} Bow Knight (M) {Der, Pikmin}-stand.png
+- {Der, Pushwall} Spartan (M) Lance Narrowed {Der, Pushwall}-stand.png
+- {Der} Archer (F) Improved {Der}-stand
+- {Der} Ballistician (M) {Der}-stand.png
+- {Der} Cursed Sword (U) {Der}-stand.png
+- {Der} Ninja {Der}-stand.png
+- {Der} Spartan (M) Lance {Der}-stand.png
+- {Der} Valkyrie (M) Non-Religious Staff {Der}-stand.png
+- {Der} War Cleric (F) Axe {Der}-stand.png
+- {Der} War Monk (M) Axe {Der}-stand.png
+- {Dora Drago} Berserker (M) Oni Chieftain {Dora Drago}-stand.png
+- {Dutch Introvert} Lamia (F) {Dutch Introvert}-stand.png
+- {Dutch Introvert} Tarvos Armor Promo (F) {Dutch Introvert}-stand
+- {Dutch_Introvert, L95} Drake Rider (F) Axe {Dutch_Introvert, L95}-stand.png
+- {EldritchAbomination, SkidMarc25, Blood} Zombie Lich (+Staff) {EldritchAbomination, SkidMarc25, Blood}-stand
+- {Faeriefruit} Wyvern Wild (U) {Faeriefruit}-walk.png
+- {Faeriefruit} Wyvern Wild (U) 16x16 {Faeriefruit}-stand
+- {Fates-Blade} Grand Paladin (M) Lance {Fates-Blade}-stand.png
+- {FE7if, Jiege} Blade Lord Exalt Magic Effect (F)
+- {FEGirls} Mercenary (F) {FEGirls}-stand
+- {flasuban, Mikey_Seregon} Pirate (F) Axe {flasuban, Mikey_Seregon}-stand-move
+- {Flasuban} Brigand (M) Improved +Clothing {Flasuban}-stand
+- {flasuban} Soldier (F) FE10-Style Lance {flasuban}-stand
+- {FuriousHaunter} Half Dragon (F) Generic Sword {FuriousHaunter}-stand.png
+- {GabrielKnight} Samurai (Iaijutsu - Rouge) (F) Sword {GabrielKnight}-stand
+- {GabrielKnight} Samurai (Iaijutsu - Rouge) (M) Sword {GabrielKnight}-stand.png
+- {Glaceo} Brigand (M) FE13-Style Axe {Glaceo}-stand
+- {Huichelaar, IS, Lexou} Executioner (U) {Huichelaar, IS, Lexou}-stand.png
+- {Hypergammaspaces} Gold Knight (U) Lance {Hypergammaspaces}-stand.png
+- {HyperGammaSpaces} Villager (F) v2 Sword {HyperGammaSpaces}-stand
+- {HyperGammaSpaces} Villager (F) v2 Sword {HyperGammaSpaces}-stand
+- {HyperGammaSpaces} Villager (M) v2 Sword {HyperGammaSpaces}-stand
+- {IS, Blademaster} General (U) Axe {IS, Blademaster}-stand
+- {IS} _Mercenary (M) Beta {IS}-stand-move
+- {IS} Archsage (M) {IS}-stand.png
+- {IS} Bael (U) {IS}-stand.png
+- {IS} Bael (U) Elder {IS}-stand.png
+- {IS} Ballista Killer Mounted {IS}-stand.png
+- {IS} Ballista Normal Mounted {IS}-stand.png
+- {IS} Boat (U) {IS}-stand
+- {IS} Cleric (F) Generic {IS}-stand.png
+- {IS} Cyclops (U) Axe {IS}-stand
+- {IS} Dark Druid (M) {IS}-stand.png
+- {IS} Dracozombie (U) {IS}-stand.png
+- {IS} Dragon (U) FE6 Idunn {IS}-stand.png
+- {IS} Dragon (U) FE7 Fire Dragon (U) {IS}-stand.png
+- {IS} Druid (M) {IS}-stand.png
+- {IS} Gorgon (U) {IS}-stand.png
+- {IS} Gorgon Egg (U) Black {IS}-stand.png
+- {IS} Gorgon Egg (U) White {IS}-stand.png
+- {IS} Goyle (U) T1 Lance {IS}-stand.png
+- {IS} Goyle (U) T2 Lance {IS}-stand.png
+- {IS} King (M) Zephiel Eckesachs {IS}-stand.png
+- {IS} Manakete (U) FE6 Generic {IS}-stand.png
+- {IS} Nomad (F) {IS}-stand.png
+- {IS} Nomad Trooper (M) {IS}-stand.png
+- {IS} Phantom (U) {IS}-stand.png
+- {IS} Pontifex (M) Moving {IS}.png
+- {IS} Pupil (M) {IS}-stand.png
+- {IS} Queen (F) (Hat) Moving {IS}.png
+- {IS} Shaman (F) {IS}-stand-stand-move
+- {IS} Summoner (M) {IS}-stand.png
+- {IS} Swordmaster (F) {IS}-stand
+- {IS} Tarvos (M) Axe {IS}-stand.png
+- {IS} Tarvos (M) Maelduin Axe {IS}-stand.png
+- {IS} Villager (F) (Girl) Standing {IS}
+- {IS} Wolf (U) {IS}-stand.png
+- {IS} Wolf (U) Gwyllgi {IS}-stand.png
+- {JaidynReiman, VelvetKitsune, Leif} Wolf Knight (M) {JaidynReiman, VelvetKitsune, Leif}-stand
+- {Jiege, TLP} Archsage (F) Brunnya {Jiege, TLP}-stand.png
+- {Jiege} Mage Knight (F) Selena {Jiege}-walk.png
+- {Kemui52} Dragon (U) Myrrh Generic [Kemui52]-stand
+- {Knabepicer} Wyvern Lord (U) Sword {Knabepicer}-stand
+- {Knabepicer} Wyvern Lord (U) Sword {Knabepicer}-stand.png
+- {L95, Hanakko} Goyle (U) T2 Lance (Alt) 16x32 {L95, Hanakko}-stand
+- {L95,Speak} Swordmaster (F) FE10-Style Sword {L95,Speak}-stand-1.png
+- {L95} Dragon (U) Divine {L95}-stand
+- {L95} Dragon (U) Earth {L95}-walk
+- {L95} Dragon (U) Ice {L95}-stand
+- {L95} Dragon (U) Magic {L95}-stand
+- {L95} Goyle (U) T2 Lance {L95}-walk
+- {L95} Pegasi (F) T1 Black Beauty Lance {L95}-stand
+- {L95} Pegasi (F) T2 Black Beauty Lance {L95}-stand.png
+- {Leif, MeatofJustice} Sage (M) FE2 (Leif, MeatofJustice)-stand.png
+- {Leo_Link, DerTheVaporeon} Duke Knight (U) {Leo_Link, DerTheVaporeon}-stand.png
+- {Leo_Link, DerTheVaporeon} Forest Knight (U) Sword {Leo_Link, DerTheVaporeon}-stand
+- {Leo_Link, DerTheVaporeon} Forest Knight (U) Sword {Leo_Link, DerTheVaporeon}-stand.png
+- {Leo_Link, DerTheVaporeon} Great Knight (U) Axe {Leo_Link, DerTheVaporeon}-stand.png
+- {Leo_Link} Axe Cavalier (M) {Leo_Link}-stand.png
+- {LonkFC} Marauder (M) Spud's {LonkFC}-stand
+- {Marlon&Louis} Bard (M) Sonneteer Elffin {Marlon&Louis}-stand.png
+- {MeatOfJustice} Bael Widow (F) {MeatOfJustice}-stand
+- {MeatofJustice} Cowboy (M) Crossbow {MeatofJustice}
+- {MeatOfJustice} Hunter (M) {MeatOfJustice}-stand
+- {MeatOfJustice} Wicked Flier (U) {MeatOfJustice}-stand.png
+- {MeatOfJustice} Wicked Flier (U) {MeatOfJustice}-stand.png
+- {N426} Griffon Rider (U) Axe {N426}-stand.png
+- {N426} Griffon Rider (U) Bow {N426}-stand
+- {N426} Sephiroth {N426}-stand
+- {N426} Sephiroth {N426}-stand.png
+- {Norikins} General (U) Sword {Norikins}-stand
+- {Nuramon, Jay, Ryn} Baron (U) +Cape and Shield Lance Centurion Helm {Nuramon, Jay, Ryn}-stand.png
+- {Nuramon}  Marshall (M) Zelgius Sword {Nuramon}-stand.png
+- {Nuramon} [Hero-Variant] [M] Vanguard
+- {Nuramon} Black Knight (U) Sword {Nuramon}-stand.png
+- {Nuramon} Dread Fighter (F) {Nuramon}-stand.png
+- {Nuramon} Dread Fighter (M) {Nuramon}-stand.png
+- {Nuramon} Hero (F) Gerik-Style Sword {Nuramon}-stand-move
+- {Nuramon} Hero (F) Gerik-Style Sword {Nuramon}-stand-stand
+- {Nuramon} Marshall (U) Axe {Nuramon}-stand
+- {Nuramon} Marshall (U) Axe {Nuramon}-stand
+- {Nuramon} Marshall (U) Capeless Sword {Nuramon}-stand
+- {Orihara Saki} Camel Rider (M) Lance {Orihara Saki}-stand.png
+- {Pikmin, Nuramon, Der} Dark Knight (U) {Pikmin, Nuramon, Der}-stand.png
+- {Pikmin} Goyle (U) T2 Lance Resize {Pikmin}-stand
+- {Pikmin} Malig Knight (M) Axe {Pikmin}-stand
+- {Pikmin} Malig Knight (M) Axe {Pikmin}-stand.png
+- {Pushwall, FEGirls} Warrior (F) Axe {Pushwall, FEGirls}-stand-move
+- {Pushwall, FEGirls} Warrior (F) Axe {Pushwall, FEGirls}-stand-stand
+- {Pushwall} Assassin (F) Thief Head {Pushwall}-stand
+- {Rasdel, Jey the Count} Warrior (M) Tellius + helmet {Rasdel, Jey the Count}-stand.png
+- {Rasdel} Mercenary (F) Long-Hair Sword {Rasdel}-stand
+- {Rasdel} Necromancer (M) Generic {Rasdel}-stand.png
+- {RobertFPY} Assassin (F) {RobertFPY}-stand
+- {RobertFPY} Assassin (F) RobertFPY-walk
+- {RobertFPY} Paladin (M) v2 Axe {RobertFPY}-stand.png
+- {Ryn} Assassin (M) Novistador Ghost {Ryn}-stand.png
+- {Sacred War} Oracle v2 {Sacred War}-stand
+- {SALVAGED, BoneSethMan} Knight (U) Helmetless Sword {SALVAGED, BoneSethMan}-stand
+- {SALVAGED} Lancer (M) Brown Hair {SALVAGED}-walk
+- {SD9K} Great Lord (M) Hector-Harbinger {SD9K}-stand.png
+- {Seal, Cornontherob} Bonewalker (U) King Sword {Seal, Cornontherob}-stand.png
+- {Seal} Bonewalker (U) Legion Sword {Seal}-stand
+- {Seal} Mogall (U) Gazer {Seal}-stand.png
+- {Seal} Tarvos (M) Elder Centaur Axe {Seal}-stand.png
+- {Seliost1} Berserker (M) Lizardzerker Axe {Seliost1}-stand
+- {Shin19} Lord (F) Hector Axe {Shin19}-stand
+- {SHYUTERz, HIRITO, SHIRMER} Duma (U) {SHYUTERz, HIRITO, SHIRMER}-stand.png
+- {SHYUTERz} Demon King (U) Angry {SHYUTERz}-stand.png
+- {SHYUTERz} Wyvern Lord (U) Armored Lance {SHYUTERz}-stand.png
+- {SHYUTERz} Wyvern Lord (U) Armored Lance {SHYUTERz}-stand.png
+- {SkidMarc25} Succubus (F) {SkidMarc25}-stand.png
+- {Snewping} Great Lord (M) Ephraim-Infantry Lance {Snewping}-stand.png
+- {Sphealnuke} Ophanim (U) {Sphealnuke}-stand
+- {Spud, Dora Drago} Sergeant (F) {Spud, Dora Drago}-stand
+- {Spud} Sergeant (M) {Spud}-stand.png
+- {SSHX, Amyd} Neotank {SSHX, Amyd}-stand.png
+- {SteamingTofu} Warrior (F) Camilla {SteamingTofu}-stand-move
+- {SteamingTofu} Warrior (F) Camilla {SteamingTofu}-stand-move
+- {SteamingTofu} Warrior (F) Camilla {SteamingTofu}-stand-stand
+- {StreetHero, blood} Trickster (M) Redone {StreetHero, blood}-stand.png
+- {StreetHero} Blade Lord (F) Brave Lyn Bow {StreetHero}-stand.png
+- {Tarantino500} Brigand (U) Lizard Wildling {Tarantino500}-stand.png
+- {Tdim} Cleric (F) Trainee {Tdim}-stand
+- {Teelvade} Archsage (M) Wolf Rider {Teelvade}-stand.png
+- {Teelvade} Cyclops (U) Promoted Two-Headed Axe {Teelvade}-standing.png
+- {Topazlight,Unknown} Sage (M) Battle Sage (Hat) {Topazlight,Unknown}-stand
+- {topazlight} Sage (F) Battle Sage Sword {topazlight}-stand
+- {TytheBub} Bael [F] Queen Bael {TytheBub}-stand
+- {TytheBub} Bael [F] Queen Bael {TytheBub}-stand.png
+- {TytheBub} Great Lord (M) T2 Hector Dual-Sword {TytheBub}-stand
+- {TytheBub} Lord [M] T1 Hector-Dual Sword {TytheBub}-stand
+- {Unknown, Alexsplode} Sky Guard Warbird (F) {Unknown, Alexsplode}-stand
+- {Unknown, Alexsplode} Warbird (F) {Unknown, Alexsplode}-stand.png
+- {Unknown,Speak} Fem Greil Lord Attempt (F) {Unknown,Speak}-stand-1.png
+- {Unknown,Speak} Fem Ike Vanguard Attempt (F) {Unknown,Speak}-stand-1.png-move
+- {Unknown,Speak} Fem Ike Vanguard Attempt (F) {Unknown,Speak}-stand-1.png-stand
+- {Unknown} Angel (F) {Unknown}-stand.png
+- {Unknown} Baron (M) Lance {Unknown}-stand.png
+- {Unknown} Dark Knight (U) Helm {Unknown}-stand.png
+- {Unknown} Dragoon (M) Lance {Unknown}-stand.png
+- {Unknown} Greil Lord (M) {Unknown}-stand.png
+- {Unknown} High Magus (F) {Unknown}-stand.png
+- {Unknown} High Magus (M) {Unknown}-stand.png
+- {Unknown} Ike Vanguard (M) {Unknown}-stand.png
+- {Unknown} Master Knight (F) Lance {Unknown}-stand.png
+- {Unknown} Matriarch (F) {Unknown}-stand
+- {Unknown} Matriarch (F) {Unknown}-stand.png
+- {Unknown} Mercenary (M) Armored {Unknown}-stand.png
+- {Unknown} Patriarch (M) {Unknown}-stand
+- {Unknown} Patriarch (M) {Unknown}-stand.png
+- {Unknown} Wyvern Rider (U) Axe {Unknown}-stand
+- {Velvet Kitsune, Dellhonne and WiiSPortsRemote} Wolf Winged
+- {VelvetKitsune, BatimaTheBat} Lord (F) Blonde Lucina Sword {VelvetKitsune, BatimaTheBat}-stand
+- {VelvetKitsune} Summoner (F) {VelvetKitsune}-stand-stand
+- {Vilkalizer, Morth} Blade Lord (F) Lyn Axe {Vilkalizer, Morth}-stand-move
+- {Vilkalizer, Morth} Blade Lord (F) Lyn Axe {Vilkalizer, Morth}-stand-stand
+- {Vilkalizer, Morth} Lord (F) Lyn Axe {Vilkalizer, Morth}-stand-1.png-move
+- {Vilkalizer, Morth} Lord (F) Lyn Axe {Vilkalizer, Morth}-stand-1.png-stand
+- {WarPath} Baron (U) Magic {WarPath}-stand
+- {WarPath} Pegasi (F) T1 Staff {WarPath}-stand.png
+- {Yangfly Master} _Swordmaster (M) Izark {Yangfly Master}-stand-move
+- {Zoramine} Berserker (F) Axe Wolf Rider {Zoramine}-stand
+- {Zoramine} Berserker (M) Axe Wolf Rider {Zoramine}-stand.png
+- {Zoramine} Brigand (F) Wolf Rider Axe {Zoramine}-stand
+- {Zoramine} Brigand (M) Armored Wolf Rider Axe {Zoramine}-stand.png
+- {Zoramine} Brigand (M) Armored Wolf Rider Axe {Zoramine}-walk.png
+- {Zoramine} Cavalier (M) Spider Rider Sword {Zoramine}-stand
+- {ZoramineFae} Berserker (M) Dartzerker Sword {ZoramineFae}-stand
+- {ZoramineFae} Mermaid (F) {ZoramineFae}-stand
