@@ -83,7 +83,7 @@ def make_valid_class_name(s):
 
 def convert_func(matchobj):
     if m := matchobj.group(1):
-        return f'<span class="{make_valid_class_name(m)}-subIcon"></span>'
+        return f'<span class="{make_valid_class_name(m.lstrip().rstrip())}-subIcon"></span>'
     return ""
 
 
