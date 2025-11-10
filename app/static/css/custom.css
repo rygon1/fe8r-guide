@@ -14,7 +14,6 @@
   /* Original: 0.25rem */
   --pico-card-background-color: #181c256c;
   --pico-card-sectioning-background-color: rgb(26, 30.5, 40.25, 0.9);
-  
 }
 
 @media (min-width: 576px) {
@@ -81,15 +80,8 @@ article > footer {
   /* Original: var(--pico-border-radius) */
 }
 
-.clickable {
+.copy-entry {
   cursor: pointer;
-}
-
-.align-right {
-  margin: 0;
-  margin-left: 0px;
-  margin-left: var(--pico-spacing);
-  padding: 0;
   float: right;
 }
 
@@ -153,7 +145,7 @@ main {
   display: inline-block;
 }
 
-.feClassImg img{
+.feClassImg img {
   vertical-align: baseline;
   width: 100%; /* Ensures the GIF fills the container's width */
   height: 100%; /* Ensures the GIF fills the container's height */
@@ -163,11 +155,14 @@ main {
 
 nav details.dropdown {
   display: inline-block;
-  width:fit-content;
+  width: fit-content;
 }
 
 @media (min-width: 576px) {
-nav[role="burger"] {
+  nav[role="burger"] {
+    display: none;
+  }
+  .sidebar-toggle {
     display: none;
   }
 }
@@ -175,4 +170,35 @@ nav[role="burger"] {
   nav[role="menu"] {
     display: none;
   }
+  .sidebar {
+    display: none;
+  }
+  .sidebar-open {
+    display: block;
+  }
+}
+.sidebar {
+  width: 100%;
+  position: sticky; /* The key property */
+  top: 1rem; /* The distance from the top of the viewport when it becomes sticky */
+  left: 0; /* The distance from the top of the viewport when it becomes sticky */
+  padding-bottom: 2rem; /* The distance from the top of the viewport when it becomes sticky */
+  height: 100vh; /* Optional: ensures sidebar is full height if content is short */
+  overflow-y: auto; /* Adds a scrollbar to the sidebar if its content is long */
+  overflow-x: hidden;
+}
+.sidebar-toggle {
+    position:sticky;
+    top:1rem;
+    z-index: 7;
+  }
+.container-fluid-sidebar {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2rem;
+}
+
+svg.size-6 {
+  height: 24px;
+  width: 24px;
 }
