@@ -26,8 +26,14 @@ def make_valid_class_name(s):
 
 
 def convert_func(matchobj):
-    if m := matchobj.group(1):
-        return f'<span class="{make_valid_class_name(m.lstrip().rstrip())}-subIcon"></span>'
+    if tag_name := matchobj.group(1):
+        if tag_name == "icon":
+            if m := matchobj.group(2):
+                return f'<span class="{make_valid_class_name(m.lstrip().rstrip())}-subIcon"></span>'
+        else:
+            if m := matchobj.group(2):
+                return f'<span class="lt-color-{tag_name}">{m}</span>'
+
     return ""
 
 
@@ -44,11 +50,7 @@ def process_styled_text(raw_text) -> str:
         tuple[str, str],
         tuple[str, str],
     ] = (
-        (
-            r"\<icon\>(.*?)\</\>",
-            convert_func,  # pyright: ignore[reportAssignmentType]
-        ),
-        (r"\<([^/]*?)\>(.*?)(\</\>)", r'<span class="lt-color-\1">\2</span>'),
+        (r"\<(.*?)\>(.*?)(\</\>)", convert_func),
         (r"{e:(.*?)}", r""),
         (r" \(<span class=\"lt-color-red\"></span>\)", r""),
         (r"\n", r"<br/>"),
