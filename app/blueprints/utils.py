@@ -1,5 +1,13 @@
 import re
 
+SKILL_EXCLUDE = (
+    "Absolute_Mastery_Anima",
+    "Absolute_Mastery_Light",
+    "Absolute_Mastery_Staff",
+    "Absolute_Mastery_Dark",
+    "_hide",
+)
+
 
 def make_valid_class_name(s):
     # Remove invalid characters and replace underscores with dashes and spaces with underscores
@@ -44,6 +52,7 @@ def process_styled_text(raw_text) -> str:
         (r"{e:(.*?)}", r""),
         (r" \(<span class=\"lt-color-red\"></span>\)", r""),
         (r"\n", r"<br/>"),
+        (r"\{br\}", r"<br/>"),
     )
     for pattern, replacement in replacements:
         new_text = re.sub(pattern, replacement, new_text)

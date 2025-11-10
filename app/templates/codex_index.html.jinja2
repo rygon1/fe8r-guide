@@ -1,0 +1,19 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}Codex | {% endblock %}
+{% block content %}
+<hgroup>
+    <h1>Codex</h1>
+</hgroup>
+<section>
+    <ul>
+        <li>
+            <a href="{{ url_for('codex.get_codex_mechanics') }}">Mechanics</a>
+        </li>
+        <li>
+            <a href="{{ url_for('codex.get_codex_achievements') }}">Achievements</a>
+        </li>
+    </ul>
+</section>
+{% endblock content %}

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from flask import Blueprint, render_template, request
 
-from app.blueprints.utils import get_alt_name, process_styled_text
+from app.blueprints.utils import SKILL_EXCLUDE, get_alt_name, process_styled_text
 
 bp = Blueprint(
     "classes",
@@ -63,7 +63,7 @@ def init_lists() -> None:
                 learned_skills=[
                     x
                     for x in data_entry["learned_skills"]
-                    if x and not x[1].endswith("_hide")
+                    if x and not x[1].endswith(SKILL_EXCLUDE)
                 ],
                 weapons=[x for x, y in data_entry["wexp_gain"].items() if y[0]],
                 icon_nid=data_entry["icon_nid"],

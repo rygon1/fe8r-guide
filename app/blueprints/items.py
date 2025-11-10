@@ -70,6 +70,7 @@ def get_status_equip(data_entry) -> list:
         "_AOE_Splash",
         "Drench",
         "Avo_Ddg_",
+        "Luckblade",  # TODO
     )
     wp_status = []
     if s1 := get_comp(data_entry, "status_on_equip"):
