@@ -159,7 +159,6 @@ def make_arsenal_json() -> None:
     for _, arsenal_unit_dict in arsenals.items():
         for arsenal_name in arsenal_unit_dict.keys():
             arsenal_nid_list.append(arsenal_name)
-    print(arsenals)
     # Get all item data
     with (JSON_DIR / "items.json").open("r") as fp:
         all_items: dict[Any, Any] = {x["nid"]: x for x in json.load(fp)}
