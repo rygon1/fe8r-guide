@@ -3,6 +3,13 @@
 [Wiki](https://fe8r-guide.onrender.com/)
 [Github](https://github.com/rygon1/fe8r-guide)
 
+## [0.0.2] - 2025-11
+
+### Added
+
+- Stuff from new update
+- Codex section
+
 ## [0.0.1] - 2025-11
 
 ### Added
