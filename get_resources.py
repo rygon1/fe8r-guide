@@ -2,6 +2,7 @@
 
 import json
 import re
+import shutil
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -129,7 +130,7 @@ def make_arsenal_json() -> None:
                 arsenals[unit_nid] = {}
     # Add arsenal details
     with (JSON_DIR / "items.json").open("r") as fp:
-        arsenal_marks = ("_Arsenal", "bending", "_Studies", "_Stash")
+        arsenal_marks = ("_Arsenal", "bending", "_Studies", "_Stash", "_Grimoire")
         arsenal_exclude = ("Davius_Arsenal_Old",)
         for item_data in json.load(fp):
             if (
@@ -158,17 +159,19 @@ def make_arsenal_json() -> None:
     for _, arsenal_unit_dict in arsenals.items():
         for arsenal_name in arsenal_unit_dict.keys():
             arsenal_nid_list.append(arsenal_name)
+    print(arsenals)
     # Get all item data
     with (JSON_DIR / "items.json").open("r") as fp:
         all_items: dict[Any, Any] = {x["nid"]: x for x in json.load(fp)}
     # Add items to arsenals
+    item_end_exclude = ("_Old", "_Multi", "_Warp_2", "_Warp")
     with (JSON_DIR / "items.category.json").open("r") as fp:
         for item_nid, items_cat in json.load(fp).items():
             arsenal_data: dict[Any, Any] = {}
             if (
                 items_cat.startswith("Personal Weapons")
                 and item_nid not in arsenal_nid_list
-                and not item_nid.endswith("_Old")
+                and not item_nid.endswith(item_end_exclude)
                 and all_items[item_nid]["desc"]
                 and (arsenal_unit := items_cat.split("/")[1]) not in ("Davius Old",)
             ):
@@ -289,7 +292,7 @@ def make_item_cat_new_json():
                     item_cats[wtype] = {}
                 if data_entry["name"] not in item_cats[wtype].values():
                     item_cats[wtype][data_entry["nid"]] = data_entry["name"]
-
+    # TODO add Consumables category
     with (GUIDE_JSON_DIR / "items.category.new.json").open("w+") as fp:
         json.dump(item_cats, fp)
     print("Done.")
@@ -499,7 +502,35 @@ def get_map_sprites():
             )
 
 
+def copy_json():
+    game_data_jsons = (
+        "affinities.json",
+        "classes.json",
+        "items.category.json",
+        "items.json",
+        "lore.json",
+        "skills.category.json",
+        "skills.json",
+        "stats.json",
+        "support_pairs.json",
+        "units.category.json",
+        "units.json",
+        "weapon_ranks.json",
+        "weapons.json",
+    )
+    for fname in game_data_jsons:
+        if (JSON_DIR / fname).exists():
+            print(f"Copying {fname} from ltproj directory ...")
+            try:
+                shutil.copy((JSON_DIR / fname), (GUIDE_JSON_DIR / fname))
+            except Exception as e:
+                print(f"Failed to copy {(JSON_DIR/fname)}! {e}")
+        else:
+            print(f"{(JSON_DIR/fname)} does not exist!")
+
+
 def main():
+    copy_json()
     make_arsenal_json()
     make_class_promo_json()
     make_item_cat_new_json()
