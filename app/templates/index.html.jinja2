@@ -31,6 +31,16 @@
     <li>
       <a href="{{ url_for('get_credits') }}">Credits</a>
     </li>
+    <li><a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
+      <ul>
+        <li>
+          <a href="{{ url_for('codex.get_codex_mechanics') }}">Mechanics</a>
+        </li>
+        <li>
+          <a href="{{ url_for('codex.get_codex_achievements') }}">Achievements</a>
+        </li>
+      </ul>
+    </li>
   </ul>
 </section>
 
