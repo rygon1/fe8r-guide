@@ -1,10 +1,10 @@
-# FE8R Reference Guide
+# FE8R Wiki
 
-This is the github repo for <a href="https://fe8r-guide.onrender.com/">FE8R Reference Guide</a>.
+This is the github repo for <a href="https://fe8r-guide.onrender.com/">FE8R Wiki</a>.
 
 ## About The Project
 
-<a href="https://fe8r-guide.onrender.com/">FE8R Reference Guide</a> is a website that serves as a reference guide for <a href="https://github.com/FE8Dev/FE8RProject">Fire Emblem 8R</a>, an (awesome) remake using the <a href="https://lex-talionis.net/">Lex Talionis</a> engine.
+<a href="https://fe8r-guide.onrender.com/">FE8R Wiki</a> is an online reference guide for <a href="https://github.com/FE8Dev/FE8RProject">Fire Emblem 8R</a>, an (awesome) remake using the <a href="https://lex-talionis.net/">Lex Talionis</a> engine.
 
 ## Getting Started
 
@@ -24,7 +24,8 @@ Python >=3.10
 
     ```bash
     cd fe8r-guide
-    chmod +x deploy.sh && ./deploy.sh
+    chmod +x deploy.sh
+    ./deploy.sh
     ```
 
 The next ones are optional, just in case this repo is out of date with the FE8RProject files.
@@ -45,7 +46,8 @@ The next ones are optional, just in case this repo is out of date with the FE8RP
 ### Running the server locally
 
 ```bash
-source .venv/bin/activate && gunicorn wsgi:app
+source .venv/bin/activate
+gunicorn wsgi:app
 ```
 
 Go to http://127.0.0.1:8000 in your internet browser of choice.

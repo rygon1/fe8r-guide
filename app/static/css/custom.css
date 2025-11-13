@@ -1,19 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap");
 
 :root {
-  --pico-font-family-sans-serif: "Literata", Inter, system-ui, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial, "Helvetica Neue",
-    sans-serif, var(--pico-font-family-emoji);
+  --pico-font-family: "Literata", var(--font-old-style), system-ui;
   --pico-font-size: 87.5%;
-  /* Original: 100% */
   --pico-form-element-spacing-vertical: 0.5rem;
-  /* Original: 1rem */
   --pico-form-element-spacing-horizontal: 1rem;
-  /* Original: 1.25rem */
   --pico-border-radius: 0.375rem;
-  /* Original: 0.25rem */
-  --pico-card-background-color: #181c256c;
-  --pico-card-sectioning-background-color: rgb(26, 30.5, 40.25, 0.9);
 }
 
 @media (min-width: 576px) {
@@ -51,11 +43,27 @@
   }
 }
 
-h1 {
-  color: #fecc63;
-  text-shadow: -1px -1px 0 #942d0d, /* Top-left shadow */ 1px -1px 0 #942d0d,
-    /* Top-right shadow */ -1px 1px 0 #942d0d,
-    /* Bottom-left shadow */ 1px 1px 0 #942d0d; /* Bottom-right shadow */
+
+[data-theme=dark] {
+  color-scheme: dark;
+  --pico-color: var(--gray-5);
+  --pico-muted-color: var(--gray-6);
+  --pico-primary: var(--blue-5);
+  --pico-primary-background: var(--blue-6);
+  --pico-primary-hover: var(--blue-3);
+  --pico-primary-hover-background: var(--blue-4);
+  --pico-secondary: var(--gray-5);
+  --pico-secondary-background: var(--gray-6);
+  --pico-contrast: var(--gray-2);
+  --pico-h1-color: var(--yellow-5);
+  --pico-h2-color: var(--gray-2);
+  --pico-h3-color: var(--gray-2);
+  --pico-h4-color: var(--gray-2);
+  --pico-h5-color: var(--gray-2);
+  --pico-h6-color: var(--gray-2);
+  --pico-accordion-active-summary-color: var(--pico-color);
+  --pico-tooltip-background-color: var(--gray-8);
+  --pico-tooltip-color: var(--pico-color);
 }
 
 h1,
@@ -65,24 +73,11 @@ h4,
 h5,
 h6 {
   --pico-font-weight: 600;
-  /* Original: 700 */
 }
 
-article {
-  border: 1px solid var(--pico-muted-border-color);
-  /* Original doesn't have a border */
-  border-radius: calc(var(--pico-border-radius) * 2);
-  /* Original: var(--pico-border-radius) */
-}
-
-article > footer {
-  border-radius: calc(var(--pico-border-radius) * 2);
-  /* Original: var(--pico-border-radius) */
-}
-
-.copy-entry {
-  cursor: pointer;
-  float: right;
+h1 {
+  text-shadow: -1px -1px 0 var(--orange-10), 1px -1px 0 var(--orange-10), -1px 1px 0 var(--orange-10),
+    1px 1px 0 var(--orange-10);
 }
 
 .htmx-indicator {
@@ -93,6 +88,10 @@ article > footer {
 }
 .htmx-request.htmx-indicator {
   display: block;
+}
+.copy-entry {
+  cursor: pointer;
+  float: right;
 }
 
 .unit-head-container {
@@ -123,39 +122,32 @@ article > footer {
   color: var(--orange-6);
 }
 
-body {
+body>header {
   background: linear-gradient(
       to bottom,
-      rgba(19, 22.5, 30.5, 0.9),
-      rgba(19, 22.5, 30.5, 1)
+      rgba(19, 22.5, 30.5, 0.85),
+      var(--pico-background-color)
     ),
     url("../images/bg.png");
-  background-repeat: repeat;
+  
+}
+body {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-  flex-grow: 1;
-}
-
-.feClassImg {
-  width: 48px; /* Desired width of the cropped area */
-  height: 34px; /* Desired height of the cropped area */
-  overflow: hidden; /* Hides any content extending beyond the container */
-  display: inline-block;
-}
-
-.feClassImg img {
-  vertical-align: baseline;
-  width: 100%; /* Ensures the GIF fills the container's width */
-  height: 100%; /* Ensures the GIF fills the container's height */
-  object-fit: none; /* Crops the GIF to fit the container while maintaining aspect ratio */
-  object-position: center; /* Centers the GIF within the container. Can be adjusted (e.g., "25% 25%") to control the visible area. */
+  flex: 1;
 }
 
 nav details.dropdown {
   display: inline-block;
   width: fit-content;
+}
+
+nav[role="burger"] details.dropdown summary::after {
+  display: none;
 }
 
 @media (min-width: 576px) {
@@ -176,22 +168,25 @@ nav details.dropdown {
   .sidebar-open {
     display: block;
   }
+  .sidebar-toggle-hide {
+    display: none;
+  }
 }
 .sidebar {
   width: 100%;
-  position: sticky; /* The key property */
-  top: 1rem; /* The distance from the top of the viewport when it becomes sticky */
-  left: 0; /* The distance from the top of the viewport when it becomes sticky */
-  padding-bottom: 2rem; /* The distance from the top of the viewport when it becomes sticky */
-  height: 100vh; /* Optional: ensures sidebar is full height if content is short */
-  overflow-y: auto; /* Adds a scrollbar to the sidebar if its content is long */
+  position: sticky;
+  top: 1rem;
+  left: 0;
+  padding-bottom: 2rem;
+  height: 100vh;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 .sidebar-toggle {
-    position:sticky;
-    top:1rem;
-    z-index: 7;
-  }
+  position: sticky;
+  top: 1rem;
+  z-index: 7;
+}
 .container-fluid-sidebar {
   display: grid;
   grid-template-columns: auto auto;
