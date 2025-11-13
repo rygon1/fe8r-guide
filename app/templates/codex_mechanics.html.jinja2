@@ -3,10 +3,10 @@
 {% endif %}
 {% block title %}Mechanics &mdash; Codex | {% endblock %}
 {% block content %}
-
 <h1>Mechanics</h1>
 <div class="container-fluid-sidebar">
-    <aside id="sidebar" class="sidebar">
+    <aside id="sidebar" class="sidebar"
+        _="on click from body if event.target is not in me and event.target is not in <p.sidebar-toggle/> and I match .sidebar-open remove .sidebar-open then show <p.sidebar-toggle/>">
         <nav>
             <ul>
                 {% for mechanic_nid,mechanic_data in mechanics|items %}
@@ -19,7 +19,7 @@
     </aside>
     <section>
         <p class="sidebar-toggle">
-            <button class="secondary" _="on click toggle .sidebar-open on #sidebar">
+            <button class="secondary" _="on click toggle .sidebar-open on #sidebar then hide <p.sidebar-toggle/>">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                     aria-hidden="true" data-slot="icon" fill="none" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
