@@ -41,6 +41,7 @@ CLASSES = {}
 CLASS_PROMOS = {}
 SUPPORTS = {}
 AFFINITIES = {}
+SKILL_HIDDEN = {}
 
 
 def _get_classes():
@@ -103,6 +104,9 @@ def fix_stat_cap_modifiers(old_scm: dict):
 
 
 def init_lists() -> None:
+    with bp.open_resource("../static/json/skills.hidden.json", "r") as fp:
+        for key, value in json.load(fp).items():
+            SKILL_HIDDEN[key] = value
     print("Initializing units ...")
     _get_classes()
 
@@ -125,7 +129,7 @@ def init_lists() -> None:
                 learned_skills=[
                     x
                     for x in data_entry["learned_skills"]
-                    if x and not x[1].endswith("_hide")
+                    if x and not x[1].endswith(SKILL_EXCLUDE)
                 ],
                 weapons=[x for x, y in data_entry["wexp_gain"].items() if y[0]],
                 portrait_nid=data_entry["portrait_nid"],

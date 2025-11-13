@@ -1,6 +1,8 @@
 from flask import Flask, Response, render_template
 
 from app.blueprints import classes, codex, items, skills, units
+from app.config import Config
+from app.extensions import db
 
 
 def page_not_found(e):
@@ -11,11 +13,21 @@ def internal_server_error(e):
     return render_template("500.html.jinja2"), 500
 
 
-def create_app() -> Flask:
+def create_app(config_class=Config) -> Flask:
 
     app = Flask(__name__)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, internal_server_error)
+
+    app.config.from_object(config_class)
+
+    db.init_app(app)
+
+    app.register_blueprint(units.bp)
+    app.register_blueprint(items.bp)
+    app.register_blueprint(skills.bp)
+    app.register_blueprint(classes.bp)
+    app.register_blueprint(codex.bp)
 
     @app.route("/favicon.ico")
     def favicon() -> Response:
@@ -29,11 +41,5 @@ def create_app() -> Flask:
     @app.route("/credits")
     def get_credits() -> str:
         return render_template("credits.html.jinja2")
-
-    app.register_blueprint(units.bp)
-    app.register_blueprint(items.bp)
-    app.register_blueprint(skills.bp)
-    app.register_blueprint(classes.bp)
-    app.register_blueprint(codex.bp)
 
     return app

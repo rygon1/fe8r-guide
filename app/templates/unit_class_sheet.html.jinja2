@@ -3,21 +3,29 @@
 {% block title %}{{ class_data.name }} &mdash; Classes | {% endblock %}
 {% endif %}
 {% block content %}
-<article>
+<section>
     <header>
         <hgroup>
-            <h5><span>{{ class_data.name }}</span><span class="feClassImg">
-                    <img
-                        src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}" />
-                </span></h5>
-            <p>{{ class_data.desc }}<br />
-                {% if class_data.weapons%}
-                <span class="lt-color-red">Prof:</span>
-                {% for weapon_type in class_data.weapons%}
-                <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
-                {% endfor %}
-            </p>
-            {% endif %}
+            <div class="unit-head-container">
+                <div class="div1">
+                    <img src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}"
+                        height="96" width="96" />
+                </div>
+                <div class="div2">
+                    <hgroup>
+                        <h5>{{ class_data.name }}</h5>
+                        <p>{{ class_data.desc }}
+                            {% if class_data.weapons%}
+                            <br />
+                            <span class="lt-color-red">Prof:</span>
+                            {% for weapon_type in class_data.weapons%}
+                            <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+                            {% endfor %}
+                            {% endif %}
+                        </p>
+                    </hgroup>
+                </div>
+            </div>
         </hgroup>
     </header>
     <div class="overflow-auto">
@@ -68,10 +76,11 @@
         </div>
     </div>
     {% endif %}
-</article>
+</section>
 {% if class_promo_data.turns_into %}
 <div class="classT{{ class_data.tier + 1 }}Selector">
     <label>Tier {{ class_data.tier + 1 }}</label>
+    {% if class_promo_data.turns_into|length > 1%}
     <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
         hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT{{ class_data.tier + 1 }}Sheet"
         hx-indicator="#unitClassT{{ class_data.tier + 1 }}Sheet" hx-swap="innerHTML" {% if class_data.tier==1 %}
@@ -81,6 +90,12 @@
         <option value="{{ next_class_data.nid }}">{{ next_class_data.name }}</option>
         {% endfor %}
     </select>
+    {% else %}
+    {% set next_class_data=class_promo_data.turns_into|first%}
+    <div hx-get="/units/{{ unit_data.nid }}/classes" hx-vals='{"unitClassSelect":"{{ next_class_data.nid }}"}'
+        hx-target="#unitClassT{{ class_data.tier + 1 }}Sheet" hx-indicator="#unitClassT{{ class_data.tier + 1 }}Sheet"
+        hx-swap="innerHTML" hx-trigger="load"></div>
+    {% endif %}
 </div>
 {% endif %}
 {% endblock content %}

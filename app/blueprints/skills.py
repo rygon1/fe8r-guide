@@ -1,9 +1,10 @@
 import json
 from dataclasses import dataclass
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, abort, render_template, request
 
-from app.blueprints.utils import make_valid_class_name, process_styled_text
+from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
+from app.extensions import db
 
 bp = Blueprint("skills", __name__, url_prefix="/skills", static_folder="../static/")
 
@@ -14,6 +15,7 @@ class FESkill:
     name: str
     desc: str
     icon_class: str
+    is_hidden: bool
 
 
 SKILLS = {}
@@ -36,6 +38,7 @@ def init_lists() -> None:
                     if data_entry["icon_nid"]
                     else ""
                 ),
+                is_hidden=get_comp(data_entry, "hidden", bool),
             )
             SKILLS[data_entry["nid"]] = new_skill_data
     with bp.open_resource("../static/json/skills.category.json", "r") as fp:
@@ -53,16 +56,26 @@ init_lists()
 
 @bp.route("/")
 def get_fe_skill_index() -> str:
+    from app.models import Skill
+
     if skill_nid := request.args.get("skillSelect"):
         template = "skill_sheet.html.jinja2"
     else:
         skill_nid = "Frightening_Debuff"
         template = "skill_index.html.jinja2"
-    return render_template(
+    if not (skill_data := db.session.get(Skill, skill_nid)):
+        abort(404)
+    return render_template(template, skill_data=skill_data, skill_cats=SKILL_CATS)
+    """ return render_template(
         template, skill_data=SKILLS[skill_nid], skill_cats=SKILL_CATS
-    )
+    ) """
 
 
 @bp.route("/<string:fe_skill_nid>")
 def get_fe_skill_sheet(fe_skill_nid="Frightening_Debuff") -> str:
-    return render_template("skill_sheet.html.jinja2", skill_data=SKILLS[fe_skill_nid])
+    from app.models import Skill
+
+    if skill_data := db.session.get(Skill, fe_skill_nid):
+        return render_template("skill_sheet.html.jinja2", skill_data=skill_data)
+    abort(404)
+    # return render_template("skill_sheet.html.jinja2", skill_data=SKILLS[fe_skill_nid])

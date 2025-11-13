@@ -63,7 +63,7 @@ def init_lists() -> None:
                 learned_skills=[
                     x
                     for x in data_entry["learned_skills"]
-                    if x and not x[1].endswith(SKILL_EXCLUDE)
+                    if (x and not x[1].endswith(SKILL_EXCLUDE))
                 ],
                 weapons=[x for x, y in data_entry["wexp_gain"].items() if y[0]],
                 icon_nid=data_entry["icon_nid"],
@@ -93,6 +93,8 @@ def init_lists() -> None:
             "Snag20",
             "Dummy_T2",
             "Dummy_T3",
+            "Boat",
+            "Dead_Body",
         )
         if class_nid not in exclude_class:
             match (class_data.tier):

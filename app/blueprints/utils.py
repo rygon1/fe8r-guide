@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 SKILL_EXCLUDE = (
     "Absolute_Mastery_Anima",
@@ -6,10 +7,11 @@ SKILL_EXCLUDE = (
     "Absolute_Mastery_Staff",
     "Absolute_Mastery_Dark",
     "_hide",
+    "Feat_Enabler",
 )
 
 
-def make_valid_class_name(s):
+def make_valid_class_name(s) -> str:
     # Remove invalid characters and replace underscores with dashes and spaces with underscores
     cleaned_s = (
         "".join(c for c in s if c.isalnum() or c in (" ", "_", "-"))
@@ -25,7 +27,7 @@ def make_valid_class_name(s):
     return pascal_case_name
 
 
-def convert_func(matchobj):
+def convert_func(matchobj) -> str:
     if tag_name := matchobj.group(1):
         if tag_name == "icon":
             if m := matchobj.group(2):
@@ -50,7 +52,10 @@ def process_styled_text(raw_text) -> str:
         tuple[str, str],
         tuple[str, str],
     ] = (
-        (r"\<(.*?)\>(.*?)(\</\>)", convert_func),
+        (
+            r"\<(.*?)\>(.*?)(\</\>)",
+            convert_func,  # pyright: ignore[reportAssignmentType]
+        ),
         (r"{e:(.*?)}", r""),
         (r" \(<span class=\"lt-color-red\"></span>\)", r""),
         (r"\n", r"<br/>"),
@@ -74,3 +79,25 @@ def get_alt_name(orig_name: str, orig_nid: str) -> str:
         alt_name = re.sub(pattern, replacement, alt_name)
     alt_name = alt_name.replace(orig_name, "").lstrip().rstrip()
     return alt_name
+
+
+def get_comp(entry, comp_name: str, comp_type: type) -> Any:
+    """
+    Returns component value
+    """
+    if comp_entry := [x for x in entry["components"] if x[0] == comp_name]:
+        if comp_type == bool:
+            if comp_entry[0][1] is None:
+                return True
+        else:
+            return comp_entry[0][1]
+
+    if comp_type == bool:
+        return False
+    elif comp_type == int:
+        return 0
+    elif comp_type == str:
+        return ""
+    elif comp_type == list:
+        return []
+    return None

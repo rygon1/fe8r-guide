@@ -1,15 +1,24 @@
 #!/usr/bin/python3
-
 import json
-import re
 import shutil
 from pathlib import Path
-from typing import Any
+from typing import Any, List, Optional
 from urllib.parse import quote
 
 from PIL import Image
+from sqlalchemy import (
+    Column,
+    Integer,
+    MetaData,
+    String,
+    Table,
+    create_engine,
+    insert,
+    text,
+)
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
 
-from app.blueprints.utils import make_valid_class_name, process_styled_text
+from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
 
 LTPROJ_DIR = Path("")
 try:
@@ -43,28 +52,6 @@ def minify_json() -> None:
             with json_fpath.open("w") as fp:
                 json.dump(x, fp, separators=(",", ":"))
     print("Done.")
-
-
-def get_comp(entry, comp_name: str, comp_type: type) -> Any:
-    """
-    Returns component value
-    """
-    if comp_entry := [x for x in entry["components"] if x[0] == comp_name]:
-        if comp_type == bool:
-            if comp_entry[0][1] is None:
-                return True
-        else:
-            return comp_entry[0][1]
-    if comp_type == bool:
-        return False
-    elif comp_type == int:
-        return 0
-    elif comp_type == str:
-        return ""
-    elif comp_type == list:
-        return []
-    else:
-        return None
 
 
 def make_arsenal_json() -> None:
@@ -202,7 +189,9 @@ def make_arsenal_json() -> None:
     }
 
     def w_rank(x) -> int:
-        return ranks[get_comp(all_items[x], "weapon_rank", str)]
+        if weapon_rank := get_comp(all_items[x], "weapon_rank", str):
+            return ranks[weapon_rank]
+        return 10
 
     sorted_arsenal = {}
     for arsenal_unit_id, arsenal_unit_dict in arsenals.items():
@@ -404,6 +393,17 @@ def make_class_promo_json() -> None:
     print("Done.")
 
 
+def make_skill_hide_json() -> None:
+    print("Creating skills.hidden.json ...")
+    skills = {}
+    with (JSON_DIR / "skills.json").open("r") as fp:
+        for data_entry in json.load(fp):
+            skills[data_entry["nid"]] = get_comp(data_entry, "hidden", bool)
+    with (GUIDE_JSON_DIR / "skills.hidden.json").open("w+") as fp:
+        json.dump(skills, fp)
+    print("Done.")
+
+
 def remove_bg(entry: Path):
     img = Image.open(entry)
     img = img.convert("RGBA")
@@ -443,7 +443,8 @@ def get_map_sprites():
                 upper = row * frame_height
                 right = left + frame_width
                 lower = upper + frame_height
-                frame = sprite_sheet.crop((left, upper, right, lower))
+                sprite = sprite_sheet.crop((left, upper, right, lower))
+                frame = sprite.crop((8, 0, 64 - 8, 48))
                 frames.append(frame)
             frames[0].save(
                 des_dir / f"{data_entry['map_sprite_nid']}-stand.webp",
@@ -481,6 +482,44 @@ def copy_json():
             print(f"{(JSON_DIR/fname)} does not exist!")
 
 
+class Base(DeclarativeBase):
+    pass
+
+
+class Skill(Base):
+    __tablename__ = "Skills"
+    nid: Mapped[str] = mapped_column(String(50), primary_key=True)
+    name: Mapped[str] = mapped_column(String(50))
+    desc: Mapped[str]
+    icon_class: Mapped[str]
+    is_hidden: Mapped[bool]
+
+    def __repr__(self) -> str:
+        return f"Skill(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
+
+
+def add_to_db():
+    db_path = Path(__file__).resolve().parent / "app/fe8r-guide.db"
+    engine = create_engine(f"sqlite+pysqlite:///{db_path}", echo=True)
+    Base.metadata.create_all(engine)
+    with engine.connect() as conn:
+        with (JSON_DIR / "skills.json").open("r") as fp:
+            for data_entry in json.load(fp):
+                stmt = insert(Skill).values(
+                    nid=data_entry["nid"],
+                    name=data_entry["name"],
+                    desc=process_styled_text(data_entry["desc"]),
+                    icon_class=(
+                        f"{make_valid_class_name(data_entry["nid"])}-icon {make_valid_class_name(data_entry["icon_nid"])}-icon"
+                        if data_entry["icon_nid"]
+                        else ""
+                    ),
+                    is_hidden=get_comp(data_entry, "hidden", bool),
+                )
+                result = conn.execute(stmt)
+        conn.commit()
+
+
 def main():
     copy_json()
     make_arsenal_json()
@@ -491,6 +530,7 @@ def main():
     get_portraits()
     get_map_sprites()
     make_icon_css()
+    add_to_db()
 
 
 if __name__ == "__main__":

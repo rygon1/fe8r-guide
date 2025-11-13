@@ -4,35 +4,36 @@
 {% endif %}
 {% block content %}
 <div id="classSheet">
-    <hgroup>
-        <h3>
-            <span>{{ class_data.name }}</span><span class="feClassImg">
-                <img
-                    src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}" />
-            </span>
-
-
-            {% if not request.headers.hx_request or request.args.get('addCopy') == 'True'%}
-            <a class="secondary copy-entry"
-                _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') then toggle .lt-color-green on <svg/> in me wait 1s then toggle .lt-color-green on <svg/> in me">
-                <svg xmlns="
+    <div class="unit-head-container">
+        <div class="div1">
+            <img src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}"
+                height="96" width="96" />
+        </div>
+        <div class="div2">
+            <hgroup>
+                <h2>{{ class_data.name }}</h2>
+                <p>{{ class_data.desc }}
+                    {% if class_data.weapons%}
+                    <br />
+                    <span class="lt-color-red">Prof:</span>
+                    {% for weapon_type in class_data.weapons%}
+                    <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+                    {% endfor %}
+                    {% endif %}
+                </p>
+            </hgroup>
+        </div>
+        {% if not request.headers.hx_request or request.args.get('addCopy') == 'True'%}
+        <a class="secondary copy-entry"
+            _="on click call navigator.clipboard.writeText('[{{ class_data.name }}](https://fe8r-guide.onrender.com/classes/{{ class_data.nid }})') then toggle .lt-color-green on <svg/> in me wait 1s then toggle .lt-color-green on <svg/> in me">
+            <svg xmlns="
                 http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-                </svg></a>
-            {% endif %}
-        </h3>
-        <p>{{ class_data.desc }}
-            {% if class_data.weapons%}
-            <br />
-            <span class="lt-color-red">Prof:</span>
-            {% for weapon_type in class_data.weapons%}
-            <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
-            {% endfor %}
-            {% endif %}
-        </p>
-    </hgroup>
+                class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+            </svg></a>
+        {% endif %}
+    </div>
 
     <div class="overflow-auto">
         <table class="striped">
@@ -93,7 +94,8 @@
             <ul>
                 {% for prev_class_data in class_promo_data.turns_from %}
                 <li><a href="#" hx-get="/classes/{{prev_class_data.nid}}" hx-target="#classSheet"
-                        hx-swap="outerHTML">{{prev_class_data.name}} {% if prev_class_data.alt_name %}({{
+                        hx-vals='{"addCopy":"True"}' hx-swap="outerHTML">{{prev_class_data.name}} {% if
+                        prev_class_data.alt_name %}({{
                         prev_class_data.alt_name }}){% endif %}</a>
                 </li>
                 {% endfor %}
@@ -106,7 +108,8 @@
             <ul>
                 {% for next_class_data in class_promo_data.turns_into %}
                 <li><a href="#" hx-get="/classes/{{next_class_data.nid}}" hx-target="#classSheet"
-                        hx-swap="outerHTML">{{next_class_data.name}} {% if next_class_data.alt_name %}({{
+                        hx-vals='{"addCopy":"True"}' hx-swap="outerHTML">{{next_class_data.name}} {% if
+                        next_class_data.alt_name %}({{
                         next_class_data.alt_name }}){% endif %}</a>
                 </li>
                 {% endfor %}

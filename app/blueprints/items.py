@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from flask import Blueprint, render_template, request
 
-from app.blueprints.utils import make_valid_class_name, process_styled_text
+from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
 
@@ -40,22 +40,7 @@ UNITS = {}
 ARSENAL_UNITS = {}
 with bp.open_resource("../static/json/arsenals.json", "r") as f:
     ARSENALS = json.load(f)
-
-
-def get_comp(data_entry, comp_name: str):
-    if comp_entry := [x for x in data_entry["components"] if x[0] == comp_name]:
-        if comp_entry[0][1] is None:
-            return 1
-        return comp_entry[0][1]
-    return 0
-
-
-def get_comp_str(data_entry, comp_name: str):
-    if comp_entry := [x for x in data_entry["components"] if x[0] == comp_name]:
-        if comp_entry[0][1] is None:
-            return " "
-        return comp_entry[0][1]
-    return ""
+SKILL_HIDDEN = {}
 
 
 def get_status_equip(data_entry) -> list:
@@ -73,10 +58,10 @@ def get_status_equip(data_entry) -> list:
         "Luckblade",  # TODO
     )
     wp_status = []
-    if s1 := get_comp(data_entry, "status_on_equip"):
+    if s1 := get_comp(data_entry, "status_on_equip", str):
         if not any(sub in s1 for sub in exclude):
             wp_status.append(s1)
-    if s2 := get_comp(data_entry, "multi_status_on_equip"):
+    if s2 := get_comp(data_entry, "multi_status_on_equip", list):
         for entry in s2:
             if not any(sub in entry for sub in exclude):
                 wp_status.append(entry)
@@ -90,6 +75,9 @@ def init_lists() -> None:
                 "name": unit_data["name"],
                 "nid": unit_data["nid"],
             }
+    with bp.open_resource("../static/json/skills.hidden.json", "r") as fp:
+        for key, value in json.load(fp).items():
+            SKILL_HIDDEN[key] = value
     with bp.open_resource("../static/json/units.category.json", "r") as fp:
         for unit_nid, unit_cat in json.load(fp).items():
             if unit_nid in ARSENALS:
@@ -113,37 +101,15 @@ def init_lists() -> None:
                 nid=data_entry["nid"],
                 name=data_entry["name"],
                 desc=process_styled_text(data_entry["desc"]),
-                value=(
-                    get_comp(data_entry, "value")
-                    if get_comp(data_entry, "value")
-                    else 0
-                ),
-                weapon_rank=get_comp_str(data_entry, "weapon_rank"),
-                weapon_type=get_comp_str(data_entry, "weapon_type"),
-                damage=(
-                    get_comp(data_entry, "damage")
-                    if get_comp(data_entry, "damage")
-                    else 0
-                ),
-                weight=(
-                    get_comp(data_entry, "weight")
-                    if get_comp(data_entry, "weight")
-                    else 0
-                ),
-                crit=(
-                    get_comp(data_entry, "crit") if get_comp(data_entry, "crit") else 0
-                ),
-                hit=(get_comp(data_entry, "hit") if get_comp(data_entry, "hit") else 0),
-                min_range=(
-                    get_comp(data_entry, "min_range")
-                    if get_comp(data_entry, "min_range")
-                    else 0
-                ),
-                max_range=(
-                    get_comp(data_entry, "max_range")
-                    if get_comp(data_entry, "max_range")
-                    else 0
-                ),
+                value=get_comp(data_entry, "value", int),
+                weapon_rank=get_comp(data_entry, "weapon_rank", str),
+                weapon_type=get_comp(data_entry, "weapon_type", str),
+                damage=get_comp(data_entry, "damage", int),
+                weight=get_comp(data_entry, "weight", int),
+                crit=get_comp(data_entry, "crit", int),
+                hit=get_comp(data_entry, "hit", int),
+                min_range=get_comp(data_entry, "min_range", int),
+                max_range=get_comp(data_entry, "max_range", int),
                 status_on_equip=get_status_equip(data_entry),
                 target=target,
                 icon_class=(
@@ -151,11 +117,7 @@ def init_lists() -> None:
                     if data_entry["icon_nid"]
                     else ""
                 ),
-                sub_items=(
-                    get_comp(data_entry, "multi_item")
-                    if get_comp(data_entry, "multi_item")
-                    else []
-                ),
+                sub_items=get_comp(data_entry, "multi_item", list),
             )
 
     with bp.open_resource("../static/json/items.category.new.json", "r") as fp:
