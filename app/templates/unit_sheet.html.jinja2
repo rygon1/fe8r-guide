@@ -29,21 +29,29 @@
     {% endif %}
   </div>
   <br />
-  <hgroup>
-    <h3><span>{{ unit_data.base_class_data.name }}</span><span class="feClassImg">
-        <img
-          src="{{ url_for('static',filename='images/map_sprites/'+unit_data.base_class_data.map_sprite_nid+'-stand.webp') }}" />
-      </span></h3>
-    <p>{{ unit_data.base_class_data.desc }}
-      {% if unit_data.base_class_data.weapons%}
-      <br />
-      <span class="lt-color-red">Prof:</span>
-      {% for weapon_type in unit_data.base_class_data.weapons%}
-      <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
-      {% endfor %}
-    </p>
-  </hgroup>
-  {% endif %}
+
+  <div class="unit-head-container">
+    <div class="div1">
+      <img
+        src="{{ url_for('static',filename='images/map_sprites/'+unit_data.base_class_data.map_sprite_nid+'-stand.webp') }}"
+        height="96" width="96" />
+    </div>
+    <div class="div2">
+      <hgroup>
+        <h3>{{ unit_data.base_class_data.name }}</h3>
+        <p>{{ unit_data.base_class_data.desc }}
+          {% if unit_data.base_class_data.weapons%}
+          <br />
+          <span class="lt-color-red">Prof:</span>
+          {% for weapon_type in unit_data.base_class_data.weapons%}
+          <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+          {% endfor %}
+          {% endif %}
+        </p>
+      </hgroup>
+    </div>
+  </div>
+
   <div class="overflow-auto">
     <table class="striped">
       {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
@@ -121,6 +129,7 @@
     {% else %}
     <div id="classT2Selector">
       <label>Tier 2</label>
+      {% if unit_promos.turns_into|length > 1%}
       <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
         hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT2Sheet" hx-indicator="#unitClassT2Sheet"
         hx-swap="innerHTML" _="on change set #unitClassT3Sheet.innerHTML to ''">
@@ -129,6 +138,11 @@
         <option value="{{ promo_class_t2.nid }}">{{ promo_class_t2.name }}</option>
         {% endfor %}
       </select>
+      {% else %}
+      {% set promo_class_t2=unit_promos.turns_into|first%}
+      <div hx-vals='{"unitClassSelect":"{{ promo_class_t2.nid }}"}' hx-get="/units/{{ unit_data.nid }}/classes"
+        hx-target="#unitClassT2Sheet" hx-indicator="#unitClassT2Sheet" hx-swap="innerHTML" hx-trigger="load"></div>
+      {% endif %}
     </div>
     {% endif %}
     <div id="unitClassT1Sheet"></div>
