@@ -2,20 +2,11 @@
 import json
 import shutil
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any
 from urllib.parse import quote
 
 from PIL import Image
-from sqlalchemy import (
-    Column,
-    Integer,
-    MetaData,
-    String,
-    Table,
-    create_engine,
-    insert,
-    text,
-)
+from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
 
 from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
@@ -153,8 +144,7 @@ def make_arsenal_json() -> None:
                                 arsenal_nid = list(arsenals[arsenal_unit].keys())[0]
                                 arsenal_data = arsenals[arsenal_unit][arsenal_nid]
                 if arsenal_data and (item_data := all_items[item_nid]):
-                    weapon_type = get_comp(item_data, "weapon_type", str)
-                    if weapon_type == "":
+                    if not (weapon_type := get_comp(item_data, "weapon_type", str)):
                         weapon_type = "Misc"
                     if weapon_type not in arsenal_data["items"]:
                         arsenal_data["items"][weapon_type] = []
@@ -487,37 +477,71 @@ class Base(DeclarativeBase):
 
 
 class Skill(Base):
-    __tablename__ = "Skills"
+    __tablename__ = "skills"
     nid: Mapped[str] = mapped_column(String(50), primary_key=True)
     name: Mapped[str] = mapped_column(String(50))
     desc: Mapped[str]
     icon_class: Mapped[str]
     is_hidden: Mapped[bool]
+    category_nid: Mapped[str] = mapped_column(ForeignKey("skill_categories.nid"))
+    category: Mapped["SkillCategory"] = relationship()
 
     def __repr__(self) -> str:
         return f"Skill(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
 
 
+class SkillCategory(Base):
+    __tablename__ = "skill_categories"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+
+    def __repr__(self) -> str:
+        return f"SkillCategory(nid={self.nid!r}, name={self.name!r})"
+
+
 def add_to_db():
     db_path = Path(__file__).resolve().parent / "app/fe8r-guide.db"
     engine = create_engine(f"sqlite+pysqlite:///{db_path}", echo=True)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-    with engine.connect() as conn:
+    skill_cats = {}
+    new_skill_cats = []
+    with (JSON_DIR / "skills.category.json").open("r") as fp:
+        for key, value in json.load(fp).items():
+            skill_cats[key] = value
+            if value not in (x.nid for x in new_skill_cats if new_skill_cats):
+                if value.startswith("MyUnit/T"):
+                    print(value)
+                    print(f"Feats (Tier {value.split('/T')[1]}")
+                    new_skill_cats.append(
+                        SkillCategory(
+                            nid=value, name=f"Feats (Tier {value.split('/')[1]})"
+                        )
+                    )
+                else:
+                    new_skill_cats.append(SkillCategory(nid=value, name=value))
+    with Session(engine) as session:
         with (JSON_DIR / "skills.json").open("r") as fp:
-            for data_entry in json.load(fp):
-                stmt = insert(Skill).values(
+            new_skills = [
+                Skill(
                     nid=data_entry["nid"],
                     name=data_entry["name"],
                     desc=process_styled_text(data_entry["desc"]),
                     icon_class=(
-                        f"{make_valid_class_name(data_entry["nid"])}-icon {make_valid_class_name(data_entry["icon_nid"])}-icon"
+                        f"{make_valid_class_name(data_entry["nid"])}-icon "
+                        + f"{make_valid_class_name(data_entry["icon_nid"])}-icon"
                         if data_entry["icon_nid"]
                         else ""
                     ),
                     is_hidden=get_comp(data_entry, "hidden", bool),
+                    category_nid=skill_cats[data_entry["nid"]],
                 )
-                result = conn.execute(stmt)
-        conn.commit()
+                for data_entry in json.load(fp)
+            ]
+            session.add_all(new_skills)
+            session.add_all(new_skill_cats)
+
+        session.commit()
 
 
 def main():
