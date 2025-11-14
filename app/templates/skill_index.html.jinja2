@@ -23,8 +23,8 @@
                     required hx-get="/skills" hx-vals='{"addCopy": "True"}' hx-target="#skillsheet"
                     hx-indicator="#skillsheet">
                     <option value="default" selected disabled>Select a skill</option>
-                    {% for skill_nid,skill in skills.items() %}
-                    <option value="{{ skill['nid'] }}">{{ skill["name"] }}</option>
+                    {% for skill_nid,skill_name in skills.items() %}
+                    <option value="{{ skill_nid }}">{{ skill_name }}</option>
                     {% endfor %}
                 </select>
                 {% endfor %}

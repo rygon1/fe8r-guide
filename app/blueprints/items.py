@@ -40,7 +40,6 @@ UNITS = {}
 ARSENAL_UNITS = {}
 with bp.open_resource("../static/json/arsenals.json", "r") as f:
     ARSENALS = json.load(f)
-SKILL_HIDDEN = {}
 
 
 def get_status_equip(data_entry) -> list:
@@ -75,9 +74,6 @@ def init_lists() -> None:
                 "name": unit_data["name"],
                 "nid": unit_data["nid"],
             }
-    with bp.open_resource("../static/json/skills.hidden.json", "r") as fp:
-        for key, value in json.load(fp).items():
-            SKILL_HIDDEN[key] = value
     with bp.open_resource("../static/json/units.category.json", "r") as fp:
         for unit_nid, unit_cat in json.load(fp).items():
             if unit_nid in ARSENALS:
@@ -113,7 +109,7 @@ def init_lists() -> None:
                 status_on_equip=get_status_equip(data_entry),
                 target=target,
                 icon_class=(
-                    f"{make_valid_class_name(data_entry["nid"])}-icon {make_valid_class_name(data_entry["icon_nid"])}-icon"
+                    f"{make_valid_class_name(data_entry['nid'])}-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
                     if data_entry["icon_nid"]
                     else ""
                 ),

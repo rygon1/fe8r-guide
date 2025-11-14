@@ -1,5 +1,4 @@
 import json
-import re
 from dataclasses import dataclass
 
 from flask import Blueprint, render_template, request
@@ -45,7 +44,6 @@ CLASS_PROMOS = {}
 
 
 def init_lists() -> None:
-    print("Initializing classes ...")
     with bp.open_resource("../static/json/classes.json", "r") as fp:
         for data_entry in sorted(json.load(fp), key=lambda x: x["tier"], reverse=True):
             CLASSES[data_entry["nid"]] = FEClass(

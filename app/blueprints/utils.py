@@ -91,7 +91,6 @@ def get_comp(entry, comp_name: str, comp_type: type) -> Any:
                 return True
         else:
             return comp_entry[0][1]
-
     if comp_type == bool:
         return False
     elif comp_type == int:

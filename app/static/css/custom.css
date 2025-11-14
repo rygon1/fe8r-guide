@@ -140,6 +140,11 @@ body {
 main {
   flex: 1;
 }
+article article {
+  --pico-card-background-color: hsl(221.5, 21.3%, 13%);
+  --pico-card-border-color: hsl(221.5, 21.3%, 13%);
+  --pico-card-sectioning-background-color: hsl(218.6, 21.2%, 13.9%);
+}
 
 nav details.dropdown {
   display: inline-block;
