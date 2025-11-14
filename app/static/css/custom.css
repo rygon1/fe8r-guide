@@ -102,14 +102,6 @@ h1 {
   grid-auto-flow: row;
   grid-template-areas: ". . .";
 }
-.item-grid {
-  display: grid;
-  grid-template-columns: auto auto ;
-  grid-template-rows: 1fr;
-  gap: 0px 20px;
-  grid-auto-flow: row;
-  grid-template-areas: ". .";
-}
 
 .lt-color-red {
   color: var(--red-10);
