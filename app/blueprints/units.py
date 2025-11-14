@@ -41,7 +41,6 @@ CLASSES = {}
 CLASS_PROMOS = {}
 SUPPORTS = {}
 AFFINITIES = {}
-SKILL_HIDDEN = {}
 
 
 def _get_classes():
@@ -104,10 +103,6 @@ def fix_stat_cap_modifiers(old_scm: dict):
 
 
 def init_lists() -> None:
-    with bp.open_resource("../static/json/skills.hidden.json", "r") as fp:
-        for key, value in json.load(fp).items():
-            SKILL_HIDDEN[key] = value
-    print("Initializing units ...")
     _get_classes()
 
     with bp.open_resource("../static/json/units.json", "r") as fp:
