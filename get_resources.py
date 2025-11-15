@@ -681,15 +681,15 @@ def add_to_db() -> None:
 
 
 def main():
-    # copy_json()
-    # make_arsenal_json()
-    # make_class_promo_json()
-    # make_item_cat_new_json()
-    # minify_json()
-    # get_icons()
-    # get_portraits()
-    # get_map_sprites()
-    # make_icon_css()
+    copy_json()
+    make_arsenal_json()
+    make_class_promo_json()
+    make_item_cat_new_json()
+    minify_json()
+    get_icons()
+    get_portraits()
+    get_map_sprites()
+    make_icon_css()
     add_to_db()
 
 
