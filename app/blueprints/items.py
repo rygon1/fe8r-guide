@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from flask import Blueprint, render_template, request
 
 from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
+from app.extensions import db
+from app.models import Item
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
 
@@ -126,22 +128,23 @@ init_lists()
 
 @bp.route("/")
 def get_fe_item_index() -> str:
-    if item_id := request.args.get("itemSelect"):
+    if item_nid := request.args.get("itemSelect"):
         template = "item_sheet.html.jinja2"
     else:
-        item_id = "Iron_Sword"
+        item_nid = "Iron_Sword"
         template = "item_index.html.jinja2"
+    item_data = db.get_or_404(Item, item_nid)
     return render_template(
         template,
-        item_data=ITEMS[item_id],
+        item_data=item_data,
         item_cats=ITEM_CATS,
     )
 
 
 @bp.route("/<string:fe_item_nid>")
 def get_fe_item_sheet(fe_item_nid="Iron_Sword_Test") -> str:
-    fe_item_data = ITEMS[fe_item_nid]
-    return render_template("item_sheet.html.jinja2", item_data=fe_item_data)
+    item_data = db.get_or_404(Item, fe_item_nid)
+    return render_template("item_sheet.html.jinja2", item_data=item_data)
 
 
 @bp.route("/arsenals")

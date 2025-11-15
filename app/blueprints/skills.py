@@ -13,7 +13,6 @@ def _get_skill_cats():
         .where(SkillCategory.nid.startswith("MyUnit/T"))
         .order_by(SkillCategory.nid)
     ).scalars():
-        print(entry)
         skill_cats[entry.name] = {
             x.nid: x.name
             for x in db.session.execute(

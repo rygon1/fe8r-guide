@@ -6,7 +6,8 @@ from typing import Any
 from urllib.parse import quote
 
 from PIL import Image
-from sqlalchemy import create_engine
+from sqlalchemy import Column, ForeignKey, String, Table, create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
 
 from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
@@ -361,6 +362,19 @@ def make_icon_css():
                             transform: scale(1.5);
                         }}\n
                         """
+    # Special case for monster wep missing in wexp_icons.png
+    css_str += f"""
+    .Wexpicons-icon.Monster-subIcon{{
+    background-image: url(\'/static/images/icons/{quote("Monster WEP Icon.png")}\');
+    background-repeat: no-repeat;
+    background-position: -0px -0px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 0px 4px;
+    transform: scale(1.5);
+    }}\n
+    """
     with css_path.open("w") as fp:
         fp.write(css_str)
     print("Done.")
@@ -472,6 +486,31 @@ def copy_json():
             print(f"{(JSON_DIR/fname)} does not exist!")
 
 
+def _get_status_equip(data_entry) -> list:
+    exclude: tuple = (
+        "_hide",
+        "_Penalty",
+        "_Buff",
+        "_Effect",
+        "_Gain",
+        "_Proc",
+        "_Weapon",
+        "_AOE_Splash",
+        "Drench",
+        "Avo_Ddg_",
+        "Luckblade",  # TODO
+    )
+    wp_status = []
+    if s1 := get_comp(data_entry, "status_on_equip", str):
+        if not any(sub in s1 for sub in exclude):
+            wp_status.append(s1)
+    if s2 := get_comp(data_entry, "multi_status_on_equip", list):
+        for entry in s2:
+            if not any(sub in entry for sub in exclude):
+                wp_status.append(entry)
+    return list(set(wp_status))
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -499,7 +538,55 @@ class SkillCategory(Base):
         return f"SkillCategory(nid={self.nid!r}, name={self.name!r})"
 
 
-def add_to_db():
+item_skill_assoc = Table(
+    "item_skill_assoc",
+    Base.metadata,
+    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
+    Column("skill_nid", String, ForeignKey("skills.nid"), primary_key=True),
+)
+sub_item_assoc = Table(
+    "sub_item_assoc",
+    Base.metadata,
+    Column("super_item_nid", String, ForeignKey("items.nid"), primary_key=True),
+    Column("sub_item_nid", String, ForeignKey("items.nid"), primary_key=True),
+)
+
+
+class Item(Base):
+    __tablename__ = "items"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    desc: Mapped[str]
+    value: Mapped[int]
+    weapon_rank: Mapped[str]
+    weapon_type: Mapped[str]
+    target: Mapped[str]
+    damage: Mapped[int]
+    weight: Mapped[int]
+    crit: Mapped[int]
+    hit: Mapped[int]
+    min_range: Mapped[int]
+    max_range: Mapped[int]
+    icon_class: Mapped[str]
+
+    sub_items = relationship(
+        "Item",
+        secondary=sub_item_assoc,
+        primaryjoin=(sub_item_assoc.c.super_item_nid == nid),
+        secondaryjoin=(sub_item_assoc.c.sub_item_nid == nid),
+        backref="super_item",
+    )
+    status_on_equip = relationship(
+        "Skill",
+        secondary=item_skill_assoc,
+        backref="items",
+    )
+
+    def __repr__(self) -> str:
+        return f"Item(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
+
+
+def add_to_db() -> None:
     db_path = Path(__file__).resolve().parent / "app/fe8r-guide.db"
     engine = create_engine(f"sqlite+pysqlite:///{db_path}", echo=True)
     Base.metadata.drop_all(engine)
@@ -511,16 +598,15 @@ def add_to_db():
             skill_cats[key] = value
             if value not in (x.nid for x in new_skill_cats if new_skill_cats):
                 if value.startswith("MyUnit/T"):
-                    print(value)
-                    print(f"Feats (Tier {value.split('/T')[1]}")
                     new_skill_cats.append(
                         SkillCategory(
-                            nid=value, name=f"Feats (Tier {value.split('/')[1]})"
+                            nid=value, name=f"Feats (Tier {value.split('/T')[1]})"
                         )
                     )
                 else:
                     new_skill_cats.append(SkillCategory(nid=value, name=value))
     with Session(engine) as session:
+        # Add skills
         with (JSON_DIR / "skills.json").open("r") as fp:
             new_skills = [
                 Skill(
@@ -540,20 +626,70 @@ def add_to_db():
             ]
             session.add_all(new_skills)
             session.add_all(new_skill_cats)
+        # Add items
+        with (JSON_DIR / "items.json").open("r") as fp:
+            for data_entry in json.load(fp):
+                if target := [
+                    x for x in data_entry["components"] if x[0].startswith("target")
+                ]:
+                    target = target[0][0].split("_")[1].title()
+                else:
+                    target = ""
+                new_item = Item(
+                    nid=data_entry["nid"],
+                    name=data_entry["name"],
+                    desc=process_styled_text(data_entry["desc"]),
+                    value=get_comp(data_entry, "value", int),
+                    weapon_rank=get_comp(data_entry, "weapon_rank", str),
+                    weapon_type=get_comp(data_entry, "weapon_type", str),
+                    damage=get_comp(data_entry, "damage", int),
+                    weight=get_comp(data_entry, "weight", int),
+                    crit=get_comp(data_entry, "crit", int),
+                    hit=get_comp(data_entry, "hit", int),
+                    min_range=get_comp(data_entry, "min_range", int),
+                    max_range=get_comp(data_entry, "max_range", int),
+                    target=target,
+                    icon_class=(
+                        f"{make_valid_class_name(data_entry['nid'])}-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
+                        if data_entry["icon_nid"]
+                        else ""
+                    ),
+                )
+                session.add(new_item)
+                # Add item skills
+                if status_on_equip := _get_status_equip(data_entry):
+                    if item_with_skill := session.query(Item).get(data_entry["nid"]):
+                        for skill_nid in status_on_equip:
+                            try:
+                                item_with_skill.status_on_equip.append(
+                                    session.query(Skill).get(skill_nid)
+                                )
+                            except IntegrityError:
+                                print("Skipping existing entry.")
 
+        session.commit()
+        # Add sub_items
+        with (JSON_DIR / "items.json").open("r") as fp:
+            for data_entry in json.load(fp):
+                if sub_items := get_comp(data_entry, "multi_item", list):
+                    if super_item := session.query(Item).get(data_entry["nid"]):
+                        for sub_item_nid in sub_items:
+                            super_item.sub_items.append(
+                                session.query(Item).get(sub_item_nid)
+                            )
         session.commit()
 
 
 def main():
-    copy_json()
-    make_arsenal_json()
-    make_class_promo_json()
-    make_item_cat_new_json()
-    minify_json()
-    get_icons()
-    get_portraits()
-    get_map_sprites()
-    make_icon_css()
+    # copy_json()
+    # make_arsenal_json()
+    # make_class_promo_json()
+    # make_item_cat_new_json()
+    # minify_json()
+    # get_icons()
+    # get_portraits()
+    # get_map_sprites()
+    # make_icon_css()
     add_to_db()
 
 
