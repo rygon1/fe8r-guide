@@ -112,7 +112,7 @@ def init_lists() -> None:
                 status_on_equip=get_status_equip(data_entry),
                 target=target,
                 icon_class=(
-                    f"{make_valid_class_name(data_entry['nid'])}-items-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
+                    f"{make_valid_class_name(data_entry['nid'])}-item-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
                     if data_entry["icon_nid"]
                     else ""
                 ),
