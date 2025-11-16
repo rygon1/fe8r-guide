@@ -3,6 +3,16 @@
 [Wiki](https://fe8r-guide.onrender.com/)
 [Github](https://github.com/rygon1/fe8r-guide)
 
+## [0.0.3] - 2025-11-15
+
+### Added
+
+- Shops section
+
+### Changed
+
+- Class sprites are bigger and now placed like unit portraits
+
 ## [0.0.2] - 2025-11
 
 ### Added
