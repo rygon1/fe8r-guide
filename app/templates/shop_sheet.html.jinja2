@@ -1,0 +1,33 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% block title %}{{ shop_data.name }} &mdash; Shops | {% endblock %}
+{% endif %}
+{% block content %}
+<div>
+    <h2>{{ shop_data.name }} <span class="{{ shop_data.icon_class }}"></span></h2>
+</div>
+<section class="shop-grid">
+    {% for wtype in wtypes %}
+    <table class="striped">
+        <caption>{{ wtype if wtype else "Misc"}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in shop_data.items | selectattr('weapon_type', 'equalto', wtype) %}
+            <tr>
+                <th scope="row"><span class="{{ item.icon_class }}"></span><a href="/items/{{ item.nid }}">{{ item.name
+                        }}</a></th>
+                <td>{{ item.value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+</section>
+
+
+{% endblock content %}

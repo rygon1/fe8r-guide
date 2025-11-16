@@ -2,10 +2,11 @@ import json
 from dataclasses import dataclass
 
 from flask import Blueprint, render_template, request
+from sqlalchemy import select
 
 from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
 from app.extensions import db
-from app.models import Item
+from app.models import Item, Shop
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
 
@@ -111,7 +112,7 @@ def init_lists() -> None:
                 status_on_equip=get_status_equip(data_entry),
                 target=target,
                 icon_class=(
-                    f"{make_valid_class_name(data_entry['nid'])}-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
+                    f"{make_valid_class_name(data_entry['nid'])}-items-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
                     if data_entry["icon_nid"]
                     else ""
                 ),
@@ -170,3 +171,24 @@ def get_fe_arsenal_sheet(fe_unit_nid="Artur") -> str:
         unit_arsenals=ARSENALS[fe_unit_nid],
         arsenal_units=ARSENAL_UNITS,
     )
+
+
+@bp.route("/shops")
+def get_shop_index() -> str:
+    stmt = select(Shop).order_by(Shop.order_name.asc())
+    shops = db.session.execute(stmt).scalars().all()
+    if shop_nid := request.args.get("shopSelect"):
+        template = "shop_sheet.html.jinja2"
+    else:
+        shop_nid = "Global IdeArmory"
+        template = "shop_index.html.jinja2"
+    shop_data = db.get_or_404(Shop, shop_nid)
+    wtypes = set(x.weapon_type for x in shop_data.items)
+    return render_template(template, shop_data=shop_data, shops=shops, wtypes=wtypes)
+
+
+@bp.route("/shops/<string:shop_nid>")
+def get_shop_sheet(shop_nid="Global IdeArmory") -> str:
+    shop_data = db.get_or_404(Shop, shop_nid)
+    wtypes = set(x.weapon_type for x in shop_data.items)
+    return render_template("shop_sheet.html.jinja2", shop_data=shop_data, wtypes=wtypes)

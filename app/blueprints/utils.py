@@ -100,3 +100,20 @@ def get_comp(entry, comp_name: str, comp_type: type) -> Any:
     elif comp_type == list:
         return []
     return None
+
+
+def pad_digits_in_string(text, width):
+    """
+    Finds all sequences of digits in a string and pads them with
+    leading zeros to the specified width.
+    """
+
+    # Define a replacement function that takes the regex match object
+    def replacer(match):
+        # match.group(0) is the sequence of digits found (e.g., '1', '10', '007')
+        digit_string = match.group(0)
+        # Apply the padding using zfill()
+        return digit_string.zfill(width)
+
+    # re.sub() finds all matches of r'\d+' and replaces them using the replacer function
+    return re.sub(r"\d+", replacer, text)

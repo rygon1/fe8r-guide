@@ -17,8 +17,8 @@
     href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/open-props" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/iconsheet.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/iconsheet.min.css') }}">
 </head>
 
 <body>
@@ -49,6 +49,9 @@
                 <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
               </li>
               <li>
+                <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
+              </li>
+              <li>
                 <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
               </li>
               <li>
@@ -75,6 +78,9 @@
         </li>
         <li>
           <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
+        </li>
+        <li>
+          <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
         </li>
         <li>
           <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>

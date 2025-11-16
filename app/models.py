@@ -73,3 +73,29 @@ class Item(db.Model):
 
     def __repr__(self) -> str:
         return f"Item(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
+
+
+shop_item_assoc = Table(
+    "shop_item_assoc",
+    db.metadata,
+    Column("shop_nid", String, ForeignKey("shops.nid"), primary_key=True),
+    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
+)
+
+
+class Shop(db.Model):
+    __tablename__ = "shops"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    type: Mapped[str]
+    order_name: Mapped[str]
+
+    items = relationship(
+        "Item",
+        secondary=shop_item_assoc,
+        backref="shops",
+        uselist=True,
+    )
+
+    def __repr__(self) -> str:
+        return f"Shop(nid={self.nid!r}, name={self.name!r}, type={self.type!r})"

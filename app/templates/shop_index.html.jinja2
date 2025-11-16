@@ -1,0 +1,19 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}Shops &mdash; items | {% endblock %}
+{% block content %}
+<h1>Shops</h1>
+<section>
+    <select class="shopSelect" name="shopSelect" aria-label="Select shop" required hx-get="/items/shops"
+        hx-vals='{"addCopy": "True"}' hx-target="#shopSheet" hx-indicator="#shopSheet">
+        <option value="default" selected disabled>Select a shop</option>
+        {% for shop in shops %}
+        <option value="{{ shop.nid }}">{{ shop.name }}</option>
+        {% endfor %}
+    </select>
+</section>
+<section id="shopSheet">
+    <div aria-busy="true" class="htmx-indicator"></div>
+</section>
+{% endblock content %}

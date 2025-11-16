@@ -20,6 +20,9 @@
         <li>
           <a href="{{ url_for('items.get_fe_arsenal') }}">Arsenals</a>
         </li>
+        <li>
+          <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
+        </li>
       </ul>
     </li>
     <li>
@@ -27,9 +30,6 @@
     </li>
     <li>
       <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
-    </li>
-    <li>
-      <a href="{{ url_for('get_credits') }}">Credits</a>
     </li>
     <li><a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
       <ul>
@@ -40,6 +40,9 @@
           <a href="{{ url_for('codex.get_codex_achievements') }}">Achievements</a>
         </li>
       </ul>
+    </li>
+    <li>
+      <a href="{{ url_for('get_credits') }}">Credits</a>
     </li>
   </ul>
 </section>

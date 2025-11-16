@@ -1,16 +1,22 @@
 #!/usr/bin/python3
 import json
+import re
 import shutil
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
 from PIL import Image
-from sqlalchemy import Column, ForeignKey, String, Table, create_engine
+from sqlalchemy import Column, ForeignKey, String, Table, create_engine, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
 
-from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
+from app.blueprints.utils import (
+    get_comp,
+    make_valid_class_name,
+    pad_digits_in_string,
+    process_styled_text,
+)
 
 LTPROJ_DIR = Path("")
 try:
@@ -308,7 +314,7 @@ def make_icon_css():
                     css_str += new_sheet_css
                     added_icon_sheet.append(entry["icon_nid"])
                 css_str += f"""
-                .{make_valid_class_name(entry["nid"])}-icon {{
+                .{make_valid_class_name(entry["nid"])}-item-icon {{
                     background-position: -{entry["icon_index"][0]*icon_width}px -{entry["icon_index"][1]*icon_height}px;
                     margin: 0px 4px;
                     transform: scale(1.5);
@@ -330,7 +336,7 @@ def make_icon_css():
                     css_str += new_sheet_css
                     added_icon_sheet.append(entry["icon_nid"])
                 css_str += f"""
-                .{make_valid_class_name(entry["nid"])}-icon {{
+                .{make_valid_class_name(entry["nid"])}-skill-icon {{
                     background-position: -{entry["icon_index"][0]*icon_width}px -{entry["icon_index"][1]*icon_height}px;
                     margin: 0px 4px;
                     transform: scale(1.5);
@@ -574,7 +580,7 @@ class Item(Base):
         secondary=sub_item_assoc,
         primaryjoin=(sub_item_assoc.c.super_item_nid == nid),
         secondaryjoin=(sub_item_assoc.c.sub_item_nid == nid),
-        backref="super_item",
+        backref="super_items",
     )
     status_on_equip = relationship(
         "Skill",
@@ -586,9 +592,35 @@ class Item(Base):
         return f"Item(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
 
 
+shop_item_assoc = Table(
+    "shop_item_assoc",
+    Base.metadata,
+    Column("shop_nid", String, ForeignKey("shops.nid"), primary_key=True),
+    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
+)
+
+
+class Shop(Base):
+    __tablename__ = "shops"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    type: Mapped[str]
+    order_name: Mapped[str]
+
+    items = relationship(
+        "Item",
+        secondary=shop_item_assoc,
+        backref="shops",
+        uselist=True,
+    )
+
+    def __repr__(self) -> str:
+        return f"Shop(nid={self.nid!r}, name={self.name!r}, type={self.type!r})"
+
+
 def add_to_db() -> None:
     db_path = Path(__file__).resolve().parent / "app/fe8r-guide.db"
-    engine = create_engine(f"sqlite+pysqlite:///{db_path}", echo=True)
+    engine = create_engine(f"sqlite+pysqlite:///{db_path}")
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     skill_cats = {}
@@ -614,7 +646,7 @@ def add_to_db() -> None:
                     name=data_entry["name"],
                     desc=process_styled_text(data_entry["desc"]),
                     icon_class=(
-                        f"{make_valid_class_name(data_entry["nid"])}-icon "
+                        f"{make_valid_class_name(data_entry["nid"])}-skill-icon "
                         + f"{make_valid_class_name(data_entry["icon_nid"])}-icon"
                         if data_entry["icon_nid"]
                         else ""
@@ -650,7 +682,7 @@ def add_to_db() -> None:
                     max_range=get_comp(data_entry, "max_range", int),
                     target=target,
                     icon_class=(
-                        f"{make_valid_class_name(data_entry['nid'])}-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
+                        f"{make_valid_class_name(data_entry['nid'])}-item-icon {make_valid_class_name(data_entry['icon_nid'])}-icon"
                         if data_entry["icon_nid"]
                         else ""
                     ),
@@ -658,11 +690,11 @@ def add_to_db() -> None:
                 session.add(new_item)
                 # Add item skills
                 if status_on_equip := _get_status_equip(data_entry):
-                    if item_with_skill := session.query(Item).get(data_entry["nid"]):
+                    if item_with_skill := session.get(Item, data_entry["nid"]):
                         for skill_nid in status_on_equip:
                             try:
                                 item_with_skill.status_on_equip.append(
-                                    session.query(Skill).get(skill_nid)
+                                    session.get(Skill, skill_nid)
                                 )
                             except IntegrityError:
                                 print("Skipping existing entry.")
@@ -672,11 +704,66 @@ def add_to_db() -> None:
         with (JSON_DIR / "items.json").open("r") as fp:
             for data_entry in json.load(fp):
                 if sub_items := get_comp(data_entry, "multi_item", list):
-                    if super_item := session.query(Item).get(data_entry["nid"]):
+                    if super_item := session.get(Item, data_entry["nid"]):
                         for sub_item_nid in sub_items:
-                            super_item.sub_items.append(
-                                session.query(Item).get(sub_item_nid)
-                            )
+                            super_item.sub_items.append(session.get(Item, sub_item_nid))
+        session.commit()
+        # Add shops
+        alt_shops = {}
+        with (JSON_DIR / "events.json").open("r") as fp:
+            for data_entry in sorted(json.load(fp), key=lambda x: x["nid"]):
+                if (
+                    data_entry["nid"].endswith(("Vendor", "SecretShop", "Armory"))
+                    and data_entry["name"] not in ("Armory", "Vendor", "SecretShop")
+                    and "Dragons_Gate" not in data_entry["nid"]
+                ):
+                    shop_name = ""
+                    shop_items = next(
+                        x.split(";")[2].split(",")
+                        for x in data_entry["_source"]
+                        if x.startswith("shop;")
+                    )
+                    for key, val in alt_shops.items():
+                        if sorted(shop_items) == sorted(val):
+                            shop_name += f"{" ".join(key.split()[:-1])} / "
+                    shop_name += " ".join(re.split(r"(?=[A-Z])", data_entry["name"]))
+                    shop_name = " ".join(shop_name.split()).rstrip().lstrip()
+                    if "SecretShop" in data_entry["nid"]:
+                        shop_type = "Secret Shop"
+                    elif "Armory" in data_entry["nid"]:
+                        shop_type = "Armory"
+                    else:
+                        shop_type = "Vendor"
+                    new_shop = Shop(
+                        nid=data_entry["nid"],
+                        name=shop_name,
+                        type=shop_type,
+                        order_name=pad_digits_in_string(shop_name, 2),
+                    )
+                    session.add(new_shop)
+                    for item_nid in shop_items:
+                        if curr_shop := session.get(Shop, data_entry["nid"]):
+                            curr_shop.items.append(session.get(Item, item_nid))
+                elif data_entry["name"] in ("Armory", "Vendor", "SecretShop"):
+                    shop_items = next(
+                        x.split(";")[2].split(",")
+                        for x in data_entry["_source"]
+                        if x.startswith("shop;")
+                    )
+                    alt_shops["Chapter " + data_entry["nid"]] = shop_items
+        # Add Dragon's Gate to shops
+        new_shop = Shop(
+            nid="Dragon_Gate",
+            name="Dragon's Gate (Anna)",
+            type="Vendor",
+            order_name="Z_Dragon_Gate",
+        )
+        session.add(new_shop)
+        with (JSON_DIR / "items.json").open("r") as fp:
+            for data_entry in json.load(fp):
+                if data_entry["nid"].endswith("_DG"):
+                    if curr_shop := session.get(Shop, "Dragon_Gate"):
+                        curr_shop.items.append(session.get(Item, data_entry["nid"]))
         session.commit()
 
 
