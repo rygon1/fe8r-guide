@@ -219,6 +219,8 @@ static/images/*
 *.cfg
 /lib64
 
-static/css/iconsheet.css
-static/css/custom.css
+
+app/static/css/iconsheet.css
+app/static/css/custom.css
+
 ltprojpath.txt
