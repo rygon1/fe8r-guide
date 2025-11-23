@@ -116,6 +116,7 @@
     {% if unit_data.base_class_data.tier == 0 %}
     <div id="classT1Selector">
       <label>Tier 1</label>
+      {% if unit_promos.turns_into|length > 1%}
       <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
         hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT1Sheet" hx-indicator="#unitClassT1Sheet"
         hx-swap="innerHTML"
@@ -125,6 +126,11 @@
         <option value="{{ promo_class_t2.nid }}">{{ promo_class_t2.name }}</option>
         {% endfor %}
       </select>
+      {% else %}
+      {% set promo_class_t2=unit_promos.turns_into|first%}
+      <div hx-vals='{"unitClassSelect":"{{ promo_class_t2.nid }}"}' hx-get="/units/{{ unit_data.nid }}/classes"
+        hx-target="#unitClassT1Sheet" hx-indicator="#unitClassT1Sheet" hx-swap="innerHTML" hx-trigger="load"></div>
+      {% endif %}
     </div>
     {% else %}
     <div id="classT2Selector">
