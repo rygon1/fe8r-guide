@@ -148,6 +148,7 @@ def _get_skill_categories(session: Session, json_dir: Path) -> dict[str, str]:
 
 def remove_lt_tags(orig_str: str):
     new_str = re.sub(r"<\w+[^>]*>.*?((</\w+>)|/>)", "", orig_str, flags=re.DOTALL)
+    new_str = re.sub(r"\([ \t\r\n]*\)|\s*\[[ \t\r\n]*\]|\s*\{[ \t\r\n]*\}", "", new_str)
     return new_str
 
 
@@ -162,7 +163,7 @@ def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) ->
             for data_entry in load_json_data(skill_json):
                 icon_nid = data_entry.get("icon_nid")
                 icon_class = (
-                    f"{make_valid_class_name(data_entry['nid'])}-skill-icon "
+                    f"{make_valid_class_name(data_entry.get('nid'))}-skill-icon "
                     f"{make_valid_class_name(icon_nid)}-icon"
                     if icon_nid
                     else ""
@@ -170,13 +171,13 @@ def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) ->
 
                 new_skills.append(
                     Skill(
-                        nid=data_entry["nid"],
-                        # name=process_styled_text(data_entry["name"]), # TODO change to this when everything is migrated
-                        name=remove_lt_tags(data_entry["name"]),
-                        desc=process_styled_text(data_entry["desc"]),
+                        nid=data_entry.get("nid"),
+                        # name=process_styled_text(data_entry("name")), # TODO change to this when everything is migrated
+                        name=remove_lt_tags(data_entry.get("name")),
+                        desc=process_styled_text(data_entry.get("desc")),
                         icon_class=icon_class.strip(),
                         is_hidden=get_comp(data_entry, "hidden", bool),
-                        category_nid=skill_cats.get(data_entry["nid"], "Misc"),
+                        category_nid=skill_cats.get(data_entry.get("nid"), "Misc"),
                     )
                 )
     session.add_all(new_skills)
@@ -200,16 +201,16 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
             for data_entry in load_json_data(item_json):
                 icon_nid = data_entry.get("icon_nid")
                 icon_class = (
-                    f"{make_valid_class_name(data_entry['nid'])}-item-icon "
+                    f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
                     f"{make_valid_class_name(icon_nid)}-icon"
                     if icon_nid
                     else ""
                 )
 
                 new_item = Item(
-                    nid=data_entry["nid"],
-                    name=process_styled_text(data_entry["name"]),
-                    desc=process_styled_text(data_entry["desc"]),
+                    nid=data_entry.get("nid"),
+                    name=process_styled_text(data_entry.get("name")),
+                    desc=process_styled_text(data_entry.get("desc")),
                     value=get_comp(data_entry, "value", int),
                     weapon_rank=get_comp(data_entry, "weapon_rank", str),
                     weapon_type=get_comp(data_entry, "weapon_type", str),
@@ -219,36 +220,17 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
                     hit=get_comp(data_entry, "hit", int),
                     min_range=get_comp(data_entry, "min_range", int),
                     max_range=get_comp(data_entry, "max_range", int),
-                    target=_process_item_target(data_entry["components"]),
+                    target=_process_item_target(data_entry.get("components")),
                     icon_class=icon_class.strip(),
                 )
                 session.add(new_item)
 
-                """ if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
-                    session.flush()
-                    skills_to_add = session.scalars(
-                        select(Skill).where(Skill.nid.in_(skill_nids))
-                    ).all()
-
-                    try:
-                        new_item.status_on_equip.extend(skills_to_add)
-                    except IntegrityError:
-                        print(
-                            "Skipping existing entry or handling M2M relationship IntegrityError."
-                        ) """
-
                 if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
                     session.flush()
-                    # 1. Fetch all skills based on NIDs
                     all_skills = session.scalars(
                         select(Skill).where(Skill.nid.in_(skill_nids))
                     ).all()
 
-                    # 2. Group skills by name and select the one with the longest description
-
-                    # This dictionary comprehension uses the skill's name as the key.
-                    # It iterates through all_skills and updates the entry for a skill name
-                    # only if the current skill's description is longer than the one already stored.
                     unique_skills_by_name = {}
                     for skill in all_skills:
                         if skill.name not in unique_skills_by_name or len(
@@ -275,7 +257,7 @@ def _add_sub_items(session: Session, json_dir: Path) -> None:
 
     for data_entry in item_data:
         if sub_items_nids := get_comp(data_entry, "multi_item", list):
-            if super_item := session.get(Item, data_entry["nid"]):
+            if super_item := session.get(Item, data_entry.get("nid")):
                 sub_items = session.scalars(
                     select(Item).where(Item.nid.in_(sub_items_nids))
                 ).all()
@@ -323,15 +305,14 @@ def _add_shops(session: Session, json_dir: Path) -> None:
     Loads event data, groups events, creates Shop objects, and links items.
     """
     events_data = load_json_data(json_dir / "events.json")
-    sorted_events = sorted(events_data, key=lambda x: x["nid"])
+    sorted_events = sorted(events_data, key=lambda x: x.get("nid"))
 
     shops_map = {}
 
     for data_entry in sorted_events:
-        if (
-            data_entry["nid"].endswith(("Vendor", "SecretShop", "Armory"))
-            and "Dragons_Gate" not in data_entry["nid"]
-        ):
+        if data_entry.get("nid").endswith(
+            ("Vendor", "SecretShop", "Armory")
+        ) and "Dragons_Gate" not in data_entry.get("nid"):
             shop_items_source = [
                 x.split(";")[2].split(",")
                 for x in data_entry.get("_source", [])
@@ -348,7 +329,7 @@ def _add_shops(session: Session, json_dir: Path) -> None:
             shops_map[shop_items_key].append(data_entry)
 
     for shop_items_tuple, shops_group in shops_map.items():
-        nid_strings = [x["nid"] for x in shops_group]
+        nid_strings = [x.get("nid") for x in shops_group]
 
         orig_shop_nids = sorted(nid_strings, key=lambda x: pad_digits_in_string(x, 2))
 
