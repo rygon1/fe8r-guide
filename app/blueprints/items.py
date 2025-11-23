@@ -4,7 +4,12 @@ from dataclasses import dataclass
 from flask import Blueprint, render_template, request
 from sqlalchemy import select
 
-from app.blueprints.utils import get_comp, make_valid_class_name, process_styled_text
+from app.blueprints.utils import (
+    get_comp,
+    get_status_equip,
+    make_valid_class_name,
+    process_styled_text,
+)
 from app.extensions import db
 from app.models import Item, Shop
 
@@ -43,31 +48,6 @@ UNITS = {}
 ARSENAL_UNITS = {}
 with bp.open_resource("../static/json/arsenals.json", "r") as f:
     ARSENALS = json.load(f)
-
-
-def get_status_equip(data_entry) -> list:
-    exclude: tuple = (
-        "_hide",
-        "_Penalty",
-        "_Buff",
-        "_Effect",
-        "_Gain",
-        "_Proc",
-        "_Weapon",
-        "_AOE_Splash",
-        "Drench",
-        "Avo_Ddg_",
-        "Luckblade",  # TODO
-    )
-    wp_status = []
-    if s1 := get_comp(data_entry, "status_on_equip", str):
-        if not any(sub in s1 for sub in exclude):
-            wp_status.append(s1)
-    if s2 := get_comp(data_entry, "multi_status_on_equip", list):
-        for entry in s2:
-            if not any(sub in entry for sub in exclude):
-                wp_status.append(entry)
-    return wp_status
 
 
 def init_lists() -> None:
@@ -180,7 +160,7 @@ def get_shop_index() -> str:
     if shop_nid := request.args.get("shopSelect"):
         template = "shop_sheet.html.jinja2"
     else:
-        shop_nid = "Global IdeArmory"
+        shop_nid = "2_Armory_Global_IdeArmory"
         template = "shop_index.html.jinja2"
     shop_data = db.get_or_404(Shop, shop_nid)
     wtypes = set(x.weapon_type for x in shop_data.items)
@@ -188,7 +168,7 @@ def get_shop_index() -> str:
 
 
 @bp.route("/shops/<string:shop_nid>")
-def get_shop_sheet(shop_nid="Global IdeArmory") -> str:
+def get_shop_sheet(shop_nid="2_Armory_Global_IdeArmory") -> str:
     shop_data = db.get_or_404(Shop, shop_nid)
     wtypes = set(x.weapon_type for x in shop_data.items)
     return render_template("shop_sheet.html.jinja2", shop_data=shop_data, wtypes=wtypes)
