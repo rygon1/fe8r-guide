@@ -20,7 +20,7 @@ Python >=3.10
     git clone --depth 1 https://github.com/rygon1/fe8r-guide.git
     ```
 
-2. Run deploy.sh
+2. Run `deploy.sh`
 
     ```bash
     cd fe8r-guide
@@ -36,8 +36,8 @@ The next ones are optional, just in case this repo is out of date with the FE8RP
     git clone --depth 1 https://github.com/FE8Dev/FE8RProject/tree/main/FE8R.ltproj
     ```
 
-2. Open ltprojpath.txt inside the fe8r-guide directory. Paste your directory path to FE8R.ltproj
-3. In the fe8r-guide directory, run get_resources.py
+2. Open config.json inside the fe8r-guide directory. Change the `ltproj_path` field with your directory path to FE8R.ltproj
+3. In the fe8r-guide directory, run `get_resources.py`
   
     ```bash
     python get_resources.py
@@ -50,6 +50,6 @@ source .venv/bin/activate
 gunicorn wsgi:app
 ```
 
-Go to http://127.0.0.1:8000 in your internet browser of choice.
+Go to [localhost:8000](http://localhost:8000) in your internet browser of choice. The port number (8000 in this case) might be different on your machine, so check what port gunicorn is served in your terminal.
 
-If you're on Windows and not using WSL, try using Waitress instead of Gunicorn.
+Alternatively, you can just use `flask run` instead of gunicorn if you don't mind just running a dev server. Go to [localhost:5000](http://localhost:5000) or whatever flask says the port is.
