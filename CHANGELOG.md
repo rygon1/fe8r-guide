@@ -1,7 +1,21 @@
 # Latest Changelog
 
 [Wiki](https://fe8r-guide.onrender.com/)
-[Github](https://github.com/rygon1/fe8r-guide)
+
+## [0.0.4] - 2025-11-22
+
+### Added
+
+- FE8R Discord link on footer (by popular demand)
+
+### Changed
+
+- Class sprites are bigger and now placed like unit portraits
+
+### Fixed
+
+- Skill names showing icon nid
+- Different entries for Taizel/Caer Pelyn Shop
 
 ## [0.0.3] - 2025-11-15
 
