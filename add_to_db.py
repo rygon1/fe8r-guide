@@ -158,28 +158,28 @@ def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) ->
     Loads skill data from JSON files, creates Skill objects, and adds them to the session.
     """
     new_skills = []
-    for skill_json in (json_dir / "skills").iterdir():
-        if skill_json.suffix == ".json":
-            for data_entry in load_json_data(skill_json):
-                icon_nid = data_entry.get("icon_nid")
-                icon_class = (
-                    f"{make_valid_class_name(data_entry.get('nid'))}-skill-icon "
-                    f"{make_valid_class_name(icon_nid)}-icon"
-                    if icon_nid
-                    else ""
-                )
+    # for skill_json in (json_dir / "skills").glob("*.json"):
+    for skill_json in [json_dir / "skills.json"]:
+        for data_entry in load_json_data(skill_json):
+            icon_nid = data_entry.get("icon_nid")
+            icon_class = (
+                f"{make_valid_class_name(data_entry.get('nid'))}-skill-icon "
+                f"{make_valid_class_name(icon_nid)}-icon"
+                if icon_nid
+                else ""
+            )
 
-                new_skills.append(
-                    Skill(
-                        nid=data_entry.get("nid"),
-                        # name=process_styled_text(data_entry("name")), # TODO change to this when everything is migrated
-                        name=remove_lt_tags(data_entry.get("name")),
-                        desc=process_styled_text(data_entry.get("desc")),
-                        icon_class=icon_class.strip(),
-                        is_hidden=get_comp(data_entry, "hidden", bool),
-                        category_nid=skill_cats.get(data_entry.get("nid"), "Misc"),
-                    )
+            new_skills.append(
+                Skill(
+                    nid=data_entry.get("nid"),
+                    # name=process_styled_text(data_entry("name")), # TODO change to this when everything is migrated
+                    name=remove_lt_tags(data_entry.get("name")),
+                    desc=process_styled_text(data_entry.get("desc")),
+                    icon_class=icon_class.strip(),
+                    is_hidden=get_comp(data_entry, "hidden", bool),
+                    category_nid=skill_cats.get(data_entry.get("nid"), "Misc"),
                 )
+            )
     session.add_all(new_skills)
 
 
@@ -196,57 +196,57 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
     """
     Loads item data, creates Item objects, and links them to associated Skill objects.
     """
-    for item_json in (json_dir / "items").iterdir():
-        if item_json.suffix == ".json":
-            for data_entry in load_json_data(item_json):
-                icon_nid = data_entry.get("icon_nid")
-                icon_class = (
-                    f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
-                    f"{make_valid_class_name(icon_nid)}-icon"
-                    if icon_nid
-                    else ""
-                )
+    # for item_json in (json_dir / "items").glob("*.json"):
+    for item_json in [json_dir / "items.json"]:
+        for data_entry in load_json_data(item_json):
+            icon_nid = data_entry.get("icon_nid")
+            icon_class = (
+                f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
+                f"{make_valid_class_name(icon_nid)}-icon"
+                if icon_nid
+                else ""
+            )
 
-                new_item = Item(
-                    nid=data_entry.get("nid"),
-                    name=process_styled_text(data_entry.get("name")),
-                    desc=process_styled_text(data_entry.get("desc")),
-                    value=get_comp(data_entry, "value", int),
-                    weapon_rank=get_comp(data_entry, "weapon_rank", str),
-                    weapon_type=get_comp(data_entry, "weapon_type", str),
-                    damage=get_comp(data_entry, "damage", int),
-                    weight=get_comp(data_entry, "weight", int),
-                    crit=get_comp(data_entry, "crit", int),
-                    hit=get_comp(data_entry, "hit", int),
-                    min_range=get_comp(data_entry, "min_range", int),
-                    max_range=get_comp(data_entry, "max_range", int),
-                    target=_process_item_target(data_entry.get("components")),
-                    icon_class=icon_class.strip(),
-                )
-                session.add(new_item)
+            new_item = Item(
+                nid=data_entry.get("nid"),
+                name=process_styled_text(data_entry.get("name")),
+                desc=process_styled_text(data_entry.get("desc")),
+                value=get_comp(data_entry, "value", int),
+                weapon_rank=get_comp(data_entry, "weapon_rank", str),
+                weapon_type=get_comp(data_entry, "weapon_type", str),
+                damage=get_comp(data_entry, "damage", int),
+                weight=get_comp(data_entry, "weight", int),
+                crit=get_comp(data_entry, "crit", int),
+                hit=get_comp(data_entry, "hit", int),
+                min_range=get_comp(data_entry, "min_range", int),
+                max_range=get_comp(data_entry, "max_range", int),
+                target=_process_item_target(data_entry.get("components")),
+                icon_class=icon_class.strip(),
+            )
+            session.add(new_item)
 
-                if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
-                    session.flush()
-                    all_skills = session.scalars(
-                        select(Skill).where(Skill.nid.in_(skill_nids))
-                    ).all()
+            if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
+                session.flush()
+                all_skills = session.scalars(
+                    select(Skill).where(Skill.nid.in_(skill_nids))
+                ).all()
 
-                    unique_skills_by_name = {}
-                    for skill in all_skills:
-                        if skill.name not in unique_skills_by_name or len(
-                            skill.desc
-                        ) > len(unique_skills_by_name[skill.name].desc):
-                            unique_skills_by_name[skill.name] = skill
+                unique_skills_by_name = {}
+                for skill in all_skills:
+                    if skill.name not in unique_skills_by_name or len(skill.desc) > len(
+                        unique_skills_by_name[skill.name].desc
+                    ):
+                        unique_skills_by_name[skill.name] = skill
 
-                    # 3. Get the list of selected skills (the values from the dictionary)
-                    skills_to_add = list(unique_skills_by_name.values())
+                # 3. Get the list of selected skills (the values from the dictionary)
+                skills_to_add = list(unique_skills_by_name.values())
 
-                    try:
-                        new_item.status_on_equip.extend(skills_to_add)
-                    except IntegrityError:
-                        print(
-                            "Skipping existing entry or handling M2M relationship IntegrityError."
-                        )
+                try:
+                    new_item.status_on_equip.extend(skills_to_add)
+                except IntegrityError:
+                    print(
+                        "Skipping existing entry or handling M2M relationship IntegrityError."
+                    )
 
     session.flush()
 
