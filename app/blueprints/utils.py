@@ -1,5 +1,9 @@
+import json
 import re
-from typing import Any
+import time
+from functools import wraps
+from pathlib import Path
+from typing import Any, TypeAlias
 
 SKILL_EXCLUDE = (
     "Absolute_Mastery_Anima",
@@ -9,6 +13,64 @@ SKILL_EXCLUDE = (
     "_hide",
     "Feat_Enabler",
 )
+
+STATUS_EXCLUDE: tuple[str, ...] = (
+    "_hide",
+    "_Penalty",
+    "_Gain",
+    "_Proc",
+    "_Weapon",
+    "_AOE_Splash",
+    "_Boss",
+    "Avo_Ddg_",
+)
+
+DataEntry: TypeAlias = dict[str, Any]
+
+
+def load_json_data(file_path: Path):
+    """
+    Loads and returns data from a specified JSON file.
+    (Not decorated to avoid spamming logs for every single file load)
+    """
+    with file_path.open("r") as fp:
+        return json.load(fp)
+
+
+def save_json_data(
+    file_path: Path,
+    data: Any,
+    indent: int | None = None,
+    separators: tuple[str, str] | None = None,
+) -> None:
+    """Helper to save JSON data safely."""
+    with file_path.open("w", encoding="utf-8") as fp:
+        json.dump(data, fp, indent=indent, separators=separators)
+
+
+def log_execution_step(func):
+    """
+    Decorator that prints a message before a function starts and
+    after it completes successfully.
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print(f"[*] Starting task: {func.__name__}...")
+        start_time = time.perf_counter()
+
+        try:
+            result = func(*args, **kwargs)
+            end_time = time.perf_counter()
+            duration = end_time - start_time
+            print(f"[✓] Successfully finished: {func.__name__} ({duration:.2f}s)\n")
+            return result
+        except Exception as e:
+            print(f"[!] FAILED task: {func.__name__}")
+            print(f"    Error: {e}")
+            raise  # Re-raise the exception so the script stops and you see the traceback
+
+    return wrapper
 
 
 def make_valid_class_name(s) -> str:
@@ -81,7 +143,7 @@ def get_alt_name(orig_name: str, orig_nid: str) -> str:
     return alt_name
 
 
-def get_comp(entry, comp_name: str, comp_type: type) -> Any:
+def get_comp_old(entry, comp_name: str, comp_type: type) -> Any:
     """
     Returns component value
     """
@@ -100,6 +162,75 @@ def get_comp(entry, comp_name: str, comp_type: type) -> Any:
     elif comp_type == list:
         return []
     return None
+
+
+def get_status_equip(data_entry: DataEntry) -> list[str]:
+    """
+    Extracts unique, non-excluded status names from various component fields of an entry.
+
+    :param data_entry: The item data entry to process.
+    :type data_entry: DataEntry
+    :returns: A list of unique status names associated with the item, excluding any in EXCLUDE.
+    :rtype: list[str]
+    """
+    excluded_substrings: tuple[str, ...] = STATUS_EXCLUDE
+    wp_status: set[str] = set()
+
+    single_status_comps: tuple[str, ...] = ("status_on_equip", "status_on_hit")
+    multi_status_comps: tuple[str, ...] = ("multi_status_on_equip", "statuses_on_hit")
+
+    # Process single status components
+    for comp_name in single_status_comps:
+        status: str = get_comp(data_entry, comp_name, str)
+        if status and not any(sub in status for sub in excluded_substrings):
+            wp_status.add(status)
+
+    # Process multi-status components
+    for comp_name in multi_status_comps:
+        statuses: list[str] = get_comp(data_entry, comp_name, list)
+        for status_entry in statuses:
+            if status_entry and not any(
+                sub in status_entry for sub in excluded_substrings
+            ):
+                wp_status.add(status_entry)
+
+    return list(wp_status)
+
+
+def get_comp(entry: DataEntry, comp_name: str, comp_type: type) -> Any:
+    """
+    Retrieves the value of a component from an entry.
+    Returns a default value based on comp_type if the component is not found.
+
+    :param entry: The item data entry dictionary to search within.
+    :type entry: DataEntry
+    :param comp_name: The string name of the component to find (e.g., 'status_on_equip').
+    :type comp_name: str
+    :param comp_type: The expected type of the component's value (e.g., str, list, bool).
+    :type comp_type: type
+    :returns: The component's value, or a type-appropriate default.
+    :rtype: Any
+    """
+    default_values: dict[type, Any] = {
+        bool: False,
+        int: 0,
+        str: "",
+        list: [],
+    }
+
+    comp_entry: list[Any] | None = next(
+        (x for x in entry.get("components", []) if x[0] == comp_name), None
+    )
+
+    if comp_entry:
+        value = comp_entry[1]
+        if comp_type is bool and value is None:
+            return True
+        return value
+
+    if comp_type is bool:
+        return False
+    return default_values.get(comp_type, None)
 
 
 def pad_digits_in_string(text, width):
