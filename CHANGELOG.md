@@ -6,11 +6,7 @@
 
 ### Added
 
-- FE8R Discord link on footer (by popular demand)
-
-### Changed
-
-- Class sprites are bigger and now placed like unit portraits
+- FE8R Discord link on footer
 
 ### Fixed
 
