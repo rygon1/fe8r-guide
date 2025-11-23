@@ -146,6 +146,11 @@ def _get_skill_categories(session: Session, json_dir: Path) -> dict[str, str]:
     return skill_cats
 
 
+def remove_lt_tags(orig_str: str):
+    new_str = re.sub(r"<\w+[^>]*>.*?((</\w+>)|/>)", "", orig_str, flags=re.DOTALL)
+    return new_str
+
+
 @log_execution_step
 def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) -> None:
     """
@@ -166,7 +171,8 @@ def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) ->
                 new_skills.append(
                     Skill(
                         nid=data_entry["nid"],
-                        name=process_styled_text(data_entry["name"]),
+                        # name=process_styled_text(data_entry["name"]), # TODO change to this when everything is migrated
+                        name=remove_lt_tags(data_entry["name"]),
                         desc=process_styled_text(data_entry["desc"]),
                         icon_class=icon_class.strip(),
                         is_hidden=get_comp(data_entry, "hidden", bool),
@@ -218,11 +224,40 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
                 )
                 session.add(new_item)
 
-                if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
+                """ if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
                     session.flush()
                     skills_to_add = session.scalars(
                         select(Skill).where(Skill.nid.in_(skill_nids))
                     ).all()
+
+                    try:
+                        new_item.status_on_equip.extend(skills_to_add)
+                    except IntegrityError:
+                        print(
+                            "Skipping existing entry or handling M2M relationship IntegrityError."
+                        ) """
+
+                if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
+                    session.flush()
+                    # 1. Fetch all skills based on NIDs
+                    all_skills = session.scalars(
+                        select(Skill).where(Skill.nid.in_(skill_nids))
+                    ).all()
+
+                    # 2. Group skills by name and select the one with the longest description
+
+                    # This dictionary comprehension uses the skill's name as the key.
+                    # It iterates through all_skills and updates the entry for a skill name
+                    # only if the current skill's description is longer than the one already stored.
+                    unique_skills_by_name = {}
+                    for skill in all_skills:
+                        if skill.name not in unique_skills_by_name or len(
+                            skill.desc
+                        ) > len(unique_skills_by_name[skill.name].desc):
+                            unique_skills_by_name[skill.name] = skill
+
+                    # 3. Get the list of selected skills (the values from the dictionary)
+                    skills_to_add = list(unique_skills_by_name.values())
 
                     try:
                         new_item.status_on_equip.extend(skills_to_add)
