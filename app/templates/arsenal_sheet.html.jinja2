@@ -1,26 +1,16 @@
 {% if not request.headers.hx_request %}
 {% extends "layout.html.jinja2" %}
-{% block title %} {{ unit_data["name"] }} &mdash; Arsenals | {% endblock %}
+{% block title %} {{ unit_data.name }} &mdash; Arsenals | {% endblock %}
 {% endif %}
 {% block content %}
 <div id="arsenalSheet">
     <div aria-busy="true" class="htmx-indicator"></div>
-    <h2>{{ unit_data["name"] }}</h2>
-    {% if not request.headers.hx_request or request.args.get('addCopy') == 'True'%}
-    <a class="secondary copy-entry"
-        _="on click call navigator.clipboard.writeText('[{{ unit_data['name'] }} Arsenals](https://fe8r-guide.onrender.com/arsenals/{{ unit_data['nid'] }})') then toggle .lt-color-green on <svg/> in me wait 1s then toggle .lt-color-green on <svg/> in me">
-        <svg xmlns="
-            http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-        </svg></a>
-    {% endif %}
-    {% for arsenal_nid, arsenal in unit_arsenals.items() %}
+    <h2>{{ unit_data.name }}</h2>
+    {% for arsenal in unit_arsenals %}
     <section>
         <hgroup>
-            <h3>{{ arsenal["name"] }}</h3>
-            <p>{{ arsenal["desc"] }}</p>
+            <h3>{{ arsenal.name }}<span class="{{ arsenal.icon_class }}"></span></h3>
+            <p>{{ arsenal.desc }}</p>
         </hgroup>
         <select name="arsenalItemType" aria-label="Select weapon type" required
             _="on change set myFilter to me.value then show .arsenalItemType in #arsenalItems when its.getAttribute('data-category') is myFilter or myFilter=='all'">
@@ -28,16 +18,16 @@
                 Select weapon type
             </option>
             <option value="all">All</option>
-            {% for item_type in arsenal["items"]%}
+            {% set unique_wtypes = arsenal.items | map(attribute='weapon_type') | unique | list %}
+            {% for item_type in unique_wtypes%}
             <option value="{{item_type}}">{{ item_type }}</option>
             {% endfor %}
         </select>
-
         <div id="arsenalItems">
-            {% for item_type,item_nids in arsenal["items"].items() %}
+            {% for item_type, item_list in arsenal.items | groupby('weapon_type') %}
             <div class="arsenalItemType" data-category="{{ item_type }}">
-                {% for item_nid in item_nids %}
-                <div hx-get="/items/{{ item_nid }}" hx-trigger="load" hx-target="this">
+                {% for item in item_list | sort(attribute='weapon_rank_order_key,damage') %}
+                <div hx-get="/items/{{ item.nid }}" hx-trigger="load" hx-target="this">
                 </div>
                 {% endfor %}
             </div>
