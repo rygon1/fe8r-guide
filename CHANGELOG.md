@@ -2,6 +2,31 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.0.5] - 2025-11-25
+
+### Added
+
+- Item sorting (name and rank)
+- Links to categories, shops and arsenals on item pages
+
+### Fixed
+
+- Skills not showing up
+
+### Removed
+
+- Copy link function
+
+## [0.0.3] - 2025-11-15
+
+### Added
+
+- Shops section
+
+### Changed
+
+- Class sprites are bigger and now placed like unit portraits
+
 ## [0.0.4] - 2025-11-22
 
 ### Added
