@@ -21,7 +21,7 @@
             <tr>
                 <th scope="row"><span class="{{ item.icon_class }}"></span><a href="/items/{{ item.nid }}">{{ item.name
                         }}</a></th>
-                <td>{{ item.value }}</td>
+                <td>{{ item.value | currency_format }}</td>
             </tr>
             {% endfor %}
         </tbody>
