@@ -14,7 +14,6 @@ from app.blueprints.utils import (
     load_json_data,
     log_execution_step,
     make_valid_class_name,
-    process_styled_text,
     save_json_data,
 )
 
@@ -56,16 +55,17 @@ GUIDE_IMG_DIR = APP_STATIC / "images"
 GUIDE_CSS_DIR = APP_STATIC / "css"
 
 RANK_VALUES = {
-    "E": 0,
-    "D": 1,
-    "C": 2,
-    "B": 3,
-    "A": 4,
-    "S": 5,
-    "SS": 6,
-    "SSS": 7,
-    "X": 8,
-    "": 9,
+    "": -1,
+    "Prf": 0,
+    "E": 1,
+    "D": 2,
+    "C": 3,
+    "B": 4,
+    "A": 5,
+    "S": 6,
+    "SS": 7,
+    "SSS": 8,
+    "X": 9,
 }
 
 # --- Helper Functions ---
@@ -98,176 +98,6 @@ def minify_json() -> None:
     for json_fpath in GUIDE_JSON_DIR.glob("*.json"):
         data = load_json_data(json_fpath)
         save_json_data(json_fpath, data, separators=(",", ":"))
-
-
-@log_execution_step
-def make_arsenal_json() -> None:
-    arsenals: dict[str, Any] = {}
-
-    # 1. Initialize Arsenals based on Units
-    units = load_json_data(JSON_DIR / "units.category.json")
-    excluded_units = {"_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit"}
-    allowed_cats = {"Vanilla", "Monsters", "Dragon Gate"}
-
-    for unit_nid, unit_cat in units.items():
-        if unit_cat in allowed_cats and unit_nid not in excluded_units:
-            arsenals[unit_nid] = {}
-
-    # 2. Add Arsenal Details from Items
-    items_list = load_json_data(JSON_DIR / "items.json")
-    all_items_map = {x["nid"]: x for x in items_list}  # Quick lookup
-
-    arsenal_marks = ("_Arsenal", "bending", "_Studies", "_Stash", "_Grimoire")
-    arsenal_exclude = {"Davius_Arsenal_Old"}
-
-    for item_data in items_list:
-        nid = item_data["nid"]
-        if nid in arsenal_exclude:
-            continue
-
-        if any(nid.endswith(mark) for mark in arsenal_marks):
-            prf_list = get_comp(item_data, "prf_unit", list)
-            if prf_list and prf_list[0] in arsenals:
-                arsenals[prf_list[0]][nid] = {
-                    "name": item_data["name"],
-                    "desc": process_styled_text(item_data["desc"]),
-                    "items": {},
-                }
-
-    # Manual Add: Myrrh
-    arsenals["Myrrh"] = {
-        "Myrrh_Arsenal": {
-            "name": "Myrrh's Arsenal",
-            "desc": process_styled_text(
-                "Arsenal of a Manakete.\n<red>Prof:</><icon>Monster</>"
-            ),
-            "items": {},
-        }
-    }
-
-    # 3. Populate Items into Arsenals
-    arsenal_nid_list = {a_nid for u_dict in arsenals.values() for a_nid in u_dict}
-    items_cat = load_json_data(JSON_DIR / "items.category.json")
-    item_end_exclude = ("_Old", "_Multi", "_Warp_2", "_Warp")
-
-    for item_nid, cat_str in items_cat.items():
-        # Special Items
-        if item_nid in ("Dragonstone", "Solar_Brace", "Lunar_Brace"):
-            _handle_special_arsenal_items(item_nid, arsenals, all_items_map)
-            continue
-
-        # Standard Logic
-        if not cat_str.startswith("Personal Weapons"):
-            continue
-
-        if item_nid in arsenal_nid_list or item_nid.endswith(item_end_exclude):
-            continue
-
-        if not all_items_map[item_nid]["desc"]:
-            continue
-
-        arsenal_unit = cat_str.split("/")[1]
-        if arsenal_unit == "Davius Old":
-            continue
-
-        # Name normalization
-        if arsenal_unit == "L'arachel":
-            arsenal_unit = "Larachel"
-        elif arsenal_unit == "Pro":
-            arsenal_unit = "ProTagonist"
-
-        # Determine specific arsenal NID
-        arsenal_data = _determine_arsenal_data(arsenal_unit, item_nid, arsenals)
-
-        if arsenal_data:
-            item_data = all_items_map.get(item_nid)
-            if item_data:
-                _add_item_to_arsenal_dict(arsenal_data, item_data, item_nid)
-
-    # 4. Sort and Save
-    sorted_arsenal = _sort_arsenals(arsenals, all_items_map)
-    save_json_data(GUIDE_JSON_DIR / "arsenals.json", sorted_arsenal)
-
-
-def _determine_arsenal_data(
-    unit_name: str, item_nid: str, arsenals: dict
-) -> dict | None:
-    """Helper logic to route items to the correct sub-arsenal."""
-    if unit_name == "ProTagonist":
-        if item_nid in arsenals[unit_name]:
-            return None
-        if item_nid.startswith("Air"):
-            return arsenals[unit_name].get("Airbending")
-        if item_nid.startswith("Earth"):
-            return arsenals[unit_name].get("Earthbending")
-        if item_nid.startswith("Fire"):
-            return arsenals[unit_name].get("Firebending")
-        return arsenals[unit_name].get("Waterbending")
-
-    elif unit_name == "Tana":
-        if item_nid in arsenals[unit_name]:
-            return None
-        if "_Buff" in item_nid or "_Heal" in item_nid:
-            return arsenals[unit_name].get("Tanas_Stash")
-        return arsenals[unit_name].get("Tanas_Arsenal")
-
-    # General case logic (Lindsey, Azuth, etc)
-    if unit_name in arsenals:
-        if item_nid in arsenals[unit_name]:
-            return None
-
-        # Specific exclusions
-        if unit_name == "Lindsey" and item_nid.endswith("_D"):
-            return None
-        if unit_name == "Azuth" and item_nid.endswith("_A"):
-            return None
-
-        # Default to first available arsenal key
-        first_key = list(arsenals[unit_name].keys())[0]
-        return arsenals[unit_name][first_key]
-
-    return None
-
-
-def _handle_special_arsenal_items(item_nid: str, arsenals: dict, all_items: dict):
-    target_map = {
-        "Lunar_Brace": ("Eirika", "Eirikas_Arsenal"),
-        "Solar_Brace": ("Ephraim", "Ephraims_Arsenal"),
-        "Dragonstone": ("Myrrh", "Myrrh_Arsenal"),
-    }
-    if item_nid in target_map:
-        unit, a_id = target_map[item_nid]
-        arsenal_data = arsenals[unit][a_id]
-        if item_data := all_items.get(item_nid):
-            _add_item_to_arsenal_dict(arsenal_data, item_data, item_nid)
-
-
-def _add_item_to_arsenal_dict(arsenal_data: dict, item_data: dict, item_nid: str):
-    w_type = get_comp(item_data, "weapon_type", str) or "Misc"
-    if w_type not in arsenal_data["items"]:
-        arsenal_data["items"][w_type] = []
-    arsenal_data["items"][w_type].append(item_nid)
-
-
-def _sort_arsenals(arsenals: dict, all_items: dict) -> dict:
-    def get_rank_val(nid):
-        rank = get_comp(all_items[nid], "weapon_rank", str)
-        return RANK_VALUES.get(rank, 10)
-
-    sorted_data = {}
-    for unit_id, u_arsenals in arsenals.items():
-        sorted_data[unit_id] = {}
-        for a_id, a_data in u_arsenals.items():
-            sorted_data[unit_id][a_id] = {
-                "name": a_data["name"],
-                "desc": a_data["desc"],
-                "items": {},
-            }
-            for w_type, w_list in a_data["items"].items():
-                sorted_data[unit_id][a_id]["items"][w_type] = sorted(
-                    w_list, key=get_rank_val
-                )
-    return sorted_data
 
 
 @log_execution_step
@@ -460,8 +290,6 @@ def copy_json():
     files_to_copy = [
         "affinities.json",
         "classes.json",
-        "items.category.json",
-        "items.json",
         "lore.json",
         "stats.json",
         "support_pairs.json",
@@ -492,7 +320,6 @@ def main():
     GUIDE_CSS_DIR.mkdir(parents=True, exist_ok=True)
 
     copy_json()
-    make_arsenal_json()
     make_class_promo_json()
     make_item_cat_new_json()
     minify_json()
