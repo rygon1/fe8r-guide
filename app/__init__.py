@@ -13,6 +13,10 @@ def internal_server_error(e):
     return render_template("500.html.jinja2"), 500
 
 
+def currency_format(value):
+    return f"{value:,}"
+
+
 def create_app(config_class=Config) -> Flask:
 
     app = Flask(__name__)
@@ -28,6 +32,8 @@ def create_app(config_class=Config) -> Flask:
     app.register_blueprint(codex.bp)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, internal_server_error)
+
+    app.jinja_env.filters["currency_format"] = currency_format
 
     @app.route("/favicon.ico")
     def favicon() -> Response:
