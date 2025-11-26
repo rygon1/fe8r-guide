@@ -100,7 +100,7 @@ def get_item_list():
                 {
                     "key": group_name,
                     "order": order_key,
-                    "items": group_list,
+                    "items": sorted(group_list, key=lambda x: x.name),
                 }
             )
         grouped_items.sort(key=lambda x: x["order"], reverse=sort_reverse)
