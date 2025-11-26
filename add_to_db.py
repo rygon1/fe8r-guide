@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
 
 from app.blueprints.utils import (
+    DataEntry,
     get_comp,
     load_json_data,
     log_execution_step,
@@ -59,6 +60,14 @@ sub_item_assoc = Table(
 )
 
 
+item_category_assoc = Table(
+    "item_category_assoc",
+    Base.metadata,
+    Column("item_nid", ForeignKey("items.nid"), primary_key=True),
+    Column("category_nid", ForeignKey("item_categories.nid"), primary_key=True),
+)
+
+
 class Item(Base):
     __tablename__ = "items"
     nid: Mapped[str] = mapped_column(primary_key=True)
@@ -66,6 +75,7 @@ class Item(Base):
     desc: Mapped[str]
     value: Mapped[int]
     weapon_rank: Mapped[str]
+    weapon_rank_order_key: Mapped[str]
     weapon_type: Mapped[str]
     target: Mapped[str]
     damage: Mapped[int]
@@ -75,6 +85,10 @@ class Item(Base):
     min_range: Mapped[int]
     max_range: Mapped[int]
     icon_class: Mapped[str]
+    categories: Mapped[list["ItemCategory"]] = relationship(
+        secondary=item_category_assoc,
+        back_populates="items",
+    )
 
     sub_items = relationship(
         "Item",
@@ -93,6 +107,22 @@ class Item(Base):
         return f"Item(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
 
 
+class ItemCategory(Base):
+    __tablename__ = "item_categories"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    type: Mapped[str]
+    order_key: Mapped[int]
+
+    items: Mapped[list["Item"]] = relationship(
+        secondary=item_category_assoc,
+        back_populates="categories",
+    )
+
+    def __repr__(self) -> str:
+        return f"ItemCategory(nid={self.nid!r}, name={self.name!r})"
+
+
 shop_item_assoc = Table(
     "shop_item_assoc",
     Base.metadata,
@@ -107,6 +137,7 @@ class Shop(Base):
     name: Mapped[str]
     type: Mapped[str]
     order_name: Mapped[str]
+    abbr_name: Mapped[str]
 
     items = relationship(
         "Item",
@@ -158,28 +189,25 @@ def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) ->
     Loads skill data from JSON files, creates Skill objects, and adds them to the session.
     """
     new_skills = []
-    # for skill_json in (json_dir / "skills").glob("*.json"):
-    for skill_json in [json_dir / "skills.json"]:
-        for data_entry in load_json_data(skill_json):
-            icon_nid = data_entry.get("icon_nid")
-            icon_class = (
-                f"{make_valid_class_name(data_entry.get('nid'))}-skill-icon "
-                f"{make_valid_class_name(icon_nid)}-icon"
-                if icon_nid
-                else ""
-            )
+    for data_entry in load_json_data(json_dir / "skills.json"):
+        icon_nid = data_entry.get("icon_nid")
+        icon_class = (
+            f"{make_valid_class_name(data_entry.get('nid'))}-skill-icon "
+            f"{make_valid_class_name(icon_nid)}-icon"
+            if icon_nid
+            else ""
+        )
 
-            new_skills.append(
-                Skill(
-                    nid=data_entry.get("nid"),
-                    # name=process_styled_text(data_entry("name")), # TODO change to this when everything is migrated
-                    name=remove_lt_tags(data_entry.get("name")),
-                    desc=process_styled_text(data_entry.get("desc")),
-                    icon_class=icon_class.strip(),
-                    is_hidden=get_comp(data_entry, "hidden", bool),
-                    category_nid=skill_cats.get(data_entry.get("nid"), "Misc"),
-                )
+        new_skills.append(
+            Skill(
+                nid=data_entry["nid"],
+                name=remove_lt_tags(data_entry.get("name")),
+                desc=process_styled_text(data_entry.get("desc")),
+                icon_class=icon_class.strip(),
+                is_hidden=get_comp(data_entry, "hidden", bool),
+                category_nid=skill_cats.get(data_entry.get("nid"), "Misc"),
             )
+        )
     session.add_all(new_skills)
 
 
@@ -192,61 +220,220 @@ def _process_item_target(components: list) -> str:
 
 
 @log_execution_step
+def _add_item_categories(session: Session):
+
+    new_cats = [
+        ("wtype_Accessory", "Item Type", "Accessories"),
+        ("wtype_HeldItem", "Item Type", "Held Items"),
+        ("wtype_Sword", "Item Type", "Swords"),
+        ("wtype_Axe", "Item Type", "Axes"),
+        ("wtype_Lance", "Item Type", "Lances"),
+        ("wtype_Bow", "Item Type", "Bows"),
+        ("wtype_Staff", "Item Type", "Staves"),
+        ("wtype_Anima", "Item Type", "Anima Tomes"),
+        ("wtype_Dark", "Item Type", "Dark Tomes"),
+        ("wtype_Light", "Item Type", "Light Tomes"),
+        ("wstype_Dagger", "Weapon Subtype", "Daggers"),
+        ("wstype_Blade", "Weapon Subtype", "Blades"),
+        ("wstype_Warhammer", "Weapon Subtype", "Warhammers"),
+        ("wstype_Greatlance", "Weapon Subtype", "Greatlances"),
+        ("etype_Fire", "Element", "Fire"),
+        ("etype_Wind", "Element", "Wind"),
+        ("etype_Water", "Element", "Water"),
+        ("etype_Thunder", "Element", "Thunder"),
+        ("etype_Dark", "Element", "Dark"),
+        ("etype_Light", "Element", "Light"),
+        ("etype_Ice", "Element", "Ice"),
+        ("etype_Earth", "Element", "Earth"),
+    ]
+
+    session.add_all(
+        [
+            ItemCategory(nid=x[0], name=x[2], type=x[1], order_key=idx)
+            for idx, x in enumerate(new_cats)
+        ]
+    )
+
+
+def _set_item_categories(session: Session, data_entry: DataEntry) -> list:
+    categories = []
+    wstypes = (
+        "Dagger",
+        "Blade",
+        "Warhammer",
+        "Greatlance",
+    )
+
+    if wtype_cat := session.get(
+        ItemCategory, f"wtype_{get_comp(data_entry, "weapon_type", str)}"
+    ):
+        categories.append(wtype_cat)
+    elif get_comp(data_entry, "equippable_accessory", bool):
+        categories.append(session.get(ItemCategory, "wtype_Accessory"))
+    elif get_comp(data_entry, "status_on_hold", str) or get_comp(
+        data_entry, "multi_status_on_hold", list
+    ):
+        categories.append(session.get(ItemCategory, "wtype_HeldItem"))
+
+    if item_tags := get_comp(data_entry, "item_tags", list):
+        for element in [x for x in item_tags if x not in wstypes]:
+            if etype_cat := session.get(ItemCategory, f"etype_{element}"):
+                categories.append(etype_cat)
+        for wstype in [x for x in item_tags if x in wstypes]:
+            if wstype_cat := session.get(ItemCategory, f"wstype_{wstype}"):
+                categories.append(wstype_cat)
+    if "Quick_Knife" in get_comp(data_entry, "status_on_equip", list):
+        if is_dagger := session.get(ItemCategory, "wstype_Dagger"):
+            categories.append(is_dagger)
+
+    return categories
+
+
+def get_status(data_entry: DataEntry) -> list[str]:
+    exclude: tuple[str, ...] = (
+        "_hide",
+        "_Penalty",
+        "_Gain",
+        "_Proc",
+        "_Weapon",
+        "_AOE_Splash",
+        "_Boss",
+        "Avo_Ddg_",
+        "_Buff",
+    )
+    """
+    Extracts unique, non-excluded status names from various component fields of an entry.
+
+    :param data_entry: The item data entry to process.
+    :type data_entry: DataEntry
+    :returns: A list of unique status names associated with the item, excluding any in EXCLUDE.
+    :rtype: list[str]
+    """
+    excluded_substrings: tuple[str, ...] = exclude
+    wp_status: set[str] = set()
+
+    single_status_comps: tuple[str, ...] = ("status_on_equip", "status_on_hit")
+    multi_status_comps: tuple[str, ...] = ("multi_status_on_equip", "statuses_on_hit")
+
+    # Process single status components
+    for comp_name in single_status_comps:
+        status: str = get_comp(data_entry, comp_name, str)
+        if status and not any(sub in status for sub in excluded_substrings):
+            wp_status.add(status)
+
+    # Process multi-status components
+    for comp_name in multi_status_comps:
+        statuses: list[str] = get_comp(data_entry, comp_name, list)
+        for status_entry in statuses:
+            if status_entry and not any(
+                sub in status_entry for sub in excluded_substrings
+            ):
+                wp_status.add(status_entry)
+
+    return list(wp_status)
+
+
+@log_execution_step
 def _add_main_items(session: Session, json_dir: Path) -> None:
     """
     Loads item data, creates Item objects, and links them to associated Skill objects.
     """
-    # for item_json in (json_dir / "items").glob("*.json"):
-    for item_json in [json_dir / "items.json"]:
-        for data_entry in load_json_data(item_json):
-            icon_nid = data_entry.get("icon_nid")
-            icon_class = (
-                f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
-                f"{make_valid_class_name(icon_nid)}-icon"
-                if icon_nid
-                else ""
-            )
+    rank_values = {
+        "": -1,
+        "Prf": 0,
+        "E": 1,
+        "D": 2,
+        "C": 3,
+        "B": 4,
+        "A": 5,
+        "S": 6,
+        "SS": 7,
+        "SSS": 8,
+        "X": 9,
+    }
 
-            new_item = Item(
-                nid=data_entry.get("nid"),
-                name=process_styled_text(data_entry.get("name")),
-                desc=process_styled_text(data_entry.get("desc")),
-                value=get_comp(data_entry, "value", int),
-                weapon_rank=get_comp(data_entry, "weapon_rank", str),
-                weapon_type=get_comp(data_entry, "weapon_type", str),
-                damage=get_comp(data_entry, "damage", int),
-                weight=get_comp(data_entry, "weight", int),
-                crit=get_comp(data_entry, "crit", int),
-                hit=get_comp(data_entry, "hit", int),
-                min_range=get_comp(data_entry, "min_range", int),
-                max_range=get_comp(data_entry, "max_range", int),
-                target=_process_item_target(data_entry.get("components")),
-                icon_class=icon_class.strip(),
-            )
-            session.add(new_item)
+    for data_entry in load_json_data(json_dir / "items.json"):
+        icon_nid = data_entry.get("icon_nid")
+        icon_class = (
+            f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
+            f"{make_valid_class_name(icon_nid)}-icon"
+            if icon_nid
+            else ""
+        )
+        if not (weapon_type := get_comp(data_entry, "weapon_type", str)):
+            weapon_type = "Misc"
+        if (
+            not (weapon_rank := get_comp(data_entry, "weapon_rank", str))
+            and weapon_type != "Misc"
+            and get_comp(data_entry, "prf_unit", list)
+        ):
+            weapon_rank = "Prf"
+        weapon_rank_order_key = rank_values.get(weapon_rank, 10)
+        categories = _set_item_categories(session, data_entry)
+        new_item = Item(
+            nid=data_entry["nid"],
+            name=remove_lt_tags(data_entry.get("name")),
+            desc=process_styled_text(data_entry.get("desc")),
+            value=get_comp(data_entry, "value", int),
+            weapon_rank=weapon_rank,
+            weapon_rank_order_key=weapon_rank_order_key,
+            weapon_type=weapon_type,
+            damage=get_comp(data_entry, "damage", int),
+            weight=get_comp(data_entry, "weight", int),
+            crit=get_comp(data_entry, "crit", int),
+            hit=get_comp(data_entry, "hit", int),
+            min_range=get_comp(data_entry, "min_range", int),
+            max_range=get_comp(data_entry, "max_range", int),
+            target=_process_item_target(data_entry.get("components")),
+            icon_class=icon_class.strip(),
+            categories=categories,
+        )
+        session.add(new_item)
+        # Change to this when items.json is updated to have mult_desc
+        """ if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
+            session.flush()
+            all_skills = session.scalars(
+                select(Skill).where(Skill.nid.in_(skill_nids))
+            ).all()
 
-            if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
-                session.flush()
-                all_skills = session.scalars(
-                    select(Skill).where(Skill.nid.in_(skill_nids))
-                ).all()
+            unique_skills_by_name = {}
+            for skill in all_skills:
+                if skill.name not in unique_skills_by_name or len(skill.desc) > len(
+                    unique_skills_by_name[skill.name].desc
+                ):
+                    unique_skills_by_name[skill.name] = skill
 
-                unique_skills_by_name = {}
-                for skill in all_skills:
-                    if skill.name not in unique_skills_by_name or len(skill.desc) > len(
-                        unique_skills_by_name[skill.name].desc
-                    ):
-                        unique_skills_by_name[skill.name] = skill
+            # 3. Get the list of selected skills (the values from the dictionary)
+            skills_to_add = list(unique_skills_by_name.values())
 
-                # 3. Get the list of selected skills (the values from the dictionary)
-                skills_to_add = list(unique_skills_by_name.values())
+            try:
+                new_item.status_on_equip.extend(skills_to_add)
+            except IntegrityError:
+                print(
+                    "Skipping existing entry or handling M2M relationship IntegrityError."
+                ) """
+        if skill_nids := get_status(data_entry):
+            session.flush()
+            all_skills = session.scalars(
+                select(Skill).where(Skill.nid.in_(skill_nids))
+            ).all()
 
-                try:
-                    new_item.status_on_equip.extend(skills_to_add)
-                except IntegrityError:
-                    print(
-                        "Skipping existing entry or handling M2M relationship IntegrityError."
-                    )
+            unique_skills_by_name = {}
+            for skill in all_skills:
+                if skill.name not in unique_skills_by_name or len(skill.desc) > len(
+                    unique_skills_by_name[skill.name].desc
+                ):
+                    unique_skills_by_name[skill.name] = skill
+
+            # 3. Get the list of selected skills (the values from the dictionary)
+            skills_to_add = list(unique_skills_by_name.values())
+
+            try:
+                new_item.status_on_equip.extend(skills_to_add)
+            except IntegrityError:
+                print(
+                    "Skipping existing entry or handling M2M relationship IntegrityError."
+                )
 
     session.flush()
 
@@ -306,9 +493,25 @@ def _add_shops(session: Session, json_dir: Path) -> None:
     """
     events_data = load_json_data(json_dir / "events.json")
     sorted_events = sorted(events_data, key=lambda x: x.get("nid"))
+    abbr_name_map = {
+        "9A_Armory_10B_Armory_Global_BethroenArmory_Global_PortKirisArmory": "Bethroen / Port Kiris",
+        "9A_Vendor_10B_Vendor_Global_BethroenVendor_Global_PortKirisVendor": "Bethroen / Port Kiris",
+        "12A_Vendor_12B_Vendor_Global_CaerPelynVendor_Global_TaizelVendor": "Caer Pelyn / Taizel",
+        "14A_SecretShop_Global_JehannaHallSecretShop": "Jehanna Hall",
+        "14B_SecretShop_Global_GradoKeepSecretShop": "Grado Keep",
+        "15A_Vendor_15B_Vendor_Global_JehannaHallVendor": "Jehanna Hall",
+        "17A_Armory_17B_Armory_Global_NarubeRiverArmory": "Narube River",
+        "17A_Vendor_17B_Vendor_Global_NarubeRiverVendor": "Narube River",
+        "2_Armory_Global_IdeArmory": "Ide",
+        "5_Armory_Global_SerafewArmory": "Serafew",
+        "5_Vendor_Global_SerafewVendor": "Serafew",
+        "Global_RaustenCourtArmory": "Rausten Court",
+        "Global_RaustenCourtSecretShop": "Rausten Court",
+        "Global_RaustenCourtVendor": "Rausten Court",
+        "Dragon_Gate_Vendor": "Dragon's Gate",
+    }
 
     shops_map = {}
-
     for data_entry in sorted_events:
         if data_entry.get("nid").endswith(
             ("Vendor", "SecretShop", "Armory")
@@ -341,6 +544,7 @@ def _add_shops(session: Session, json_dir: Path) -> None:
             name=shop_name,
             type=shop_type,
             order_name=pad_digits_in_string(shop_nid, 2),
+            abbr_name=abbr_name_map[shop_nid],
         )
         session.add(new_shop)
 
@@ -366,6 +570,7 @@ def _add_dragons_gate_shop(session: Session) -> None:
         name="Dragon's Gate (Anna)",
         type="Vendor",
         order_name="Z_Dragon_Gate",
+        abbr_name="Dragon's Gate",
     )
     session.add(new_shop)
 
@@ -378,18 +583,176 @@ def _add_dragons_gate_shop(session: Session) -> None:
         new_shop.items.extend(result_items)
 
 
+arsenal_item_assoc = Table(
+    "arsenal_item_assoc",
+    Base.metadata,
+    Column("arsenal_nid", String, ForeignKey("arsenals.nid"), primary_key=True),
+    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
+)
+
+
+class Arsenal(Base):
+    __tablename__ = "arsenals"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    desc: Mapped[str]
+    arsenal_owner_nid: Mapped[int]
+    icon_class: Mapped[str]
+
+    items = relationship(
+        "Item",
+        secondary=arsenal_item_assoc,
+        backref="arsenals",
+        uselist=True,
+    )
+
+    def __repr__(self) -> str:
+        return f"Arsenal(nid={self.nid!r}, name={self.name!r}, arsenal_owner_nid={self.arsenal_owner_nid!r})"
+
+
+@log_execution_step
+def _add_arsenals(session: Session, json_dir: Path) -> None:
+
+    excluded_units = {"_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit"}
+    arsenal_marks = {"_Arsenal", "bending", "_Studies", "_Stash", "Shiro_Grimoire"}
+    arsenal_exclude = {"Davius_Arsenal_Old"}
+
+    items_list = load_json_data(json_dir / "items.json")
+    # all_items_map = {x["nid"]: x for x in items_list}  # Quick lookup
+
+    items_cat = load_json_data(json_dir / "items.category.json")
+    item_end_exclude = ("_Old", "_Multi", "_Warp_2", "_Warp")
+
+    special_item_arsenal_map = {
+        "Lunar_Brace": "Eirikas_Arsenal",
+        "Solar_Brace": "Ephraims_Arsenal",
+        "Dragonstone": "Myrrh_Arsenal",
+    }
+    # Add arsenals
+    for data_entry in items_list:
+        nid = data_entry["nid"]
+        icon_nid = data_entry["icon_nid"]
+        icon_class = (
+            f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
+            f"{make_valid_class_name(icon_nid)}-icon"
+            if icon_nid
+            else ""
+        )
+        if nid in arsenal_exclude:
+            continue
+
+        if any(nid.endswith(mark) for mark in arsenal_marks):
+            prf_unit = get_comp(data_entry, "prf_unit", list)
+            if prf_unit and prf_unit[0] not in excluded_units:
+                new_arsenal = Arsenal(
+                    nid=data_entry["nid"],
+                    name=data_entry["name"],
+                    desc=process_styled_text(data_entry.get("desc", "")),
+                    arsenal_owner_nid=prf_unit[0],
+                    icon_class=icon_class.strip(),
+                )
+                session.add(new_arsenal)
+                session.flush()
+    new_arsenal = Arsenal(
+        nid="Myrrh_Arsenal",
+        name="Myrrh's Arsenal",
+        desc=process_styled_text(
+            "Arsenal of a Manakete.\n<red>Prof:</><icon>Monster</>"
+        ),
+        arsenal_owner_nid="Myrrh",
+        icon_class="Dragonstone-item-icon Neutral-icon",
+    )
+    session.add(new_arsenal)
+    session.flush()
+
+    # Append items to corresponding
+    current_arsenal = None
+    current_item = None
+    for item_nid, item_cat in items_cat.items():
+        if not (current_item := session.get(Item, item_nid)):
+            continue
+        # Special Items
+        if item_nid in ("Dragonstone", "Solar_Brace", "Lunar_Brace"):
+            if current_arsenal := session.get(
+                Arsenal, special_item_arsenal_map[item_nid]
+            ):
+                current_arsenal.items.append(current_item)
+                session.flush()
+                continue
+
+        # Standard Logic
+        if not item_cat.startswith("Personal Weapons"):
+            continue
+
+        # if item_nid in arsenal_nid_list or item_nid.endswith(item_end_exclude):
+        if item_nid.endswith(item_end_exclude):
+            continue
+
+        if not current_item.desc:
+            continue
+
+        prf_unit = item_cat.split("/")[1]
+        if prf_unit == "Davius Old":
+            continue
+        if prf_unit == "Lindsey" and item_nid.endswith("_D"):
+            continue
+        if prf_unit == "Azuth" and item_nid.endswith("_A"):
+            continue
+
+        # Name normalization
+        if prf_unit == "L'arachel":
+            prf_unit = "Larachel"
+        elif prf_unit == "Pro":
+            prf_unit = "ProTagonist"
+
+        # Determine specific arsenal nid
+        stmt = select(Arsenal).filter(Arsenal.arsenal_owner_nid == prf_unit)
+        # Units with 1 arsenal
+        if len(possible_arsenals := session.scalars(stmt).all()) == 1:
+            current_arsenal = possible_arsenals[0]
+            if current_item.nid == current_arsenal.nid:
+                continue
+
+            current_arsenal.items.append(current_item)
+            session.flush()
+        # Units with multiple arsenals
+        elif len(possible_arsenals) > 1:
+            if prf_unit == "ProTagonist":
+                if item_nid in (
+                    "Airbending",
+                    "Earthbending",
+                    "Firebending",
+                    "Waterbending",
+                ):
+                    continue
+                if item_nid.startswith("Air"):
+                    current_arsenal = session.get(Arsenal, "Airbending")
+                elif item_nid.startswith("Earth"):
+                    current_arsenal = session.get(Arsenal, "Earthbending")
+                elif item_nid.startswith("Fire"):
+                    current_arsenal = session.get(Arsenal, "Firebending")
+                elif item_nid.startswith("Water"):
+                    current_arsenal = session.get(Arsenal, "Waterbending")
+                else:
+                    continue
+                if current_arsenal:
+                    current_arsenal.items.append(current_item)
+            elif prf_unit == "Tana":
+                if item_nid in ("Tanas_Stash", "Tanas_Arsenal"):
+                    continue
+                if "_Buff" in item_nid or "_Heal" in item_nid:
+                    current_arsenal = session.get(Arsenal, "Tanas_Stash")
+                else:
+                    current_arsenal = session.get(Arsenal, "Tanas_Arsenal")
+                if current_arsenal:
+                    current_arsenal.items.append(current_item)
+
+    session.flush()
+
+
 def add_to_db(json_dir: Path) -> None:
     """
-    Orchestrates the extraction, transformation, and loading (ETL) of game data
-    from JSON files into the SQLite database.
-
-    This function performs the following operations:
-    1.  Initializes the SQLite database connection and resets the schema (drop/create).
-    2.  Loads and processes Skill Categories and Skills, establishing relationships.
-    3.  Loads Items and links them to their intrinsic Skills (e.g., status effects).
-    4.  Establishes recursive sub-item relationships (e.g., promotional items).
-    5.  Processes and groups Shop events to create Shop entities with inventories.
-    6.  Creates the special "Dragon's Gate" shop with designated items.
+    Loads game data from JSON files into the SQLite database.
 
     Parameters:
         json_dir (Path): The directory path containing the source JSON files.
@@ -411,6 +774,7 @@ def add_to_db(json_dir: Path) -> None:
         _add_skills(session, skill_cats, json_dir)
         session.flush()
 
+        _add_item_categories(session)
         _add_main_items(session, json_dir)
         session.commit()
 
@@ -421,6 +785,9 @@ def add_to_db(json_dir: Path) -> None:
         session.commit()
 
         _add_dragons_gate_shop(session)
+        session.commit()
+
+        _add_arsenals(session, json_dir)
         session.commit()
 
     print("--- Database Population Complete ---")
