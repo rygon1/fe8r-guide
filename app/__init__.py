@@ -5,11 +5,11 @@ from app.config import Config
 from app.extensions import db
 
 
-def page_not_found(e):
+def page_not_found(_):
     return render_template("404.html.jinja2"), 404
 
 
-def internal_server_error(e):
+def internal_server_error(_):
     return render_template("500.html.jinja2"), 500
 
 
@@ -17,8 +17,31 @@ def currency_format(value):
     return f"{value:,}"
 
 
-def create_app(config_class=Config) -> Flask:
+def growth_colors(value):
+    color_ranges = [
+        (10, "red-orange"),
+        (20, "light-red"),
+        (30, "pink-orange"),
+        (40, "light-orange"),
+        (50, "corn-yellow"),
+        (60, "light-green"),
+        (70, "olive-green"),
+        (80, "soft-green"),
+        (120, "yellow-green"),
+        (160, "blue"),
+        (200, "grey"),
+        (250, "white"),
+    ]
 
+    for max_value, color in color_ranges:
+        if value <= max_value:
+            if value >= 0:
+                return color
+            return "yellow"
+    return "red"
+
+
+def create_app(config_class=Config) -> Flask:
     app = Flask(__name__)
 
     app.config.from_object(config_class)
@@ -34,6 +57,7 @@ def create_app(config_class=Config) -> Flask:
     app.register_error_handler(500, internal_server_error)
 
     app.jinja_env.filters["currency_format"] = currency_format
+    app.jinja_env.filters["growth_colors"] = growth_colors
 
     @app.route("/favicon.ico")
     def favicon() -> Response:
