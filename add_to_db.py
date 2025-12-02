@@ -4,12 +4,32 @@ import re
 from functools import reduce
 from pathlib import Path
 
-from sqlalchemy import Column, ForeignKey, String, Table, create_engine, select
+from sqlalchemy import create_engine, func, not_, or_, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
+from sqlalchemy.orm import (
+    Session,
+)
 
+from add_to_db_models import (
+    Affinity,
+    Arsenal,
+    Base,
+    Class,
+    ClassCategory,
+    ClassSkillAssociation,
+    Item,
+    ItemCategory,
+    Shop,
+    Skill,
+    SkillCategory,
+    Unit,
+    UnitCategory,
+    UnitSkillAssociation,
+    Weapon,
+)
 from app.blueprints.utils import (
     DataEntry,
+    get_alt_name,
     get_comp,
     load_json_data,
     log_execution_step,
@@ -18,177 +38,124 @@ from app.blueprints.utils import (
     process_styled_text,
 )
 
-
-class Base(DeclarativeBase):
-    pass
+STAT_KEYS = ["HP", "STR", "MAG", "SKL", "SPD", "LCK", "DEF", "RES", "CON", "MOV"]
 
 
-class Skill(Base):
-    __tablename__ = "skills"
-    nid: Mapped[str] = mapped_column(String(50), primary_key=True)
-    name: Mapped[str] = mapped_column(String(50))
-    desc: Mapped[str]
-    icon_class: Mapped[str]
-    is_hidden: Mapped[bool]
-    category_nid: Mapped[str] = mapped_column(ForeignKey("skill_categories.nid"))
-    category: Mapped["SkillCategory"] = relationship()
-
-    def __repr__(self) -> str:
-        return f"Skill(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
-
-
-class SkillCategory(Base):
-    __tablename__ = "skill_categories"
-    nid: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str]
-
-    def __repr__(self) -> str:
-        return f"SkillCategory(nid={self.nid!r}, name={self.name!r})"
+def _get_tier_category(data_entry):
+    """Determines the tier category of an entry."""
+    exclude_substr = ("_Pair_Up",)
+    if data_entry.get("nid").endswith(("_T1", "_T2", "_T3")) and all(
+        (substr not in data_entry.get("nid")) for substr in exclude_substr
+    ):
+        if data_entry.get("nid").endswith("_T1"):
+            return "feat_t1"
+        if data_entry.get("nid").endswith("_T2"):
+            return "feat_t2"
+        if data_entry.get("nid").endswith("_T3"):
+            return "feat_t3"
+    return ""
 
 
-item_skill_assoc = Table(
-    "item_skill_assoc",
-    Base.metadata,
-    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
-    Column("skill_nid", String, ForeignKey("skills.nid"), primary_key=True),
-)
-sub_item_assoc = Table(
-    "sub_item_assoc",
-    Base.metadata,
-    Column("super_item_nid", String, ForeignKey("items.nid"), primary_key=True),
-    Column("sub_item_nid", String, ForeignKey("items.nid"), primary_key=True),
-)
+def is_skill_filtered(nid):
+    """Checks if a skill's nid meets the filtering criteria."""
+    if not nid:
+        return False
+    ends_with_tier = nid.endswith(("_T1", "_T2", "_T3"))
+    has_pair_up = "_Pair_Up" in nid
+    return ends_with_tier and not has_pair_up
 
 
-item_category_assoc = Table(
-    "item_category_assoc",
-    Base.metadata,
-    Column("item_nid", ForeignKey("items.nid"), primary_key=True),
-    Column("category_nid", ForeignKey("item_categories.nid"), primary_key=True),
-)
+def _set_skill_categories(session, data_entry):
+    """Determines and retrieves skill categories for a data entry."""
+    active_components = {
+        "ability",
+        "combat_art",
+        "build_charge",
+        "Endstep_charge_increase",
+        "upkeep_charge_increase",
+    }
+    active_desc_keywords = ["<red>CA:</>", "CD:"]
 
+    support_components = {
+        "canter",
+        "canto_plus",
+        "canto_sharp",
+        "aura",
+        "aura_range",
+        "aura_target",
+        "give_status_after_combat_on_hit",
+        "negative",
+    }
+    support_desc_keywords = [
+        "ally",
+        "enemy within",
+        "allies within",
+        "enemies within",
+        "can move after",
+    ]
 
-class Item(Base):
-    __tablename__ = "items"
-    nid: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    desc: Mapped[str]
-    value: Mapped[int]
-    weapon_rank: Mapped[str]
-    weapon_rank_order_key: Mapped[str]
-    weapon_type: Mapped[str]
-    target: Mapped[str]
-    damage: Mapped[int]
-    weight: Mapped[int]
-    crit: Mapped[int]
-    hit: Mapped[int]
-    min_range: Mapped[int]
-    max_range: Mapped[int]
-    icon_class: Mapped[str]
-    categories: Mapped[list["ItemCategory"]] = relationship(
-        secondary=item_category_assoc,
-        back_populates="items",
+    if not is_skill_filtered(data_entry.get("nid")):
+        return []
+
+    components = data_entry.get("components", [])
+    desc = data_entry.get("desc", "")
+    categories = []
+    if tier_category := session.get(SkillCategory, _get_tier_category(data_entry)):
+        categories.append(tier_category)
+
+    component_names = {
+        comp[0] for comp in components if isinstance(comp, list) and len(comp) > 0
+    }
+
+    is_active_by_component = any(comp in component_names for comp in active_components)
+    is_active_by_desc = any(keyword in desc for keyword in active_desc_keywords)
+    if is_active_by_component or is_active_by_desc:
+        categories.append(session.get(SkillCategory, "active"))
+
+    is_support_by_component = any(
+        comp in component_names for comp in support_components
     )
+    is_support_by_desc = any(keyword in desc for keyword in support_desc_keywords)
+    if is_support_by_component or is_support_by_desc:
+        categories.append(session.get(SkillCategory, "support"))
 
-    sub_items = relationship(
-        "Item",
-        secondary=sub_item_assoc,
-        primaryjoin=(sub_item_assoc.c.super_item_nid == nid),
-        secondaryjoin=(sub_item_assoc.c.sub_item_nid == nid),
-        backref="super_items",
-    )
-    status_on_equip = relationship(
-        "Skill",
-        secondary=item_skill_assoc,
-        backref="items",
-    )
+    if not (is_active_by_component or is_active_by_desc):
+        if "Passive" not in categories:
+            categories.append(session.get(SkillCategory, "passive"))
 
-    def __repr__(self) -> str:
-        return f"Item(nid={self.nid!r}, name={self.name!r}, desc={self.desc!r})"
-
-
-class ItemCategory(Base):
-    __tablename__ = "item_categories"
-    nid: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    type: Mapped[str]
-    order_key: Mapped[int]
-
-    items: Mapped[list["Item"]] = relationship(
-        secondary=item_category_assoc,
-        back_populates="categories",
-    )
-
-    def __repr__(self) -> str:
-        return f"ItemCategory(nid={self.nid!r}, name={self.name!r})"
-
-
-shop_item_assoc = Table(
-    "shop_item_assoc",
-    Base.metadata,
-    Column("shop_nid", String, ForeignKey("shops.nid"), primary_key=True),
-    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
-)
-
-
-class Shop(Base):
-    __tablename__ = "shops"
-    nid: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    type: Mapped[str]
-    order_name: Mapped[str]
-    abbr_name: Mapped[str]
-
-    items = relationship(
-        "Item",
-        secondary=shop_item_assoc,
-        backref="shops",
-        uselist=True,
-    )
-
-    def __repr__(self) -> str:
-        return f"Shop(nid={self.nid!r}, name={self.name!r}, type={self.type!r})"
+    return categories
 
 
 @log_execution_step
-def _get_skill_categories(session: Session, json_dir: Path) -> dict[str, str]:
-    """
-    Processes skill categories, creates SkillCategory objects, adds them to the
-    session, and returns a mapping dictionary.
-    """
-    skill_cats = {}
-    new_skill_categories = []
+def _add_skill_categories(session: Session):
+    """Adds initial skill categories to the session."""
+    new_skill_categories = [
+        ("feat_t1", "Tier 1", "Tier"),
+        ("feat_t2", "Tier 2", "Tier"),
+        ("feat_t3", "Tier 3", "Tier"),
+        ("active", "Active", "Type"),
+        ("passive", "Passive", "Type"),
+        ("support", "Support", "Type"),
+    ]
 
-    category_map = load_json_data(json_dir / "skills.category.json")
-
-    for skill_nid, category_nid in category_map.items():
-        skill_cats[skill_nid] = category_nid
-
-        if category_nid not in (x.nid for x in new_skill_categories):
-            if category_nid.startswith("MyUnit/T"):
-                tier = category_nid.split("/T")[1]
-                name = f"Feats (Tier {tier})"
-            else:
-                name = category_nid
-
-            new_skill_categories.append(SkillCategory(nid=category_nid, name=name))
-
-    session.add_all(new_skill_categories)
-    return skill_cats
+    session.add_all(
+        [
+            SkillCategory(nid=x[0], name=x[1], type=x[2], order_key=idx)
+            for idx, x in enumerate(new_skill_categories)
+        ]
+    )
 
 
 def remove_lt_tags(orig_str: str):
+    """Removes HTML-like tags from a string."""
     new_str = re.sub(r"<\w+[^>]*>.*?((</\w+>)|/>)", "", orig_str, flags=re.DOTALL)
     new_str = re.sub(r"\([ \t\r\n]*\)|\s*\[[ \t\r\n]*\]|\s*\{[ \t\r\n]*\}", "", new_str)
     return new_str
 
 
 @log_execution_step
-def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) -> None:
-    """
-    Loads skill data from JSON files, creates Skill objects, and adds them to the session.
-    """
-    new_skills = []
+def _add_skills(session: Session, json_dir: Path) -> None:
+    """Parses skill JSON and adds Skill objects to the database."""
     for data_entry in load_json_data(json_dir / "skills.json"):
         icon_nid = data_entry.get("icon_nid")
         icon_class = (
@@ -197,22 +164,20 @@ def _add_skills(session: Session, skill_cats: dict[str, str], json_dir: Path) ->
             if icon_nid
             else ""
         )
-
-        new_skills.append(
-            Skill(
-                nid=data_entry["nid"],
-                name=remove_lt_tags(data_entry.get("name")),
-                desc=process_styled_text(data_entry.get("desc")),
-                icon_class=icon_class.strip(),
-                is_hidden=get_comp(data_entry, "hidden", bool),
-                category_nid=skill_cats.get(data_entry.get("nid"), "Misc"),
-            )
+        new_skill = Skill(
+            nid=data_entry.get("nid"),
+            name=remove_lt_tags(data_entry.get("name")),
+            desc=process_styled_text(data_entry.get("desc")),
+            icon_class=icon_class.strip(),
+            is_hidden=get_comp(data_entry, "hidden", bool),
+            categories=_set_skill_categories(session, data_entry),
         )
-    session.add_all(new_skills)
+
+        session.add(new_skill)
 
 
 def _process_item_target(components: list) -> str:
-    """Extracts the item target string from the components list."""
+    """Extracts target information from item components."""
     for comp in components:
         if isinstance(comp, list) and comp and comp[0].startswith("target"):
             return comp[0].split("_")[1].title()
@@ -221,10 +186,11 @@ def _process_item_target(components: list) -> str:
 
 @log_execution_step
 def _add_item_categories(session: Session):
-
+    """Adds standard item categories to the session."""
     new_cats = [
         ("wtype_Accessory", "Item Type", "Accessories"),
         ("wtype_HeldItem", "Item Type", "Held Items"),
+        ("wtype_Consumable", "Item Type", "Consumables"),
         ("wtype_Sword", "Item Type", "Swords"),
         ("wtype_Axe", "Item Type", "Axes"),
         ("wtype_Lance", "Item Type", "Lances"),
@@ -256,6 +222,7 @@ def _add_item_categories(session: Session):
 
 
 def _set_item_categories(session: Session, data_entry: DataEntry) -> list:
+    """Determines and retrieves item categories for a data entry."""
     categories = []
     wstypes = (
         "Dagger",
@@ -263,9 +230,17 @@ def _set_item_categories(session: Session, data_entry: DataEntry) -> list:
         "Warhammer",
         "Greatlance",
     )
+    arsenal_marks = {
+        "_Arsenal",
+        "bending",
+        "_Studies",
+        "_Stash",
+        "Shiro_Grimoire",
+        "Davius_Arsenal_Old",
+    }
 
     if wtype_cat := session.get(
-        ItemCategory, f"wtype_{get_comp(data_entry, "weapon_type", str)}"
+        ItemCategory, f"wtype_{get_comp(data_entry, 'weapon_type', str)}"
     ):
         categories.append(wtype_cat)
     elif get_comp(data_entry, "equippable_accessory", bool):
@@ -274,6 +249,16 @@ def _set_item_categories(session: Session, data_entry: DataEntry) -> list:
         data_entry, "multi_status_on_hold", list
     ):
         categories.append(session.get(ItemCategory, "wtype_HeldItem"))
+    elif (
+        get_comp(data_entry, "uses", int)
+        or get_comp(data_entry, "c_uses", int)
+        or get_comp(data_entry, "usable", bool)
+    ):
+        categories.append(session.get(ItemCategory, "wtype_Consumable"))
+    elif get_comp(data_entry, "multi_item", list) and not any(
+        data_entry.get("nid", "").endswith(mark) for mark in arsenal_marks
+    ):
+        categories.append(session.get(ItemCategory, "wtype_Consumable"))
 
     if item_tags := get_comp(data_entry, "item_tags", list):
         for element in [x for x in item_tags if x not in wstypes]:
@@ -290,6 +275,7 @@ def _set_item_categories(session: Session, data_entry: DataEntry) -> list:
 
 
 def get_status(data_entry: DataEntry) -> list[str]:
+    """Extracts associated status NIDs from item data."""
     exclude: tuple[str, ...] = (
         "_hide",
         "_Penalty",
@@ -299,29 +285,18 @@ def get_status(data_entry: DataEntry) -> list[str]:
         "_AOE_Splash",
         "_Boss",
         "Avo_Ddg_",
-        "_Buff",
     )
-    """
-    Extracts unique, non-excluded status names from various component fields of an entry.
-
-    :param data_entry: The item data entry to process.
-    :type data_entry: DataEntry
-    :returns: A list of unique status names associated with the item, excluding any in EXCLUDE.
-    :rtype: list[str]
-    """
     excluded_substrings: tuple[str, ...] = exclude
     wp_status: set[str] = set()
 
     single_status_comps: tuple[str, ...] = ("status_on_equip", "status_on_hit")
     multi_status_comps: tuple[str, ...] = ("multi_status_on_equip", "statuses_on_hit")
 
-    # Process single status components
     for comp_name in single_status_comps:
         status: str = get_comp(data_entry, comp_name, str)
         if status and not any(sub in status for sub in excluded_substrings):
             wp_status.add(status)
 
-    # Process multi-status components
     for comp_name in multi_status_comps:
         statuses: list[str] = get_comp(data_entry, comp_name, list)
         for status_entry in statuses:
@@ -335,9 +310,7 @@ def get_status(data_entry: DataEntry) -> list[str]:
 
 @log_execution_step
 def _add_main_items(session: Session, json_dir: Path) -> None:
-    """
-    Loads item data, creates Item objects, and links them to associated Skill objects.
-    """
+    """Parses item JSON, creates Item objects, and links associated Skills."""
     rank_values = {
         "": -1,
         "Prf": 0,
@@ -355,13 +328,20 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
     for data_entry in load_json_data(json_dir / "items.json"):
         icon_nid = data_entry.get("icon_nid")
         icon_class = (
-            f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
+            f"{make_valid_class_name(data_entry.get('nid'))}-item-icon "
             f"{make_valid_class_name(icon_nid)}-icon"
             if icon_nid
             else ""
         )
         if not (weapon_type := get_comp(data_entry, "weapon_type", str)):
-            weapon_type = "Misc"
+            if get_comp(data_entry, "equippable_accessory", bool):
+                weapon_type = "Accessory"
+            elif get_comp(data_entry, "status_on_hold", str) or get_comp(
+                data_entry, "multi_status_on_hold", list
+            ):
+                weapon_type = "Held Item"
+            else:
+                weapon_type = "Misc"
         if (
             not (weapon_rank := get_comp(data_entry, "weapon_rank", str))
             and weapon_type != "Misc"
@@ -371,7 +351,7 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
         weapon_rank_order_key = rank_values.get(weapon_rank, 10)
         categories = _set_item_categories(session, data_entry)
         new_item = Item(
-            nid=data_entry["nid"],
+            nid=data_entry.get("nid"),
             name=remove_lt_tags(data_entry.get("name")),
             desc=process_styled_text(data_entry.get("desc")),
             value=get_comp(data_entry, "value", int),
@@ -389,33 +369,26 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
             categories=categories,
         )
         session.add(new_item)
-        # Change to this when items.json is updated to have mult_desc
-        """ if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
-            session.flush()
-            all_skills = session.scalars(
-                select(Skill).where(Skill.nid.in_(skill_nids))
-            ).all()
+        exclude_skill_desc = (
+            "give buff to",
+            "gives buff to",
+            "gives the proper change to",
+            "give the proper change to",
+            "for the",
+        )
+        or_conditions = []
+        for prefix in exclude_skill_desc:
+            or_conditions.append(func.lower(Skill.desc).startswith(prefix))
+        prefix_exclusion_clause = or_(*or_conditions)
 
-            unique_skills_by_name = {}
-            for skill in all_skills:
-                if skill.name not in unique_skills_by_name or len(skill.desc) > len(
-                    unique_skills_by_name[skill.name].desc
-                ):
-                    unique_skills_by_name[skill.name] = skill
-
-            # 3. Get the list of selected skills (the values from the dictionary)
-            skills_to_add = list(unique_skills_by_name.values())
-
-            try:
-                new_item.status_on_equip.extend(skills_to_add)
-            except IntegrityError:
-                print(
-                    "Skipping existing entry or handling M2M relationship IntegrityError."
-                ) """
         if skill_nids := get_status(data_entry):
             session.flush()
             all_skills = session.scalars(
-                select(Skill).where(Skill.nid.in_(skill_nids))
+                select(Skill).where(
+                    Skill.nid.in_(skill_nids),
+                    not_(prefix_exclusion_clause),
+                    Skill.desc != "",
+                )
             ).all()
 
             unique_skills_by_name = {}
@@ -425,21 +398,19 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
                 ):
                     unique_skills_by_name[skill.name] = skill
 
-            # 3. Get the list of selected skills (the values from the dictionary)
             skills_to_add = list(unique_skills_by_name.values())
 
             try:
                 new_item.status_on_equip.extend(skills_to_add)
             except IntegrityError:
-                print(
-                    "Skipping existing entry or handling M2M relationship IntegrityError."
-                )
+                pass
 
     session.flush()
 
 
 @log_execution_step
 def _add_sub_items(session: Session, json_dir: Path) -> None:
+    """Links sub-items to their super-items based on JSON data."""
     item_data = load_json_data(json_dir / "items.json")
 
     for data_entry in item_data:
@@ -453,8 +424,26 @@ def _add_sub_items(session: Session, json_dir: Path) -> None:
     session.flush()
 
 
+def _update_item_categories(session: Session) -> None:
+    consumable_cat = session.get(ItemCategory, "wtype_Consumable")
+
+    if not consumable_cat:
+        print("Error: Consumable category not found.")
+        return
+
+    items_that_are_sub = session.scalars(
+        select(Item).where(Item.super_items.any())
+    ).all()
+
+    for item in items_that_are_sub:
+        if consumable_cat in item.categories:
+            item.categories.remove(consumable_cat)
+
+    session.flush()
+
+
 def _process_shop_name(nids: list[str]) -> tuple[str, str]:
-    """Cleans up, formats, and determines the final shop name and type."""
+    """Generates a human-readable shop name and type from NIDs."""
     substrings_to_remove = ["Armory", "SecretShop", "Vendor"]
 
     cleaned_nids = [
@@ -488,9 +477,7 @@ def _process_shop_name(nids: list[str]) -> tuple[str, str]:
 
 @log_execution_step
 def _add_shops(session: Session, json_dir: Path) -> None:
-    """
-    Loads event data, groups events, creates Shop objects, and links items.
-    """
+    """Parses event JSON to create Shop objects and link items."""
     events_data = load_json_data(json_dir / "events.json")
     sorted_events = sorted(events_data, key=lambda x: x.get("nid"))
     abbr_name_map = {
@@ -549,6 +536,7 @@ def _add_shops(session: Session, json_dir: Path) -> None:
         session.add(new_shop)
 
         session.flush()
+
         items_to_add = session.scalars(
             select(Item).where(Item.nid.in_(shop_items_tuple))
         ).all()
@@ -561,9 +549,7 @@ def _add_shops(session: Session, json_dir: Path) -> None:
 
 @log_execution_step
 def _add_dragons_gate_shop(session: Session) -> None:
-    """
-    Adds the specific "Dragon's Gate" shop and links all items with an '_DG' suffix.
-    """
+    """Adds the unique Dragon's Gate shop and its items."""
     dragon_gate_nid = "Dragon_Gate_Vendor"
     new_shop = Shop(
         nid=dragon_gate_nid,
@@ -583,43 +569,14 @@ def _add_dragons_gate_shop(session: Session) -> None:
         new_shop.items.extend(result_items)
 
 
-arsenal_item_assoc = Table(
-    "arsenal_item_assoc",
-    Base.metadata,
-    Column("arsenal_nid", String, ForeignKey("arsenals.nid"), primary_key=True),
-    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
-)
-
-
-class Arsenal(Base):
-    __tablename__ = "arsenals"
-    nid: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    desc: Mapped[str]
-    arsenal_owner_nid: Mapped[int]
-    icon_class: Mapped[str]
-
-    items = relationship(
-        "Item",
-        secondary=arsenal_item_assoc,
-        backref="arsenals",
-        uselist=True,
-    )
-
-    def __repr__(self) -> str:
-        return f"Arsenal(nid={self.nid!r}, name={self.name!r}, arsenal_owner_nid={self.arsenal_owner_nid!r})"
-
-
 @log_execution_step
 def _add_arsenals(session: Session, json_dir: Path) -> None:
-
+    """Creates Arsenal objects and links specific items to owners."""
     excluded_units = {"_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit"}
     arsenal_marks = {"_Arsenal", "bending", "_Studies", "_Stash", "Shiro_Grimoire"}
     arsenal_exclude = {"Davius_Arsenal_Old"}
 
     items_list = load_json_data(json_dir / "items.json")
-    # all_items_map = {x["nid"]: x for x in items_list}  # Quick lookup
-
     items_cat = load_json_data(json_dir / "items.category.json")
     item_end_exclude = ("_Old", "_Multi", "_Warp_2", "_Warp")
 
@@ -628,12 +585,12 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
         "Solar_Brace": "Ephraims_Arsenal",
         "Dragonstone": "Myrrh_Arsenal",
     }
-    # Add arsenals
+
     for data_entry in items_list:
-        nid = data_entry["nid"]
+        nid = data_entry.get("nid")
         icon_nid = data_entry["icon_nid"]
         icon_class = (
-            f"{make_valid_class_name(data_entry.get("nid"))}-item-icon "
+            f"{make_valid_class_name(data_entry.get('nid'))}-item-icon "
             f"{make_valid_class_name(icon_nid)}-icon"
             if icon_nid
             else ""
@@ -645,7 +602,7 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
             prf_unit = get_comp(data_entry, "prf_unit", list)
             if prf_unit and prf_unit[0] not in excluded_units:
                 new_arsenal = Arsenal(
-                    nid=data_entry["nid"],
+                    nid=data_entry.get("nid"),
                     name=data_entry["name"],
                     desc=process_styled_text(data_entry.get("desc", "")),
                     arsenal_owner_nid=prf_unit[0],
@@ -665,13 +622,12 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
     session.add(new_arsenal)
     session.flush()
 
-    # Append items to corresponding
     current_arsenal = None
     current_item = None
     for item_nid, item_cat in items_cat.items():
         if not (current_item := session.get(Item, item_nid)):
             continue
-        # Special Items
+
         if item_nid in ("Dragonstone", "Solar_Brace", "Lunar_Brace"):
             if current_arsenal := session.get(
                 Arsenal, special_item_arsenal_map[item_nid]
@@ -680,11 +636,9 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
                 session.flush()
                 continue
 
-        # Standard Logic
         if not item_cat.startswith("Personal Weapons"):
             continue
 
-        # if item_nid in arsenal_nid_list or item_nid.endswith(item_end_exclude):
         if item_nid.endswith(item_end_exclude):
             continue
 
@@ -699,15 +653,12 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
         if prf_unit == "Azuth" and item_nid.endswith("_A"):
             continue
 
-        # Name normalization
         if prf_unit == "L'arachel":
             prf_unit = "Larachel"
         elif prf_unit == "Pro":
             prf_unit = "ProTagonist"
 
-        # Determine specific arsenal nid
         stmt = select(Arsenal).filter(Arsenal.arsenal_owner_nid == prf_unit)
-        # Units with 1 arsenal
         if len(possible_arsenals := session.scalars(stmt).all()) == 1:
             current_arsenal = possible_arsenals[0]
             if current_item.nid == current_arsenal.nid:
@@ -715,7 +666,6 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
 
             current_arsenal.items.append(current_item)
             session.flush()
-        # Units with multiple arsenals
         elif len(possible_arsenals) > 1:
             if prf_unit == "ProTagonist":
                 if item_nid in (
@@ -750,28 +700,346 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
     session.flush()
 
 
+@log_execution_step
+def _add_unit_categories(session: Session):
+    new_cats = [
+        ("Vanilla", "Vanilla", "Category"),
+        ("Dragon Gate", "Dragon's Gate", "Category"),
+        ("Monsters", "Monsters", "Category"),
+        # "NPCs",
+        # "Enemies",
+    ]
+
+    session.add_all(
+        [
+            UnitCategory(nid=x[0], name=x[1], type=x[2], order_key=idx)
+            for idx, x in enumerate(new_cats)
+        ]
+    )
+    session.flush()
+
+
+def _set_unit_categories(
+    session: Session, data_entry: DataEntry, init_category_map: dict
+) -> list:
+    """Determines and retrieves item categories for a data entry."""
+    categories = []
+
+    if init_category := session.get(
+        UnitCategory, init_category_map.get(data_entry.get("nid"), "")
+    ):
+        categories.append(init_category)
+
+    return categories
+
+
+@log_execution_step
+def _add_class_categories(session: Session):
+    """Adds standard item categories to the session."""
+    new_cats = [
+        ("class_tier_t0", "Trainee/Untiered", "Tier"),
+        ("class_tier_t1", "Tier 1", "Tier"),
+        ("class_tier_t2", "Tier 2", "Tier"),
+        ("class_tier_t3", "Tier 3", "Tier"),
+        ("class_cat_infantry", "Infantry", "Category"),
+        # ("class_cat_autopromote", "AutoPromote", "Category"),
+        # ("class_cat_convoy", "Convoy", "Category"),
+        # ("class_cat_adjconvoy", "AdjConvoy", "Category"),
+        ("class_cat_horse", "Horse", "Category"),
+        ("class_cat_mounted", "Mounted", "Category"),
+        ("class_cat_support", "Support", "Category"),
+        ("class_cat_magic", "Magic", "Category"),
+        # ("class_cat_sword", "Sword", "Category"),
+        ("class_cat_armor", "Armor", "Category"),
+        ("class_cat_monster", "Monster", "Category"),
+        ("class_cat_flying", "Flying", "Category"),
+        ("class_cat_dragon", "Dragon", "Category"),
+        # ("class_cat_staff", "Staff", "Category"),
+        ("prof_Sword", "Sword Users", "Weapon Prof."),
+        ("prof_Axe", "Axe Users", "Weapon Prof."),
+        ("prof_Lance", "Lance Users", "Weapon Prof."),
+        ("prof_Bow", "Bow Users", "Weapon Prof."),
+        ("prof_Staff", "Staff Users", "Weapon Prof."),
+        ("prof_Anima", "Anima Tome Users", "Weapon Prof."),
+        ("prof_Dark", "Dark Tome Users", "Weapon Prof."),
+        ("prof_Light", "Light Tome Users", "Weapon Prof."),
+        ("prof_Monster", "Monster Wpn Users", "Weapon Prof."),
+    ]
+
+    session.add_all(
+        [
+            ClassCategory(nid=x[0], name=x[1], type=x[2], order_key=idx)
+            for idx, x in enumerate(new_cats)
+        ]
+    )
+
+
+def _set_class_categories(session: Session, data_entry: DataEntry) -> list:
+    """Determines and retrieves item categories for a data entry."""
+    categories = []
+
+    if class_tier := session.get(
+        ClassCategory, f"class_tier_t{data_entry.get('tier', 0)}"
+    ):
+        categories.append(class_tier)
+    if class_tags := data_entry.get("tags"):
+        for class_tag in class_tags:
+            if class_cat := session.get(
+                ClassCategory, f"class_cat_{class_tag.lower()}"
+            ):
+                categories.append(class_cat)
+
+    weapon_nids = [x for x, y in data_entry.get("wexp_gain", {}).items() if y[0]]
+    for weapon_nid in weapon_nids:
+        if weapon := session.get(ClassCategory, f"prof_{weapon_nid}"):
+            categories.append(weapon)
+
+    return categories
+
+
+@log_execution_step
+def _add_weapons(session: Session, json_dir: Path):
+    weapons = []
+    weapons_data = load_json_data(json_dir / "weapons.json")
+    for data_entry in weapons_data:
+        icon_nid = data_entry.get("icon_nid")
+        new_weapon = Weapon(
+            nid=data_entry.get("nid"),
+            name=data_entry.get("name", "Unknown"),
+            icon_class=(
+                f"{make_valid_class_name(data_entry.get('nid'))}-weapon-icon "
+                f"{make_valid_class_name(icon_nid)}-icon"
+                if icon_nid
+                else ""
+            ),
+        )
+        weapons.append(new_weapon)
+    session.add_all(weapons)
+
+
+def _set_class_weapons(session: Session, data_entry: DataEntry):
+    weapons = []
+
+    weapon_nids = [x for x, y in data_entry.get("wexp_gain", {}).items() if y[0]]
+
+    for weapon_nid in weapon_nids:
+        if weapon := session.get(Weapon, weapon_nid):
+            weapons.append(weapon)
+
+    return weapons
+
+
+@log_execution_step
+def _add_classes(session: Session, json_dir: Path) -> None:
+    """Parses class JSON to create Class objects and associations."""
+    classes_data = load_json_data(json_dir / "classes.json")
+    exclude_class = (
+        "Test",
+        "_Plushie",
+        "Wall25",
+        "Dummy_T1",
+        "Snag20",
+        "Dummy_T2",
+        "Dummy_T3",
+        "Boat",
+        "Dead_Body",
+    )
+    for data_entry in classes_data:
+        if any(substr in data_entry.get("nid") for substr in exclude_class):
+            continue
+        new_class = Class(
+            nid=data_entry.get("nid"),
+            name=data_entry.get("name", "Unknown"),
+            desc=process_styled_text(data_entry.get("desc", "")),
+            tier=data_entry.get("tier", 0),
+            max_level=data_entry.get("max_level", 10),
+            bases={
+                stat_key: data_entry.get("bases", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            growths={
+                stat_key: data_entry.get("growths", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            growth_bonus={
+                stat_key: data_entry.get("growth_bonus", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            max_stats={
+                stat_key: data_entry.get("max_stats", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            promotion={
+                stat_key: data_entry.get("promotion", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            weapons=_set_class_weapons(session, data_entry),
+            categories=_set_class_categories(session, data_entry),
+            map_sprite_nid=data_entry.get("map_sprite_nid", ""),
+            alt_name=get_alt_name(data_entry.get("name"), data_entry.get("nid")),
+        )
+
+        session.add(new_class)
+    session.flush()
+
+    for data_entry in classes_data:
+        current_class = session.get(Class, data_entry.get("nid"))
+        if not current_class:
+            continue
+
+        if learned := data_entry.get("learned_skills", []):
+            for skill_level, skill_nid in learned:
+                if not skill_nid.endswith("_hide") and (
+                    skill := session.get(Skill, skill_nid)
+                ):
+                    current_class.learned_skills.append(
+                        ClassSkillAssociation(skill=skill, level=skill_level)
+                    )
+
+        if turns_into_nids := data_entry.get("turns_into", []):
+            if turns_into_nids:
+                target_classes = session.scalars(
+                    select(Class).where(Class.nid.in_(turns_into_nids))
+                ).all()
+                current_class.turns_into.extend(target_classes)
+
+    session.flush()
+
+
+def _add_affinities(session: Session, json_dir: Path):
+    """Adds all affinities from affinities.json to the database."""
+    log_execution_step("Adding Affinities")
+    affinities_data = load_json_data(json_dir / "affinities.json")
+    for data_entry in affinities_data:
+        new_bonus = []
+        val = data_entry.get("bonus", [])
+        for bonus_data in val:
+            new_bonus.append(
+                {
+                    "RANK": bonus_data["support_rank"],
+                    "ATK": bonus_data["damage"],
+                    "DEF": bonus_data["resist"],
+                    "HIT": bonus_data["accuracy"],
+                    "AVOID": bonus_data["avoid"],
+                    "CRIT": bonus_data["crit"],
+                    "DODGE": bonus_data["dodge"],
+                    "ATK SPD": bonus_data["attack_speed"],
+                    "DEF SPD": bonus_data["defense_speed"],
+                }
+            )
+        affinity = Affinity(
+            nid=data_entry.get("nid"),
+            name=data_entry.get("name", ""),
+            desc=data_entry.get("desc", ""),
+            bonus=new_bonus,
+            icon_class=f"Affinity-icon Pair-up-affinity-{data_entry.get('nid').lower()}-skill-icon",
+        )
+        session.add(affinity)
+    session.flush()
+
+
+@log_execution_step
+def _add_unit_supports(session: Session, json_dir: Path):
+    """Adds unit support pairs from support_pairs.json to the database."""
+    support_pairs = load_json_data(json_dir / "support_pairs.json")
+
+    for pair in support_pairs:
+        unit1_nid = pair["unit1"]
+        unit2_nid = pair["unit2"]
+        one_way = pair.get("one_way", False)
+
+        unit1 = session.get(Unit, unit1_nid)
+        unit2 = session.get(Unit, unit2_nid)
+
+        if unit1 and unit2:
+            if unit2 not in unit1.supports:
+                unit1.supports.append(unit2)
+
+            # If not one-way, unit2 also supports unit1
+            if not one_way and unit1 not in unit2.supports:
+                unit2.supports.append(unit1)
+        else:
+            print(
+                f"Warning: Could not find unit(s) for support pair: {unit1_nid} and {unit2_nid}"
+            )
+
+    session.flush()
+
+
+def _add_units(session: Session, json_dir: Path) -> None:
+    """Parses unit JSON to create Unit objects and associations."""
+    units_data = load_json_data(json_dir / "units.json")
+    init_category_map = load_json_data(json_dir / "units.category.json")
+    exclude_unit = ("_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit")
+
+    for data_entry in units_data:
+        new_unit_nid = data_entry.get("nid")
+        if init_category_map.get(new_unit_nid, "") not in (
+            "Vanilla",
+            "Dragon Gate",
+            "Monsters",
+        ) or new_unit_nid.endswith(exclude_unit):
+            continue
+        new_unit = Unit(
+            nid=data_entry.get("nid"),
+            name=data_entry.get("name", "Unknown"),
+            desc=process_styled_text(data_entry.get("desc", "")),
+            level=data_entry.get("level", 1),
+            base_class_nid=data_entry.get("klass"),
+            portrait_nid=data_entry.get("portrait_nid"),
+            affinity_nid=data_entry.get("affinity", ""),
+            bases={
+                stat_key: data_entry.get("bases", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            growths={
+                stat_key: data_entry.get("growths", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            stat_cap_modifiers={
+                stat_key: data_entry.get("stat_cap_modifiers", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            categories=_set_unit_categories(session, data_entry, init_category_map),
+        )
+
+        session.add(new_unit)
+        session.flush()
+
+        if current_unit := session.get(Unit, data_entry.get("nid")):
+            if start_items := data_entry.get("starting_items"):
+                item_nids = [i[0] for i in start_items]
+                items = session.scalars(
+                    select(Item).where(Item.nid.in_(item_nids))
+                ).all()
+                current_unit.starting_items.extend(items)
+
+            if learned := data_entry.get("learned_skills", []):
+                for skill_level, skill_nid in learned:
+                    if not skill_nid.endswith("_hide") and (
+                        skill := session.get(Skill, skill_nid)
+                    ):
+                        current_unit.learned_skills.append(
+                            UnitSkillAssociation(skill=skill, level=skill_level)
+                        )
+
+    session.flush()
+
+
 def add_to_db(json_dir: Path) -> None:
-    """
-    Loads game data from JSON files into the SQLite database.
-
-    Parameters:
-        json_dir (Path): The directory path containing the source JSON files.
-
-    Returns:
-        None: The function commits changes directly to the database.
-    """
+    """Orchestrates the database population process."""
     db_path = Path(__file__).resolve().parent / "app/fe8r-guide.db"
     engine = create_engine(f"sqlite+pysqlite:///{db_path}")
 
-    print(f"--- Initializing Database at {db_path} ---")
-    print(f"--- Loading JSON data from {json_dir} ---")
+    print(f"\n--- Initializing Database at {db_path} ---")
+    print(f"--- Loading JSON data from {json_dir} ---\n")
 
     with Session(engine) as session:
         Base.metadata.drop_all(engine)
         Base.metadata.create_all(engine)
 
-        skill_cats = _get_skill_categories(session, json_dir)
-        _add_skills(session, skill_cats, json_dir)
+        _add_skill_categories(session)
+        _add_skills(session, json_dir)
         session.flush()
 
         _add_item_categories(session)
@@ -781,10 +1049,30 @@ def add_to_db(json_dir: Path) -> None:
         _add_sub_items(session, json_dir)
         session.commit()
 
+        _update_item_categories(session)
+        session.commit()
+
         _add_shops(session, json_dir)
         session.commit()
 
         _add_dragons_gate_shop(session)
+        session.commit()
+
+        _add_weapons(session, json_dir)
+        session.commit()
+
+        _add_class_categories(session)
+        _add_classes(session, json_dir)
+        session.commit()
+
+        _add_affinities(session, json_dir)
+        session.commit()
+
+        _add_unit_categories(session)
+        _add_units(session, json_dir)
+        session.commit()
+
+        _add_unit_supports(session, json_dir)
         session.commit()
 
         _add_arsenals(session, json_dir)
