@@ -15,8 +15,8 @@
 ### Changed
 
 - Units, classes, items and skills now have similar index pages
-- The box containing skills inside items is slightly more visible
-- Boxes and tables are smaller/more compact
+- Skills inside item entries are slightly more visible
+- Some UI elements are slightly more compact
 
 ## [0.0.5] - 2025-11-25
 
