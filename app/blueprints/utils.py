@@ -197,7 +197,7 @@ def get_status_equip(data_entry: DataEntry) -> list[str]:
     return list(wp_status)
 
 
-def get_comp(entry: DataEntry, comp_name: str, comp_type: type) -> Any:
+def get_comp(entry: DataEntry, comp_name: str, comp_type: type = bool) -> Any:
     """
     Retrieves the value of a component from an entry.
     Returns a default value based on comp_type if the component is not found.
