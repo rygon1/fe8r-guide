@@ -18,8 +18,6 @@
 - The box containing skills inside items is slightly more visible
 - Boxes and tables are smaller/more compact
 
----
-
 ## [0.0.5] - 2025-11-25
 
 ### Added
