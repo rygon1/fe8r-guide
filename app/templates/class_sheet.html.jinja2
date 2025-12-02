@@ -64,7 +64,7 @@
     <details open>
         <summary>Skills</summary>
         <div class="skill-grid">
-            {% for skill_assoc in class_data.learned_skills %}
+            {% for skill_assoc in class_data.learned_skills|sort(attribute="level") %}
             <div>
                 <p><small>Level {{skill_assoc.level}}</small></p>
                 <div hx-get=/skills/{{skill_assoc.skill_nid}} hx-trigger="load" hx-target="this" hx-swap="outerHTML">
