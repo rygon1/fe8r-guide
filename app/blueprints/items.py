@@ -1,40 +1,13 @@
 import json
-from dataclasses import dataclass
 from itertools import groupby
 
 from flask import Blueprint, abort, render_template, request
 from sqlalchemy import select
 
 from app.extensions import db
-from app.models import Arsenal, Item, ItemCategory, Shop
+from app.models import Arsenal, Item, ItemCategory, Shop, UnitCategory
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
-
-
-@dataclass
-class FEItem:
-    nid: str
-    name: str
-    desc: str
-    value: int
-    weapon_rank: str
-    weapon_type: str
-    target: str
-    damage: int
-    weight: int
-    crit: int
-    hit: int
-    min_range: int
-    max_range: int
-    status_on_equip: list
-    icon_class: str
-    sub_items: list
-
-
-@dataclass
-class FEUnit:
-    nid: str
-    name: str
 
 
 UNITS = {}
@@ -143,9 +116,38 @@ def get_fe_arsenal() -> str:
         abort(404)
     return render_template(
         template,
-        unit_data=UNITS[fe_unit_nid],
         unit_arsenals=unit_arsenals,
         arsenal_units=ARSENAL_UNITS,
+    )
+
+
+@bp.route("/arsenals/categories")
+def get_unit_list():
+    if not (unit_cat_nid := request.args.get("unitCategory")):
+        unit_cat_nid = "Eirika"
+    unit_cat = db.get_or_404(UnitCategory, unit_cat_nid)
+    unordered_items = unit_cat.units
+    if not (unit_cat_sort := request.args.get("unitSort")):
+        unit_cat_sort = "alpha_inc"
+    grouped_units = []
+    sort_reverse = unit_cat_sort.endswith("dec")
+    if unit_cat_sort.startswith("alpha_"):
+        unordered_items.sort(key=lambda x: x.name[0].upper())
+        for group_name, group_iterator in groupby(
+            unordered_items, key=lambda x: x.name[0].upper()
+        ):
+            group_list = list(group_iterator)
+            grouped_units.append(
+                {
+                    "key": group_name,
+                    "units": sorted(group_list, key=lambda x: x.name),
+                }
+            )
+        grouped_units.sort(key=lambda x: x["key"], reverse=sort_reverse)
+
+    return render_template(
+        "arsenal_index_list.jinja2",
+        grouped_units=grouped_units,
     )
 
 
@@ -157,7 +159,6 @@ def get_fe_arsenal_sheet(fe_unit_nid="Eirika") -> str:
         "arsenal_sheet.html.jinja2",
         unit_data=UNITS[fe_unit_nid],
         unit_arsenals=unit_arsenals,
-        arsenal_units=ARSENAL_UNITS,
     )
 
 
