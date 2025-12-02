@@ -18,18 +18,18 @@
   <div class="unit-head-container">
     <div class="div1">
       <img
-        src="{{ url_for('static',filename='images/map_sprites/'+unit_data.base_class_data.map_sprite_nid+'-stand.webp') }}"
+        src="{{ url_for('static',filename='images/map_sprites/'+unit_data.base_class.map_sprite_nid+'-stand.webp') }}"
         height="96" width="96" />
     </div>
     <div class="div2">
       <hgroup>
-        <h3>{{ unit_data.base_class_data.name }}</h3>
-        <p>{{ unit_data.base_class_data.desc }}
-          {% if unit_data.base_class_data.weapons%}
+        <h3>{{ unit_data.base_class.name }}</h3>
+        <p>{{ unit_data.base_class.desc }}
+          {% if unit_data.base_class.weapons%}
           <br />
           <span class="lt-color-red">Prof:</span>
-          {% for weapon_type in unit_data.base_class_data.weapons%}
-          <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+          {% for weapon in unit_data.base_class.weapons%}
+          <span class="{{ weapon.icon_class }}"></span>
           {% endfor %}
           {% endif %}
         </p>
@@ -52,44 +52,44 @@
         <tr>
           <th scope="row">Base</th>
           {% for stat_name in stat_names[:-1] %}
-          <td>{{ unit_data.base_class_data.promotion[stat_name] + unit_data.bases[stat_name] }}</td>
+          <td>{{ unit_data.base_class.promotion[stat_name] + unit_data.bases[stat_name] }}</td>
           {% endfor %}
-          <td>{{ unit_data.base_class_data.bases['MOV'] }}</td>
+          <td>{{ unit_data.base_class.bases['MOV'] }}</td>
         </tr>
         <tr>
           <th scope="row">Growth</th>
           {% for stat_name in stat_names %}
-          <td>{{ unit_data.base_class_data.growth_bonus[stat_name] + unit_data.growths[stat_name] }}%</td>
+          <td
+            class="lt-color-{{ (unit_data.base_class.growth_bonus[stat_name] + unit_data.growths[stat_name])|growth_colors }}">
+            {{ unit_data.base_class.growth_bonus[stat_name] + unit_data.growths[stat_name] }}%</td>
           {% endfor %}
         </tr>
         <tr>
           <th scope="row">Cap</th>
           {% for stat_name in stat_names %}
-          <td>{{ unit_data.base_class_data.max_stats[stat_name] + unit_data.stat_cap_modifiers[stat_name]}}</td>
+          <td>{{ unit_data.base_class.max_stats[stat_name] + unit_data.stat_cap_modifiers[stat_name]}}</td>
           {% endfor %}
         </tr>
     </table>
   </div>
 
-  {% if unit_data.learned_skills or unit_data.base_class_data.learned_skills%}
+  {% if unit_data.learned_skills or unit_data.base_class.learned_skills%}
   <details open>
     <summary>Skills</summary>
-    <div class="grid">
-      {% for skill_lvl,skill_nid in unit_data.learned_skills %}
-
-      <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
-      </div>
-
-      {% endfor %}
-
-      {% for skill_lvl,skill_nid in unit_data.base_class_data.learned_skills %}
-      {% if skill_lvl > 1 %}
+    <div class="skill-grid">
+      {% for skill in unit_data.learned_skills|sort(attribute="level") %}
       <div>
-        <p>Level {{skill_lvl}}</p>
-        <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+        <p><small>Level {{skill.level}}</small></p>
+        <div hx-get=/skills/{{skill.skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
         </div>
       </div>
-      {% endif %}
+      {% endfor %}
+      {% for skill in unit_data.base_class.learned_skills|sort(attribute="level") %}
+      <div>
+        <p><small>Level {{skill.level}}</small></p>
+        <div hx-get=/skills/{{skill.skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+        </div>
+      </div>
       {% endfor %}
     </div>
   </details>
@@ -98,21 +98,21 @@
 
   <details>
     <summary>Promotions</summary>
-    {% if unit_data.base_class_data.tier == 0 %}
+    {% if unit_data.base_class.tier == 0 %}
     <div id="classT1Selector">
       <label>Tier 1</label>
-      {% if unit_promos.turns_into|length > 1%}
+      {% if unit_data.base_class.turns_into|length > 1%}
       <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
         hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT1Sheet" hx-indicator="#unitClassT1Sheet"
         hx-swap="innerHTML"
         _="on change set #unitClassT3Sheet.innerHTML to '' then set #unitClassT2Sheet.innerHTML to ''">
         <option value="default" selected disabled>Select a tier 1 class</option>
-        {% for promo_class_t2 in unit_promos.turns_into %}
+        {% for promo_class_t2 in unit_data.base_class.turns_into %}
         <option value="{{ promo_class_t2.nid }}">{{ promo_class_t2.name }}</option>
         {% endfor %}
       </select>
       {% else %}
-      {% set promo_class_t2=unit_promos.turns_into|first%}
+      {% set promo_class_t2=unit_data.base_class.turns_into|first%}
       <div hx-vals='{"unitClassSelect":"{{ promo_class_t2.nid }}"}' hx-get="/units/{{ unit_data.nid }}/classes"
         hx-target="#unitClassT1Sheet" hx-indicator="#unitClassT1Sheet" hx-swap="innerHTML" hx-trigger="load"></div>
       {% endif %}
@@ -120,17 +120,17 @@
     {% else %}
     <div id="classT2Selector">
       <label>Tier 2</label>
-      {% if unit_promos.turns_into|length > 1%}
+      {% if unit_data.base_class.turns_into|length > 1%}
       <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
         hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT2Sheet" hx-indicator="#unitClassT2Sheet"
         hx-swap="innerHTML" _="on change set #unitClassT3Sheet.innerHTML to ''">
         <option value="default" selected disabled>Select a tier 2 class</option>
-        {% for promo_class_t2 in unit_promos.turns_into%}
+        {% for promo_class_t2 in unit_data.base_class.turns_into%}
         <option value="{{ promo_class_t2.nid }}">{{ promo_class_t2.name }}</option>
         {% endfor %}
       </select>
       {% else %}
-      {% set promo_class_t2=unit_promos.turns_into|first%}
+      {% set promo_class_t2=unit_data.base_class.turns_into|first%}
       <div hx-vals='{"unitClassSelect":"{{ promo_class_t2.nid }}"}' hx-get="/units/{{ unit_data.nid }}/classes"
         hx-target="#unitClassT2Sheet" hx-indicator="#unitClassT2Sheet" hx-swap="innerHTML" hx-trigger="load"></div>
       {% endif %}
@@ -145,46 +145,52 @@
   {% if unit_data.starting_items %}
   <details>
     <summary>Starting Items</summary>
-    <div class="grid">
-      {% for item_nid in unit_data.starting_items %}
+
+    <div class="skill-grid">
+      {% for item in unit_data.starting_items %}
+
       <div>
-        <div hx-get=/items/{{item_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+        <p></p>
+        <div hx-get=/items/{{item.nid}} hx-vals='{"hideSkills": "true"}' hx-trigger=" load" hx-target="this"
+          hx-swap="outerHTML">
         </div>
       </div>
+
       {% endfor %}
     </div>
+
   </details>
   <hr />
   {% endif %}
 
-  {% if unit_supports %}
+  {% if unit_data.supports %}
   <details>
     <summary>Supports</summary>
     <ul>
-      {% for support_nid,support_data in unit_supports|items %}
+      {% for support in unit_data.supports %}
       <li>
         <details name="example">
           <summary>
-            <a href="#" hx-get="/units/{{ support_nid }}" hx-vals='{"addCopy": "True"}' hx-target="#unitSheet">{{
-              support_data.name }}</a>
-            <span class="Affinity-icon Pair-up-affinity-{{ support_data.affinity.nid|lower }}-icon"></span>
+            <a href="/units/{{ support.nid }}">{{
+              support.name }}</a>
+            <span class="{{ support.affinity.icon_class }}"></span>
           </summary>
           <div class="overflow-auto">
             <table class="striped">
               <thead>
                 <tr>
-                  {% for stat, stat_val in support_data.affinity.bonus[0]|items %}
-                  {% if stat == "RANK" or stat_val > 0.0 %}
+                  {% for stat, stat_val in support.affinity.bonus[0]|items %}
+                  {% if stat == "RANK" or stat_val|float > 0.0 %}
                   <th scope="col">{{ stat }}</th>
                   {% endif %}
                   {% endfor %}
                 </tr>
               </thead>
               <tbody>
-                {% for bonus_data in support_data.affinity.bonus %}
+                {% for bonus_data in support.affinity.bonus %}
                 <tr>
                   {% for stat, stat_val in bonus_data|items %}
-                  {% if stat != "RANK" and stat_val > 0.0 %}
+                  {% if stat != "RANK" and stat_val|float > 0.0 %}
                   <td>+{{ stat_val }}</td>
                   {% elif stat == "RANK"%}
                   <th scope="row">{{ stat_val }}</th>
@@ -200,6 +206,18 @@
       {% endfor %}
     </ul>
   </details>
+  <hr />
+  {% endif %}
+  {% if unit_data.categories %}
+  <strong><small>Categories:</small></strong>
+  {% for unit_cat in unit_data.categories|sort(attribute='order_key')%}
+  <a href="/units?selectedCategory={{ unit_cat.nid }}"><small>{{ unit_cat.name }}</small></a>
+  {% if not loop.last %}
+  |
+  {% else %}
+  &nbsp;&nbsp;
+  {% endif %}
+  {% endfor %}
   {% endif %}
 </div>
 {% endblock content %}

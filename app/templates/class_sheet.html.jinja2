@@ -16,8 +16,8 @@
                     {% if class_data.weapons%}
                     <br />
                     <span class="lt-color-red">Prof:</span>
-                    {% for weapon_type in class_data.weapons%}
-                    <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+                    {% for weapon in class_data.weapons%}
+                    <span class="{{ weapon.icon_class }}"></span>
                     {% endfor %}
                     {% endif %}
                 </p>
@@ -47,7 +47,8 @@
                 <tr>
                     <th scope="row">Growth</th>
                     {% for stat_name in stat_names %}
-                    <td>+{{ class_data.growth_bonus[stat_name] }}%</td>
+                    <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">+{{
+                        class_data.growth_bonus[stat_name] }}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -62,11 +63,11 @@
     {% if class_data.learned_skills %}
     <details open>
         <summary>Skills</summary>
-        <div class="grid">
-            {% for skill_lvl,skill_nid in class_data.learned_skills %}
+        <div class="skill-grid">
+            {% for skill_assoc in class_data.learned_skills %}
             <div>
-                <p>Level {{skill_lvl}}</p>
-                <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                <p><small>Level {{skill_assoc.level}}</small></p>
+                <div hx-get=/skills/{{skill_assoc.skill_nid}} hx-trigger="load" hx-target="this" hx-swap="outerHTML">
                 </div>
             </div>
             {% endfor %}
@@ -75,32 +76,41 @@
     <hr />
     {% endif %}
 
-
-    {% if class_promo_data.turns_into or class_promo_data.turns_from%}
+    {% if class_data.turns_into or class_data.promotes_from%}
     <div class="grid">
-        {% if class_promo_data.turns_from %}
+        {% if class_data.promotes_from %}
         <details open>
             <summary>Promotes From</summary>
             <ul>
-                {% for prev_class_data in class_promo_data.turns_from %}
+                {% for prev_class_data in class_data.promotes_from %}
                 <li><a href="#" hx-get="/classes/{{prev_class_data.nid}}" hx-target="#classSheet"
                         hx-vals='{"addCopy":"True"}' hx-swap="outerHTML">{{prev_class_data.name}} {% if
                         prev_class_data.alt_name %}({{
                         prev_class_data.alt_name }}){% endif %}</a>
+                    {% if prev_class_data.weapons%}
+                    {% for weapon in prev_class_data.weapons%}
+                    <span class="{{ weapon.icon_class }}"></span>
+                    {% endfor %}
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
         </details>
         {% endif %}
-        {% if class_promo_data.turns_into %}
+        {% if class_data.turns_into %}
         <details open>
             <summary>Promotes To</summary>
             <ul>
-                {% for next_class_data in class_promo_data.turns_into %}
+                {% for next_class_data in class_data.turns_into %}
                 <li><a href="#" hx-get="/classes/{{next_class_data.nid}}" hx-target="#classSheet"
                         hx-vals='{"addCopy":"True"}' hx-swap="outerHTML">{{next_class_data.name}} {% if
                         next_class_data.alt_name %}({{
                         next_class_data.alt_name }}){% endif %}</a>
+                    {% if next_class_data.weapons%}
+                    {% for weapon in next_class_data.weapons%}
+                    <span class="{{ weapon.icon_class }}"></span>
+                    {% endfor %}
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -108,6 +118,16 @@
         {% endif %}
     </div>
     {% endif %}
-
+    {% if class_data.categories %}
+    <strong><small>Categories:</small></strong>
+    {% for class_cat in class_data.categories|sort(attribute='order_key')%}
+    <a href="/classes?selectedCategory={{ class_cat.nid }}"><small>{{ class_cat.name }}</small></a>
+    {% if not loop.last %}
+    |
+    {% else %}
+    &nbsp;&nbsp;
+    {% endif %}
+    {% endfor %}
+    {% endif %}
 </div>
 {% endblock content %}

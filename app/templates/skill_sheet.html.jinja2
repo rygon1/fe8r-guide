@@ -8,5 +8,20 @@
         <strong>{{ skill_data.name }} <span class="{{ skill_data.icon_class }}"></span></strong>
     </header>
     <p>{{ skill_data.desc }}</p>
+    {% if not request.headers.hx_request%}
+    <footer>
+        {% if skill_data.categories %}
+        <strong><small>Categories:</small></strong>
+        {% for skill_cat in skill_data.categories|sort(attribute='order_key')%}
+        <a href="/skills?selectedCategory={{ skill_cat.nid }}"><small>{{ skill_cat.name }}</small></a>
+        {% if not loop.last %}
+        |
+        {% else %}
+        &nbsp;&nbsp;
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    </footer>
+    {% endif %}
 </article>
 {% endblock content %}

@@ -7,11 +7,12 @@
     <header>
         <strong>{{ item_data.name }} <span class="{{ item_data.icon_class }}"></span></strong>
     </header>
-    {% if (item_data.weapon_type and item_data.weapon_type != 'Misc') or item_data.min_range or item_data.weight or
+    {% if (item_data.weapon_type and item_data.weapon_type not in ['Misc','Accessory','Held Item']) or
+    item_data.min_range or item_data.weight or
     item_data.damage or item_data.hit or
     item_data.crit or item_data.value %}
     <section class="stat-grid">
-        {% if item_data.weapon_type and item_data.weapon_type != 'Misc' %}
+        {% if item_data.weapon_type not in ['Misc','Accessory','Held Item'] %}
         <div>
             <span class=" Wexpicons-icon {{ item_data.weapon_type }}-subIcon"></span>{% if item_data.weapon_rank %}
             {{item_data.weapon_rank}}{% endif %}<br />
@@ -55,25 +56,36 @@
         {% endif %}
     </section>
     {% if item_data.desc %}
-    <div>
+    <section>
         <p>{{ item_data.desc }}</p>
-    </div>
+    </section>
     {% endif %}
-    {% if item_data.status_on_equip %}
-    <div class="skill-grid">
+    {% if item_data.status_on_equip and request.args.get('hideSkills') != "true" %}
+    <br />
+    <section class="skill-grid">
         {% for skill in item_data.status_on_equip %}
-        <div hx-get=/skills/{{skill.nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+        <div>
+            <p></p>
+            <div hx-get=/skills/{{skill.nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+            </div>
         </div>
         {% endfor %}
-    </div>
+    </section>
     {% endif %}
-    {% if item_data.nid == 'Crystal_Ring_DG' %}
-    <div class="grid">
+    {% if item_data.nid in
+    ['Crystal_Ring_DG','Antitoxin','Elixir','Vulnerary','Orsons_Vuln_Multi','Treat','Regenerating_Concoction_DG']
+    %}
+    <br />
+    <section class="skill-grid">
         {% for subitem in item_data.sub_items %}
-        <div hx-get=/items/{{subitem.nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+        <div>
+            <p></p>
+            <div hx-get=/items/{{subitem.nid}} hx-vals='{"hideSkills": "true"}' hx-trigger=" load" hx-target="this"
+                hx-swap="outerHTML">
+            </div>
         </div>
         {% endfor %}
-    </div>
+    </section>
     {% endif %}
     {% if not request.headers.hx_request%}
     <footer>

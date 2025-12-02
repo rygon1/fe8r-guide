@@ -1,0 +1,15 @@
+<div class="skill-grid">
+    {% for group_data in grouped_classes %}
+    <div>
+        <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
+        <ul>
+            {% for class in group_data['classes']%}
+            <li><a href="/classes/{{ class.nid }}">{{ class.name }} {% if
+                    class.alt_name %}({{
+                    class.alt_name }}){% endif %}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>

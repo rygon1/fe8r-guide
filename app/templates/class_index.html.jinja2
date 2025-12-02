@@ -5,36 +5,25 @@
 {% block content %}
 <h1>Classes</h1>
 <section>
-    <form>
-        <fieldset class="grid">
-            <div>
-                <select name="classCategory" id="classCategory" aria-label="Select category" required
-                    _="on change set myFilter to me.value then show <select/> in #classSelector when its.getAttribute('data-category') is myFilter then set .classSelect.value to 'default' then
-                    on load set myFilter to me.value then show <select/> in #classSelector when its.getAttribute('data-category') is myFilter then set .classSelect.value to 'default'">
-                    {% for class_cat in class_cats%}
-                    <option value="{{ class_cat }}">{{ class_cat }}</option>
-                    {% endfor %}
-                    </option>
-                </select>
-            </div>
-            <div id="classSelector">
-                {% for class_cat,classes in class_cats|items %}
-                <select class="classSelect" name="classSelect" aria-label="Select class" data-category="{{ class_cat }}"
-                    required hx-get="/classes" hx-vals='{"addCopy": "True"}' hx-target="#classSheet"
-                    hx-indicator="#classSheet" hx-swap="outerHTML">
-                    <option value="default" selected disabled>Select a class</option>
-                    {% for class_nid,class_data in classes|items %}
-                    <option value="{{ class_data['nid'] }}">{{ class_data['name'] }} {% if class_data.alt_name %}({{
-                        class_data.alt_name }}){% endif %}
-                    </option>
-                    {% endfor %}
-                </select>
+    <form hx-get="/classes/categories" hx-target="#classSelector" hx-swap="innerHTML" hx-trigger="change,load">
+        <fieldset role="group">
+            <select name="classCategory" id="classCategory" aria-label="Select category">
+                {% for category_type, category_list in class_cats %}
+                <option value="" disabled>-- {{ category_type }} --</option>
+                {% for category in category_list%}
+                <option value="{{ category.nid }}" {% if selected_category==category.nid %}selected{% endif %}>{{
+                    category.name }}</option>
                 {% endfor %}
-            </div>
+                {% endfor %}
+
+            </select>
+            <select name="classSort" id="classSort" class="sortSelect" aria-label="Select sort">
+                <option value="alpha_inc" selected>Name (A-Z)</option>
+                <option value="alpha_dec">Name (Z-A)</option>
+            </select>
         </fieldset>
     </form>
 </section>
-<div id="classSheet">
-    <div aria-busy="true" class="htmx-indicator"></div>
+<div id="classSelector">
 </div>
 {% endblock content %}

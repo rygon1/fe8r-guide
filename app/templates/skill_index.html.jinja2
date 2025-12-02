@@ -5,34 +5,26 @@
 {% block content %}
 <h1>Skills</h1>
 <section>
-    <form>
-        <fieldset class="grid">
-            <div>
-                <select name="skillCategory" id="skillCategory" aria-label="Select category" required
-                    _="on change set myFilter to me.value then show <select/> in #skillSelector when its.getAttribute('data-category') is myFilter then set .skillSelect.value to 'default' then
-                    on load set myFilter to me.value then show <select/> in #skillSelector when its.getAttribute('data-category') is myFilter then set .skillSelect.value to 'default'">
-                    {% for skill_cat in skill_cats%}
-                    <option value="{{ skill_cat }}">{{ skill_cat }}</option>
-                    {% endfor %}
-                    </option>
-                </select>
-            </div>
-            <div id="skillSelector">
-                {% for skill_cat,skills in skill_cats.items() %}
-                <select class="skillSelect" name="skillSelect" aria-label="Select skill" data-category="{{ skill_cat }}"
-                    required hx-get="/skills" hx-vals='{"addCopy": "True"}' hx-target="#skillsheet"
-                    hx-indicator="#skillsheet">
-                    <option value="default" selected disabled>Select a skill</option>
-                    {% for skill_nid,skill_name in skills.items() %}
-                    <option value="{{ skill_nid }}">{{ skill_name }}</option>
-                    {% endfor %}
-                </select>
+    <form hx-get="/skills/categories" hx-target="#skillSelector" hx-swap="innerHTML" hx-trigger="change,load">
+        <fieldset role="group">
+
+            <select name="skillCategory" id="skillCategory" aria-label="Select category">
+                {% for category_type, category_list in skill_cats %}
+                <option value="" disabled>-- {{ category_type }} --</option>
+                {% for category in category_list%}
+                <option value="{{ category.nid }}" {% if selected_category==category.nid %}selected{% endif %}>{{
+                    category.name }}</option>
                 {% endfor %}
-            </div>
+                {% endfor %}
+
+            </select>
+            <select name="skillSort" id="skillSort" class="sortSelect" aria-label="Select sort">
+                <option value="alpha_inc" selected>Name (A-Z)</option>
+                <option value="alpha_dec">Name (Z-A)</option>
+            </select>
         </fieldset>
     </form>
 </section>
-<div id="skillsheet">
-    <div aria-busy="true" class="htmx-indicator"></div>
+<div id="skillSelector">
 </div>
 {% endblock content %}

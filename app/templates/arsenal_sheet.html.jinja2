@@ -1,11 +1,11 @@
 {% if not request.headers.hx_request %}
 {% extends "layout.html.jinja2" %}
-{% block title %} {{ unit_data.name }} &mdash; Arsenals | {% endblock %}
+{% block title %} {{ (unit_arsenals|first).arsenal_owner.name }} &mdash; Arsenals | {% endblock %}
 {% endif %}
 {% block content %}
 <div id="arsenalSheet">
     <div aria-busy="true" class="htmx-indicator"></div>
-    <h2>{{ unit_data.name }}</h2>
+    <h2>{{ (unit_arsenals|first).arsenal_owner.name }}</h2>
     {% for arsenal in unit_arsenals %}
     <section>
         <hgroup>
@@ -25,11 +25,13 @@
         </select>
         <div id="arsenalItems">
             {% for item_type, item_list in arsenal.items | groupby('weapon_type') %}
-            <div class="arsenalItemType" data-category="{{ item_type }}">
-                {% for item in item_list | sort(attribute='weapon_rank_order_key,damage') %}
-                <div hx-get="/items/{{ item.nid }}" hx-trigger="load" hx-target="this">
+            <div>
+                <div class="arsenalItemType" data-category="{{ item_type }}">
+                    {% for item in item_list | sort(attribute='weapon_rank_order_key,damage') %}
+                    <div hx-get="/items/{{ item.nid }}" hx-trigger="load" hx-target="this">
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
             {% endfor %}
         </div>

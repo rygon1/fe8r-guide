@@ -1,0 +1,12 @@
+<div class="skill-grid">
+    {% for group_data in grouped_skills %}
+    <div>
+        <h3>{% if group_data.key %}{{group_data.key}}{% else %}N/A{% endif %}</h3>
+        <ul>
+            {% for skill in group_data['skills']%}
+            <li><span class="{{ skill.icon_class }}"></span><a href="/skills/{{ skill.nid }}">{{ skill.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>

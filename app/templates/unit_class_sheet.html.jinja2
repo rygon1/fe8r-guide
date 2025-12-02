@@ -18,8 +18,8 @@
                             {% if class_data.weapons%}
                             <br />
                             <span class="lt-color-red">Prof:</span>
-                            {% for weapon_type in class_data.weapons%}
-                            <span class=" Wexpicons-icon {{ weapon_type }}-subIcon"></span>
+                            {% for weapon in class_data.weapons%}
+                            <span class="{{ weapon.icon_class }}"></span>
                             {% endfor %}
                             {% endif %}
                         </p>
@@ -50,7 +50,9 @@
                 <tr>
                     <th scope="row">Total Growth</th>
                     {% for stat_name in stat_names %}
-                    <td>{{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%</td>
+                    <td
+                        class="lt-color-{{ (unit_data.growths[stat_name] + class_data.growth_bonus[stat_name])|growth_colors }}">
+                        {{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%</td>
                     {% endfor %}
                 </tr>
                 <tr>
@@ -65,11 +67,11 @@
     {% if class_data.learned_skills %}
     <div>
         <p><strong>Skills</strong></p>
-        <div class="grid">
-            {% for skill_lvl,skill_nid in class_data.learned_skills %}
+        <div class="skill-grid">
+            {% for skill in class_data.learned_skills|sort(attribute="level") %}
             <div>
-                <p>Level {{skill_lvl}}</p>
-                <div hx-get=/skills/{{skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                <p><small>Level {{skill.level}}</small></p>
+                <div hx-get=/skills/{{skill.skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
                 </div>
             </div>
             {% endfor %}
@@ -77,21 +79,21 @@
     </div>
     {% endif %}
 </section>
-{% if class_promo_data.turns_into %}
+{% if class_data.turns_into %}
 <div class="classT{{ class_data.tier + 1 }}Selector">
     <label>Tier {{ class_data.tier + 1 }}</label>
-    {% if class_promo_data.turns_into|length > 1%}
+    {% if class_data.turns_into|length > 1%}
     <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
         hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT{{ class_data.tier + 1 }}Sheet"
         hx-indicator="#unitClassT{{ class_data.tier + 1 }}Sheet" hx-swap="innerHTML" {% if class_data.tier==1 %}
         _="on change set #unitClassT3Sheet.innerHTML to ''" {% endif %}>
         <option value="default" selected disabled>Select a tier {{ class_data.tier + 1 }} class</option>
-        {% for next_class_data in class_promo_data.turns_into %}
+        {% for next_class_data in class_data.turns_into %}
         <option value="{{ next_class_data.nid }}">{{ next_class_data.name }}</option>
         {% endfor %}
     </select>
     {% else %}
-    {% set next_class_data=class_promo_data.turns_into|first%}
+    {% set next_class_data=class_data.turns_into|first%}
     <div hx-get="/units/{{ unit_data.nid }}/classes" hx-vals='{"unitClassSelect":"{{ next_class_data.nid }}"}'
         hx-target="#unitClassT{{ class_data.tier + 1 }}Sheet" hx-indicator="#unitClassT{{ class_data.tier + 1 }}Sheet"
         hx-swap="innerHTML" hx-trigger="load"></div>
