@@ -10,7 +10,6 @@ from PIL import Image
 
 from add_to_db import add_to_db
 from app.blueprints.utils import (
-    get_comp,
     load_json_data,
     log_execution_step,
     make_valid_class_name,
@@ -101,32 +100,6 @@ def minify_json() -> None:
 
 
 @log_execution_step
-def make_item_cat_new_json():
-    item_cats = {"Dragon's Gate": {}, "Accessories": {}}
-    items = sorted(load_json_data(JSON_DIR / "items.json"), key=lambda x: x["name"])
-
-    for entry in items:
-        nid, name = entry["nid"], entry["name"]
-
-        if nid.endswith("_DG"):
-            item_cats["Dragon's Gate"][nid] = name
-
-        if (
-            get_comp(entry, "equippable_accessory", bool)
-            and name not in item_cats["Accessories"].values()
-        ):
-            item_cats["Accessories"][nid] = name
-
-        if wtype := get_comp(entry, "weapon_type", str):
-            if wtype not in item_cats:
-                item_cats[wtype] = {}
-            if name not in item_cats[wtype].values():
-                item_cats[wtype][nid] = name
-
-    save_json_data(GUIDE_JSON_DIR / "items.category.new.json", item_cats)
-
-
-@log_execution_step
 def get_icons():
     dest_dir = GUIDE_IMG_DIR / "icons"
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -154,6 +127,7 @@ def get_portraits():
 def make_icon_css():
     items = load_json_data(JSON_DIR / "items.json")
     skills = load_json_data(JSON_DIR / "skills.json")
+    weapons = load_json_data(JSON_DIR / "weapons.json")
     icons = load_json_data(ICONS_16_DIR / "icons16.json")
 
     css_lines = []
@@ -190,6 +164,12 @@ def make_icon_css():
         if entry["icon_nid"]:
             add_sheet_entry(entry["icon_nid"])
             add_position_entry(entry["nid"], entry["icon_index"], "skill-icon")
+
+    # Process Weapons
+    for entry in weapons:
+        if entry["icon_nid"]:
+            add_sheet_entry(entry["icon_nid"])
+            add_position_entry(entry["nid"], entry["icon_index"], "weapon-icon")
 
     # Process SubIcons
     for entry in icons:
@@ -270,7 +250,6 @@ def get_map_sprites():
                 lower = upper + frame_height
 
                 sprite = sprite_sheet.crop((left, upper, right, lower))
-                # Inner crop as per original logic
                 frame = sprite.crop((8, 0, 56, 48))
                 frames.append(frame)
 
@@ -314,21 +293,18 @@ def copy_json():
 
 
 def main():
-    # Ensure output directories exist
     GUIDE_JSON_DIR.mkdir(parents=True, exist_ok=True)
     GUIDE_IMG_DIR.mkdir(parents=True, exist_ok=True)
     GUIDE_CSS_DIR.mkdir(parents=True, exist_ok=True)
 
     copy_json()
     make_class_promo_json()
-    make_item_cat_new_json()
     minify_json()
     get_icons()
     get_portraits()
     get_map_sprites()
     make_icon_css()
 
-    # Database integration
     add_to_db(JSON_DIR)
 
 
