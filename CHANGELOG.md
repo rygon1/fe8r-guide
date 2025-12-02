@@ -2,6 +2,24 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.0.6] - 2025-12-01
+
+### Added
+
+- New categories:
+  - Skills: Active, Support, and Passive
+  - Items: Consumables
+  - Classes: Weapon Profs. and Tags (e.g. Infantry, Armor)
+- Color-coded unit and class growths
+
+### Changed
+
+- Units, classes, items and skills now have similar index pages
+- The box containing skills inside items is slightly more visible
+- Boxes and tables are smaller/more compact
+
+---
+
 ## [0.0.5] - 2025-11-25
 
 ### Added
