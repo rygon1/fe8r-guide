@@ -5,11 +5,13 @@
 {% block content %}
 <div id="arsenalSheet">
     <div aria-busy="true" class="htmx-indicator"></div>
+    {% if not request.headers.hx_request %}
     <h2>{{ (unit_arsenals|first).arsenal_owner.name }}</h2>
+    {% endif %}
     {% for arsenal in unit_arsenals %}
     <section>
         <hgroup>
-            <h3>{{ arsenal.name }}<span class="{{ arsenal.icon_class }}"></span></h3>
+            <h5>{{ arsenal.name }}<span class="{{ arsenal.icon_class }}"></span></h5>
             <p>{{ arsenal.desc }}</p>
         </hgroup>
         <select name="arsenalItemType" aria-label="Select weapon type" required

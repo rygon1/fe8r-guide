@@ -212,7 +212,6 @@ def make_class_promo_json() -> None:
             promos[nid] = {"turns_into": entry["turns_into"], "turns_from": []}
 
         for target_cls in entry["turns_into"]:
-            # Ensure target exists in dict
             if target_cls not in promos:
                 promos[target_cls] = {"turns_into": [], "turns_from": []}
             promos[target_cls]["turns_from"].append(nid)
@@ -241,6 +240,12 @@ def get_map_sprites():
         with Image.open(sprite_path) as raw_img:
             sprite_sheet = process_image_transparency(raw_img)
             num_columns = int(sprite_sheet.width // frame_width)
+
+            main_sprite = sprite_sheet.crop(
+                (frame_width, 0, frame_width * 2, frame_height)
+            )
+            main_sprite = main_sprite.crop((8, 0, 56, 48))
+            main_sprite.save(dest_dir / f"{entry['map_sprite_nid']}-stand-static.webp")
 
             frames = []
             for col in range(num_columns):
@@ -297,15 +302,15 @@ def main():
     GUIDE_IMG_DIR.mkdir(parents=True, exist_ok=True)
     GUIDE_CSS_DIR.mkdir(parents=True, exist_ok=True)
 
-    copy_json()
-    make_class_promo_json()
-    minify_json()
-    get_icons()
-    get_portraits()
+    # copy_json()
+    # make_class_promo_json()
+    # minify_json()
+    # get_icons()
+    # get_portraits()
     get_map_sprites()
-    make_icon_css()
+    # make_icon_css()
 
-    add_to_db(JSON_DIR)
+    # add_to_db(JSON_DIR)
 
 
 if __name__ == "__main__":

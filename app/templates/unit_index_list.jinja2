@@ -16,9 +16,9 @@
 {% elif view == "detailed" %}
 <div>
     {% for group_data in grouped_units %}
-    <div>
+    <section>
         <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
-
+        <hr />
         {% for unit in group_data['units']%}
         <div class="list-unit-container">
             <img src="/static/images/portraits/{{ unit.portrait_nid|urlencode }}.png" height="60" width="72" />
@@ -32,7 +32,7 @@
         </div>
         {% endfor %}
 
-    </div>
+    </section>
     {% endfor %}
 </div>
 {% endif %}

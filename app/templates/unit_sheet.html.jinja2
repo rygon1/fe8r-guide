@@ -74,7 +74,7 @@
   </div>
 
   {% if unit_data.learned_skills or unit_data.base_class.learned_skills%}
-  <details open>
+  <details name="sections" open>
     <summary>Skills</summary>
     <div class="skill-grid">
       {% for skill in unit_data.learned_skills|sort(attribute="level") %}
@@ -96,7 +96,7 @@
   <hr />
   {% endif %}
 
-  <details>
+  <details name="sections">
     <summary>Promotions</summary>
     {% if unit_data.base_class.tier == 0 %}
     <div id="classT1Selector">
@@ -143,7 +143,7 @@
   <hr />
 
   {% if unit_data.starting_items %}
-  <details>
+  <details name="sections">
     <summary>Starting Items</summary>
 
     <div class="skill-grid">
@@ -163,61 +163,74 @@
   <hr />
   {% endif %}
 
-  {% if unit_data.supports %}
-  <details>
-    <summary>Supports</summary>
-    <ul>
-      {% for support in unit_data.supports %}
-      <li>
-        <details name="example">
-          <summary>
-            <a href="/units/{{ support.nid }}">{{
-              support.name }}</a>
-            <span class="{{ support.affinity.icon_class }}"></span>
-          </summary>
-          <div class="overflow-auto">
-            <table class="striped">
-              <thead>
-                <tr>
-                  {% for stat, stat_val in support.affinity.bonus[0]|items %}
-                  {% if stat == "RANK" or stat_val|float > 0.0 %}
-                  <th scope="col">{{ stat }}</th>
-                  {% endif %}
-                  {% endfor %}
-                </tr>
-              </thead>
-              <tbody>
-                {% for bonus_data in support.affinity.bonus %}
-                <tr>
-                  {% for stat, stat_val in bonus_data|items %}
-                  {% if stat != "RANK" and stat_val|float > 0.0 %}
-                  <td>+{{ stat_val }}</td>
-                  {% elif stat == "RANK"%}
-                  <th scope="row">{{ stat_val }}</th>
-                  {% endif %}
-                  {% endfor %}
-                </tr>
+  {% if unit_data.arsenals %}
+  <details name="sections">
+    <summary>Arsenals</summary>
+    <div>
+      <div hx-get="/items/arsenals/{{unit_data.nid}}" hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+      </div>
+    </div>
+</div>
+
+</details>
+<hr />
+{% endif %}
+
+{% if unit_data.supports %}
+<details name="sections">
+  <summary>Supports</summary>
+  <ul>
+    {% for support in unit_data.supports %}
+    <li>
+      <details name="example">
+        <summary>
+          <a href="/units/{{ support.nid }}">{{
+            support.name }}</a>
+          <span class="{{ support.affinity.icon_class }}"></span>
+        </summary>
+        <div class="overflow-auto">
+          <table class="striped">
+            <thead>
+              <tr>
+                {% for stat, stat_val in support.affinity.bonus[0]|items %}
+                {% if stat == "RANK" or stat_val|float > 0.0 %}
+                <th scope="col">{{ stat }}</th>
+                {% endif %}
                 {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </details>
-      </li>
-      {% endfor %}
-    </ul>
-  </details>
-  <hr />
-  {% endif %}
-  {% if unit_data.categories %}
-  <strong><small>Categories:</small></strong>
-  {% for unit_cat in unit_data.categories|sort(attribute='order_key')%}
-  <a href="/units?selectedCategory={{ unit_cat.nid }}"><small>{{ unit_cat.name }}</small></a>
-  {% if not loop.last %}
-  |
-  {% else %}
-  &nbsp;&nbsp;
-  {% endif %}
-  {% endfor %}
-  {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for bonus_data in support.affinity.bonus %}
+              <tr>
+                {% for stat, stat_val in bonus_data|items %}
+                {% if stat != "RANK" and stat_val|float > 0.0 %}
+                <td>+{{ stat_val }}</td>
+                {% elif stat == "RANK"%}
+                <th scope="row">{{ stat_val }}</th>
+                {% endif %}
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </li>
+    {% endfor %}
+  </ul>
+</details>
+<hr />
+{% endif %}
+{% if unit_data.categories %}
+<strong><small>Categories:</small></strong>
+{% for unit_cat in unit_data.categories|sort(attribute='order_key')%}
+<a href="/units?selectedCategory={{ unit_cat.nid }}"><small>{{ unit_cat.name }}</small></a>
+{% if not loop.last %}
+|
+{% else %}
+&nbsp;&nbsp;
+{% endif %}
+{% endfor %}
+{% endif %}
 </div>
 {% endblock content %}

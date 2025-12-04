@@ -3,30 +3,48 @@
     {% for group_data in grouped_classes %}
     <div>
         <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
-        <ul>
-            {% for class in group_data['classes']%}
-            <li><a href="/classes/{{ class.nid }}">{{ class.name }} {% if
-                    class.alt_name %}({{
-                    class.alt_name }}){% endif %}</a>
-            </li>
-            {% endfor %}
-        </ul>
+        {% for class in group_data['classes']%}
+        <div class="list-unit-container">
+            <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
+                height="60" width="60" />
+            <div class="list-unit-desc">
+                <p></p>
+                <p></p>
+                <p>
+                    <a href="/classes/{{ class.nid }}">{{ class.name }} {% if
+                        class.alt_name %}({{
+                        class.alt_name }}){% endif %}</a>
+                </p>
+
+            </div>
+        </div>
+        {% endfor %}
     </div>
     {% endfor %}
 </div>
 {% elif view == "detailed" %}
 <div>
     {% for group_data in grouped_classes %}
-    <div>
+    <section>
         <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
+        <hr />
         {% for class in group_data['classes']%}
-        <p><a href="/classes/{{ class.nid }}">{{ class.name }} {% if
-                class.alt_name %}({{
-                class.alt_name }}){% endif %}</a>
-        </p>
-        <p class="muted-text entry-description"><small><i>{{ class.desc }}</i></small></p>
+        <div class="list-unit-container">
+            <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
+                height="60" width="60" />
+            <div class="list-unit-desc">
+                <p></p>
+                <p>
+                    <a href="/classes/{{ class.nid }}">{{ class.name }} {% if
+                        class.alt_name %}({{
+                        class.alt_name }}){% endif %}</a>
+                </p>
+                <p class="muted-text entry-description"><small><i>{{ class.desc }}</i></small></p>
+            </div>
+        </div>
+
         {% endfor %}
-    </div>
+    </section>
     {% endfor %}
 </div>
 {% endif %}

@@ -1,42 +1,12 @@
-import json
 from itertools import groupby
 
-from flask import Blueprint, abort, render_template, request
+from flask import Blueprint, render_template, request
 from sqlalchemy import select
 
 from app.extensions import db
-from app.models import Arsenal, Item, ItemCategory, Shop, UnitCategory
+from app.models import Arsenal, Item, ItemCategory, Shop
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
-
-
-UNITS = {}
-ARSENAL_UNITS = {}
-with bp.open_resource("../static/json/arsenals.json", "r") as f:
-    ARSENALS = json.load(f)
-
-
-def init_lists() -> None:
-    with bp.open_resource("../static/json/units.json", "r") as fp:
-        for unit_data in json.load(fp):
-            UNITS[unit_data["nid"]] = {
-                "name": unit_data["name"],
-                "nid": unit_data["nid"],
-            }
-    with bp.open_resource("../static/json/units.category.json", "r") as fp:
-        for unit_nid, unit_cat in json.load(fp).items():
-            if unit_nid in ARSENALS:
-                if unit_cat in ARSENAL_UNITS:
-                    ARSENAL_UNITS[unit_cat].append(
-                        {"nid": unit_nid, "name": UNITS[unit_nid]["name"]}
-                    )
-                else:
-                    ARSENAL_UNITS[unit_cat] = [
-                        {"nid": unit_nid, "name": UNITS[unit_nid]["name"]}
-                    ]
-
-
-init_lists()
 
 
 @bp.route("/")
@@ -103,61 +73,12 @@ def get_fe_item_sheet(fe_item_nid="Iron_Sword_Test") -> str:
     return render_template("item_sheet.html.jinja2", item_data=item_data)
 
 
-@bp.route("/arsenals")
-def get_fe_arsenal() -> str:
-    if fe_unit_nid := request.args.get("unitSelect"):
-        template = "arsenal_sheet.html.jinja2"
-    else:
-        fe_unit_nid = "Eirika"
-        template = "arsenal_index.html.jinja2"
-    stmt = select(Arsenal).where(Arsenal.arsenal_owner_nid == fe_unit_nid)
-    unit_arsenals = db.session.execute(stmt).scalars().all()
-    if not unit_arsenals:
-        abort(404)
-    return render_template(
-        template,
-        unit_arsenals=unit_arsenals,
-        arsenal_units=ARSENAL_UNITS,
-    )
-
-
-@bp.route("/arsenals/categories")
-def get_unit_list():
-    if not (unit_cat_nid := request.args.get("unitCategory")):
-        unit_cat_nid = "Eirika"
-    unit_cat = db.get_or_404(UnitCategory, unit_cat_nid)
-    unordered_items = unit_cat.units
-    if not (unit_cat_sort := request.args.get("unitSort")):
-        unit_cat_sort = "alpha_inc"
-    grouped_units = []
-    sort_reverse = unit_cat_sort.endswith("dec")
-    if unit_cat_sort.startswith("alpha_"):
-        unordered_items.sort(key=lambda x: x.name[0].upper())
-        for group_name, group_iterator in groupby(
-            unordered_items, key=lambda x: x.name[0].upper()
-        ):
-            group_list = list(group_iterator)
-            grouped_units.append(
-                {
-                    "key": group_name,
-                    "units": sorted(group_list, key=lambda x: x.name),
-                }
-            )
-        grouped_units.sort(key=lambda x: x["key"], reverse=sort_reverse)
-
-    return render_template(
-        "arsenal_index_list.jinja2",
-        grouped_units=grouped_units,
-    )
-
-
 @bp.route("/arsenals/<string:fe_unit_nid>")
 def get_fe_arsenal_sheet(fe_unit_nid="Eirika") -> str:
     stmt = select(Arsenal).where(Arsenal.arsenal_owner_nid == fe_unit_nid)
     unit_arsenals = db.session.execute(stmt).scalars().all()
     return render_template(
         "arsenal_sheet.html.jinja2",
-        unit_data=UNITS[fe_unit_nid],
         unit_arsenals=unit_arsenals,
     )
 

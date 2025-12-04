@@ -12,7 +12,7 @@
     item_data.damage or item_data.hit or
     item_data.crit or item_data.value %}
     <section class="stat-grid">
-        {% if item_data.weapon_type not in ['Misc','Accessory','Held Item'] %}
+        {% if item_data.weapon_type not in ['Misc','Accessory','Held Item',"Consumable"] %}
         <div>
             <span class=" Wexpicons-icon {{ item_data.weapon_type }}-subIcon"></span>{% if item_data.weapon_rank %}
             {{item_data.weapon_rank}}{% endif %}<br />
@@ -74,7 +74,7 @@
     {% endif %}
     {% if item_data.nid in
     ['Crystal_Ring_DG','Antitoxin','Elixir','Vulnerary','Orsons_Vuln_Multi','Treat','Regenerating_Concoction_DG']
-    %}
+    and request.args.get('hideSkills') != "true" %}
     <br />
     <section class="skill-grid">
         {% for subitem in item_data.sub_items %}

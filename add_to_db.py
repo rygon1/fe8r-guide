@@ -324,6 +324,7 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
         "SSS": 8,
         "X": 9,
     }
+    arsenal_marks = {"_Arsenal", "bending", "_Studies", "_Stash", "Shiro_Grimoire"}
 
     for data_entry in load_json_data(json_dir / "items.json"):
         icon_nid = data_entry.get("icon_nid")
@@ -340,6 +341,16 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
                 data_entry, "multi_status_on_hold", list
             ):
                 weapon_type = "Held Item"
+            elif (
+                get_comp(data_entry, "uses", int)
+                or get_comp(data_entry, "c_uses", int)
+                or get_comp(data_entry, "usable", bool)
+            ):
+                weapon_type = "Consumable"
+            elif get_comp(data_entry, "multi_item", list) and not any(
+                data_entry.get("nid", "").endswith(mark) for mark in arsenal_marks
+            ):
+                weapon_type = "Consumable"
             else:
                 weapon_type = "Misc"
         if (
@@ -663,7 +674,10 @@ def _add_arsenals(session: Session, json_dir: Path) -> None:
             current_arsenal = possible_arsenals[0]
             if current_item.nid == current_arsenal.nid:
                 continue
-
+            if current_item.super_items and not any(
+                current_item.super_items[0].nid.endswith(mark) for mark in arsenal_marks
+            ):
+                continue
             current_arsenal.items.append(current_item)
             session.flush()
         elif len(possible_arsenals) > 1:
@@ -1016,7 +1030,7 @@ def _add_units(session: Session, json_dir: Path) -> None:
 
             if learned := data_entry.get("learned_skills", []):
                 for skill_level, skill_nid in learned:
-                    if not skill_nid.endswith("_hide") and (
+                    if not skill_nid.endswith(("_hide", "Feat_Enabler")) and (
                         skill := session.get(Skill, skill_nid)
                     ):
                         current_unit.learned_skills.append(

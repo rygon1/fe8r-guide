@@ -14,15 +14,15 @@
 {% elif view == "detailed" %}
 <div>
     {% for group_data in grouped_skills %}
-    <div>
+    <section>
         <h3>{% if group_data.key %}{{group_data.key}}{% else %}N/A{% endif %}</h3>
-
+        <hr />
         {% for skill in group_data['skills']%}
         <p><span class="{{ skill.icon_class }}"></span><a href="/skills/{{ skill.nid }}">{{ skill.name }}</a></p>
         <p class="muted-text entry-description"><small><i>{{ skill.desc }}</i></small></p>
         {% endfor %}
 
-    </div>
+    </section>
     {% endfor %}
 </div>
 {% endif %}
