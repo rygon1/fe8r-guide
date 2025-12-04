@@ -1,3 +1,4 @@
+{% if view == "list" %}
 <div class="skill-grid">
     {% for group_data in grouped_items %}
     <div>
@@ -10,3 +11,16 @@
     </div>
     {% endfor %}
 </div>
+{% elif view == "detailed" %}
+<div>
+    {% for group_data in grouped_items %}
+    <div>
+        <h3>{% if group_data.key %}{{group_data.key}}{% else %}N/A{% endif %}</h3>
+        {% for item in group_data['items']%}
+        <p><span class="{{ item.icon_class }}"></span><a href="/items/{{ item.nid }}">{{ item.name }}</a></p>
+        <p class="muted-text entry-description"><small><i>{{ item.desc }}</i></small></p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

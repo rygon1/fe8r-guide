@@ -49,10 +49,10 @@ def get_class_list():
                 }
             )
         grouped_classes.sort(key=lambda x: x["key"], reverse=sort_reverse)
-
+    if not (view := request.args.get("view")):
+        view = "list"
     return render_template(
-        "class_index_list.jinja2",
-        grouped_classes=grouped_classes,
+        "class_index_list.jinja2", grouped_classes=grouped_classes, view=view
     )
 
 

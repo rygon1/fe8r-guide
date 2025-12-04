@@ -49,10 +49,10 @@ def get_unit_list():
                 }
             )
         grouped_units.sort(key=lambda x: x["key"], reverse=sort_reverse)
-
+    if not (view := request.args.get("view")):
+        view = "list"
     return render_template(
-        "unit_index_list.jinja2",
-        grouped_units=grouped_units,
+        "unit_index_list.jinja2", grouped_units=grouped_units, view=view
     )
 
 

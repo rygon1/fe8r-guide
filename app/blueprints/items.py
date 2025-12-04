@@ -90,10 +90,10 @@ def get_item_list():
                 }
             )
         grouped_items.sort(key=lambda x: x["key"], reverse=sort_reverse)
-
+    if not (view := request.args.get("view")):
+        view = "list"
     return render_template(
-        "item_index_list.jinja2",
-        grouped_items=grouped_items,
+        "item_index_list.jinja2", grouped_items=grouped_items, view=view
     )
 
 

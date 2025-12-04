@@ -45,10 +45,11 @@ def get_skill_list():
                 }
             )
         grouped_skills.sort(key=lambda x: x["key"], reverse=sort_reverse)
+    if not (view := request.args.get("view")):
+        view = "list"
 
     return render_template(
-        "skill_index_list.jinja2",
-        grouped_skills=grouped_skills,
+        "skill_index_list.jinja2", grouped_skills=grouped_skills, view=view
     )
 
 
