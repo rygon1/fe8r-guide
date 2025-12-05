@@ -13,41 +13,39 @@ from app.blueprints.utils import (
     load_json_data,
     log_execution_step,
     make_valid_class_name,
-    save_json_data,
 )
 
-# --- Configuration & Constants ---
 CONFIG_FILE = Path("config.json")
 
 
 def load_config() -> dict[str, Any]:
+    """Loads the application configuration from config.json."""
     if not CONFIG_FILE.exists():
-        print(f"Error: Configuration file '{CONFIG_FILE}' not found.")
-        sys.exit(1)
+        raise FileNotFoundError(f"Configuration file '{CONFIG_FILE}' not found.")
 
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
-config = load_config()
+try:
+    config = load_config()
+except FileNotFoundError as e:
+    print(f"Error: {e}")
+    sys.exit(1)
 
-# Load Paths
 LTPROJ_DIR = Path(config.get("ltproj_path", ""))
 if not LTPROJ_DIR.exists():
     raise FileNotFoundError(
         f"The directory {LTPROJ_DIR} does not exist. Check config.json."
     )
 
-# Load Color (Convert list to tuple for PIL)
 TARGET_COLOR = tuple(config.get("target_color", [128, 160, 128]))
 
-# Define Resource Paths
 JSON_DIR = LTPROJ_DIR / "game_data"
 ICONS_16_DIR = LTPROJ_DIR / "resources/icons16"
 PORTRAITS_DIR = LTPROJ_DIR / "resources/portraits"
 MAP_SPRITES_DIR = LTPROJ_DIR / "resources/map_sprites"
 
-# App Static Paths
 APP_STATIC = Path.cwd() / "app/static"
 GUIDE_JSON_DIR = APP_STATIC / "json"
 GUIDE_IMG_DIR = APP_STATIC / "images"
@@ -67,19 +65,14 @@ RANK_VALUES = {
     "X": 9,
 }
 
-# --- Helper Functions ---
-
 
 def process_image_transparency(
     img: Image.Image, target_rgb: tuple[int, int, int] = TARGET_COLOR
 ) -> Image.Image:
-    """
-    Converts a specific RGB color to transparent.
-    """
+    """Converts a specific RGB color in an image to transparent (RGBA)."""
     img = img.convert("RGBA")
     datas = img.getdata()
 
-    # Replace target color with transparent pixel
     new_data = [
         (255, 255, 255, 0) if item[:3] == target_rgb else item for item in datas
     ]
@@ -88,19 +81,9 @@ def process_image_transparency(
     return img
 
 
-# --- Core Logic Functions ---
-
-
-@log_execution_step
-def minify_json() -> None:
-    """Removes JSON whitespace to save bandwidth."""
-    for json_fpath in GUIDE_JSON_DIR.glob("*.json"):
-        data = load_json_data(json_fpath)
-        save_json_data(json_fpath, data, separators=(",", ":"))
-
-
 @log_execution_step
 def get_icons():
+    """Processes icon images (16x16) to add transparency and copies them to the static directory."""
     dest_dir = GUIDE_IMG_DIR / "icons"
     dest_dir.mkdir(parents=True, exist_ok=True)
 
@@ -112,12 +95,12 @@ def get_icons():
 
 @log_execution_step
 def get_portraits():
+    """Processes portrait images (crops and adds transparency) and copies them to the static directory."""
     dest_dir = GUIDE_IMG_DIR / "portraits"
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     for entry in PORTRAITS_DIR.glob("*.png"):
         with Image.open(entry) as base_img:
-            # Crop first, then process transparency
             img = base_img.crop((0, 0, 96, 80))
             processed_img = process_image_transparency(img)
             processed_img.save(dest_dir / entry.name)
@@ -125,6 +108,7 @@ def get_portraits():
 
 @log_execution_step
 def make_icon_css():
+    """Generates the iconsheet.css file for displaying items, skills, and subicons using CSS spriting."""
     items = load_json_data(JSON_DIR / "items.json")
     skills = load_json_data(JSON_DIR / "skills.json")
     weapons = load_json_data(JSON_DIR / "weapons.json")
@@ -153,25 +137,21 @@ def make_icon_css():
             f"margin: 0px 4px; transform: scale(1.5); }}"
         )
 
-    # Process Items
     for entry in items:
         if entry["icon_nid"]:
             add_sheet_entry(entry["icon_nid"])
             add_position_entry(entry["nid"], entry["icon_index"], "item-icon")
 
-    # Process Skills
     for entry in skills:
         if entry["icon_nid"]:
             add_sheet_entry(entry["icon_nid"])
             add_position_entry(entry["nid"], entry["icon_index"], "skill-icon")
 
-    # Process Weapons
     for entry in weapons:
         if entry["icon_nid"]:
             add_sheet_entry(entry["icon_nid"])
             add_position_entry(entry["nid"], entry["icon_index"], "weapon-icon")
 
-    # Process SubIcons
     for entry in icons:
         if entry["subicon_dict"]:
             sub_classes = ",".join(
@@ -187,7 +167,6 @@ def make_icon_css():
             for sub_nid, sub_idx in entry["subicon_dict"].items():
                 add_position_entry(sub_nid, sub_idx, "subIcon")
 
-    # Special case
     monster_icon_url = quote("Monster WEP Icon.png")
     css_lines.append(
         f".Wexpicons-icon.Monster-subIcon {{ background-image: url('/static/images/icons/{monster_icon_url}'); "
@@ -200,27 +179,8 @@ def make_icon_css():
 
 
 @log_execution_step
-def make_class_promo_json() -> None:
-    classes = sorted(
-        load_json_data(JSON_DIR / "classes.json"), key=lambda x: x["tier"], reverse=True
-    )
-    promos = {}
-
-    for entry in classes:
-        nid = entry["nid"]
-        if nid not in promos:
-            promos[nid] = {"turns_into": entry["turns_into"], "turns_from": []}
-
-        for target_cls in entry["turns_into"]:
-            if target_cls not in promos:
-                promos[target_cls] = {"turns_into": [], "turns_from": []}
-            promos[target_cls]["turns_from"].append(nid)
-
-    save_json_data(GUIDE_JSON_DIR / "classes.promos.json", promos, indent=2)
-
-
-@log_execution_step
 def get_map_sprites():
+    """Processes map sprite sheets to create static WEBP images and animated WEBP stand sprites."""
     fe_classes = load_json_data(JSON_DIR / "classes.json")
     dest_dir = GUIDE_IMG_DIR / "map_sprites"
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -271,16 +231,9 @@ def get_map_sprites():
 
 @log_execution_step
 def copy_json():
+    """Copies essential game data JSON files from the project data directory to the guide JSON directory."""
     files_to_copy = [
-        "affinities.json",
-        "classes.json",
         "lore.json",
-        "stats.json",
-        "support_pairs.json",
-        "units.category.json",
-        "units.json",
-        "weapon_ranks.json",
-        "weapons.json",
     ]
 
     for fname in files_to_copy:
@@ -298,19 +251,22 @@ def copy_json():
 
 
 def main():
+    """Main function to set up directories, process resources, and populate the database."""
     GUIDE_JSON_DIR.mkdir(parents=True, exist_ok=True)
     GUIDE_IMG_DIR.mkdir(parents=True, exist_ok=True)
     GUIDE_CSS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # copy_json()
-    # make_class_promo_json()
-    # minify_json()
-    # get_icons()
-    # get_portraits()
-    get_map_sprites()
-    # make_icon_css()
+    copy_json()
 
-    # add_to_db(JSON_DIR)
+    get_icons()
+
+    get_portraits()
+
+    get_map_sprites()
+
+    make_icon_css()
+
+    add_to_db(JSON_DIR)
 
 
 if __name__ == "__main__":
