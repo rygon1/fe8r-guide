@@ -980,10 +980,112 @@ def _add_unit_supports(session: Session, json_dir: Path):
     session.flush()
 
 
+class ScriptParser:
+    def __init__(self):
+        self.lines = []
+        self.current_line_idx = 0
+
+    def parse(self, source_list):
+        self.lines = source_list
+        self.current_line_idx = 0
+        return self._parse_block(base_indent=-1)
+
+    def _get_line_info(self, index):
+        if index >= len(self.lines):
+            return None, 0
+        line = self.lines[index]
+        stripped = line.lstrip()
+        indent = len(line) - len(stripped)
+        return stripped, indent
+
+    def _parse_block(self, base_indent):
+        block = []
+
+        while self.current_line_idx < len(self.lines):
+            stripped, indent = self._get_line_info(self.current_line_idx)
+
+            if not stripped:
+                self.current_line_idx += 1
+                continue
+
+            if base_indent != -1 and indent <= base_indent:
+                break
+
+            if stripped.startswith("#"):
+                self.current_line_idx += 1
+                continue
+
+            parts = stripped.split(";")
+            opcode = parts[0].strip()
+            args = parts[1:] if len(parts) > 1 else []
+
+            if opcode in ("if", "elif", "else"):
+                node = {
+                    "type": "control_flow",
+                    "keyword": opcode,
+                    "condition": args[0].strip() if args else None,
+                    "children": [],
+                }
+
+                self.current_line_idx += 1
+
+                node["children"] = self._parse_block(base_indent=indent)
+                block.append(node)
+
+            else:
+                node = {
+                    "type": "command",
+                    "name": opcode,
+                    "args": [arg.strip() for arg in args],
+                }
+                self.current_line_idx += 1
+                block.append(node)
+
+        return block
+
+
+def _get_unit_quotes(session: Session, json_dir: Path):
+    json_content = load_json_data(
+        json_dir / "events" / "Global_GenericPostPromotion.json"
+    )
+
+    source_code = json_content[0]["_source"]
+    parser = ScriptParser()
+    ast = parser.parse(source_code)
+
+    unit_quote_map = {}
+    unit_nid_pattern = re.compile(r"unit\.nid == '(.*?)'$")
+    class_nid_pattern = re.compile(r"unit\.klass == '(.*?)'$")
+    for unit_cond in ast[0].get("children", []):
+        if unit_str := unit_cond.get("condition"):
+            if unit_nid_match := re.match(unit_nid_pattern, unit_str):
+                unit_nid = unit_nid_match.group(1)
+                unit_quote_map[unit_nid] = {}
+                for class_ in unit_cond.get("children", []):
+                    if class_str := class_.get("condition"):
+                        if class_nid_match := re.match(class_nid_pattern, class_str):
+                            class_nid = class_nid_match.group(1)
+                            stmt = select(Class.name).where(Class.nid == class_nid)
+                            if not (class_name := session.scalar(stmt)):
+                                continue
+                            unit_quote_map[unit_nid][class_nid] = {
+                                "name": class_name,
+                                "quotes": [],
+                            }
+                            for command in class_.get("children", []):
+                                if command.get("name") == "speak":
+                                    _, unit_quote, *_ = command.get("args", [])
+                                    unit_quote_map[unit_nid][class_nid][
+                                        "quotes"
+                                    ].append(unit_quote.replace("|", "<br/>"))
+    return unit_quote_map
+
+
 def _add_units(session: Session, json_dir: Path) -> None:
     """Parses unit JSON to create Unit objects and associations."""
     units_data = load_json_data(json_dir / "units.json")
     init_category_map = load_json_data(json_dir / "units.category.json")
+    unit_quote_map = _get_unit_quotes(session, json_dir)
     exclude_unit = ("_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit")
 
     for data_entry in units_data:
@@ -1015,6 +1117,7 @@ def _add_units(session: Session, json_dir: Path) -> None:
                 for stat_key in STAT_KEYS
             },
             categories=_set_unit_categories(session, data_entry, init_category_map),
+            quotes=unit_quote_map.get(new_unit_nid, {}),
         )
 
         session.add(new_unit)

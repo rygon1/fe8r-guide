@@ -2,6 +2,13 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.0.7] - 2025-12-11
+
+### Added
+
+- Unit promotion quotes
+- Random run generator (this one is a work in progress, very limited but fairly usable)
+
 ## [0.0.6] - 2025-12-01
 
 ### Added

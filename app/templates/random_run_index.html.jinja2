@@ -1,0 +1,57 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% endif %}
+{% block title %}Random Run Generator | {% endblock %}
+{% block content %}
+<h1>Random Run Generator</h1>
+<p>A way to play FE8R for those who:
+<ul>
+    <li>Feel overwhelmed by the amount of characters and classes,</li>
+    <li>Are tired of always picking the same units, or</li>
+    <li>Just want a challenge!</li>
+</ul>
+</p>
+<p>Inspired by the <a href="https://fire-emblem.de/fe16randomrun.php?locale=en" target="_blank">Three Houses Random Run
+        Generator</a>
+    from Fire-Emblem.de</p>
+<hr />
+<section>
+    <form>
+        <fieldset>
+            <label for="lord">Lord</label>
+            <select name="lord" aria-label="Select lord">
+                <option value="Random" selected>Random</option>
+                <option value="Eirika">Eirika</option>
+                <option value="Ephraim">Ephraim</option>
+            </select>
+            <small>This also determines what route you take</small>
+            <label for="num_units">Number of Units</label>
+            <input name="num_units" type="number" value="18" min="2" max="20" />
+            <small>Chapters usually only allow bringing 14 units (18 at most), including your chosen lord</small>
+        </fieldset>
+        <fieldset>
+            <p>Toggles</p>
+            {# <label for="final_class_only"><input name="final_class_only" type="checkbox" role="switch" checked />Show
+                promotion paths</label>
+            <label for="unique_classes"><input name="unique_classes" type="checkbox" role="switch" checked />Unique
+                classes only</label> #}
+            <label for="add_thief"><input name="add_thief" type="checkbox" role="switch" checked />At least one
+                thief/pirate/outlaw</label>
+            <label for="add_support"><input name="add_support" type="checkbox" role="switch" checked />At least one
+                support</label>
+            <label for="add_flier"><input name="add_flier" type="checkbox" role="switch" checked />At least one
+                flier</label>
+            <label for="include_monsters"><input name="include_monsters" type="checkbox" role="switch" checked />Include
+                monsters</label>
+            <label for="include_dg"><input name="include_dg" type="checkbox" role="switch" checked />Include
+                Dragon's
+                Gate</label>
+        </fieldset>
+
+        <input type="submit" hx-post="/random-run/generate" value="Generate Run" hx-target="#generatorOutput"
+            hx-swap="innerHTML" />
+    </form>
+</section>
+<div id="generatorOutput">
+</div>
+{% endblock content %}

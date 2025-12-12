@@ -1,6 +1,6 @@
 from flask import Flask, Response, render_template
 
-from app.blueprints import classes, codex, items, skills, units
+from app.blueprints import classes, codex, items, random_run, skills, units
 from app.config import Config
 from app.extensions import db
 
@@ -53,6 +53,7 @@ def create_app(config_class=Config) -> Flask:
     app.register_blueprint(skills.bp)
     app.register_blueprint(classes.bp)
     app.register_blueprint(codex.bp)
+    app.register_blueprint(random_run.bp)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(500, internal_server_error)
 

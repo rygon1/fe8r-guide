@@ -328,6 +328,8 @@ class Unit(Base):
     growths: Mapped[dict] = mapped_column(JSON)
     stat_cap_modifiers: Mapped[dict] = mapped_column(JSON)
 
+    quotes: Mapped[dict] = mapped_column(JSON)
+
     categories: Mapped[list["UnitCategory"]] = relationship(
         secondary=unit_category_assoc, back_populates="units"
     )

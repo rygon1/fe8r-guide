@@ -1,0 +1,37 @@
+{% for unit in units %}
+{% if loop.first %}
+<h2>{{unit.name}} Route</h2>
+<h4>Units</h4>
+<div class="generator-grid">
+    {% endif %}
+    <article>
+        <header><strong>{{unit.name}}</strong></header>
+        <div>
+            <img src="/static/images/portraits/{{ unit.portrait_nid|urlencode }}.png" height="96" height="80" />
+            <div>
+                {% for class in output_map[unit.nid] %}
+                <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
+                    height="48" width="48" />
+                {{ class.name }} {% if class.weapons%}
+                {% for weapon in class.weapons%}
+                <span class="{{ weapon.icon_class }}"></span>
+                {% endfor %}
+                {% endif %}{% if not loop.last %}<br />{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {# <footer><a href="#"><small><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" aria-hidden="true" data-slot="icon" fill="none" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M14.5 14.5c.12.069.384-.166.592-.525.207-.358.278-.705.158-.774-.12-.07-.384.166-.592.524-.207.36-.278.706-.158.775Zm3.25 1.5c.12.069.384-.166.592-.525.207-.358.278-.705.158-.774-.12-.07-.384.166-.592.524-.207.36-.278.706-.158.775ZM9.5 14.5c-.12.069-.384-.166-.592-.525-.207-.358-.278-.705-.158-.774.12-.07.384.166.592.524.207.36.278.706.158.775Zm0 3.25c-.12.069-.384-.166-.592-.525-.207-.358-.278-.705-.158-.774.12-.07.384.166.592.524.207.36.278.706.158.775ZM6.25 16c-.12.069-.384-.166-.592-.525-.207-.358-.278-.705-.158-.774.12-.07.384.166.592.524.207.36.278.706.158.775Zm0-3.201c-.12.07-.384-.166-.592-.524-.207-.36-.278-.706-.158-.775.12-.069.384.166.592.525.207.358.278.705.158.774Zm6.5-5.549a.75.25 0 0 1-.75.25.75.25 0 0 1-.75-.25A.75.25 0 0 1 12 7a.75.25 0 0 1 .75.25ZM21 7.5l-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9">
+                        </path>
+                    </svg>Different Unit</small></a> | <a href=""><small><svg xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"
+                        fill="none" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M14.5 14.5c.12.069.384-.166.592-.525.207-.358.278-.705.158-.774-.12-.07-.384.166-.592.524-.207.36-.278.706-.158.775Zm3.25 1.5c.12.069.384-.166.592-.525.207-.358.278-.705.158-.774-.12-.07-.384.166-.592.524-.207.36-.278.706-.158.775ZM9.5 14.5c-.12.069-.384-.166-.592-.525-.207-.358-.278-.705-.158-.774.12-.07.384.166.592.524.207.36.278.706.158.775Zm0 3.25c-.12.069-.384-.166-.592-.525-.207-.358-.278-.705-.158-.774.12-.07.384.166.592.524.207.36.278.706.158.775ZM6.25 16c-.12.069-.384-.166-.592-.525-.207-.358-.278-.705-.158-.774.12-.07.384.166.592.524.207.36.278.706.158.775Zm0-3.201c-.12.07-.384-.166-.592-.524-.207-.36-.278-.706-.158-.775.12-.069.384.166.592.525.207.358.278.705.158.774Zm6.5-5.549a.75.25 0 0 1-.75.25.75.25 0 0 1-.75-.25A.75.25 0 0 1 12 7a.75.25 0 0 1 .75.25ZM21 7.5l-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9">
+                        </path>
+                    </svg>Different Class</small></a></footer> #}
+    </article>
+    {% endfor %}
+</div>
