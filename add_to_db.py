@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import argparse
 import re
+from difflib import SequenceMatcher
 from functools import reduce
 from pathlib import Path
 
@@ -1044,6 +1045,10 @@ class ScriptParser:
         return block
 
 
+def _is_similar(str1: str, str2: str) -> bool:
+    return SequenceMatcher(None, str1, str2).ratio() >= 0.8
+
+
 def _get_unit_quotes(session: Session, json_dir: Path):
     json_content = load_json_data(
         json_dir / "events" / "Global_GenericPostPromotion.json"
@@ -1056,6 +1061,8 @@ def _get_unit_quotes(session: Session, json_dir: Path):
     unit_quote_map = {}
     unit_nid_pattern = re.compile(r"unit\.nid == '(.*?)'$")
     class_nid_pattern = re.compile(r"unit\.klass == '(.*?)'$")
+    class_multi_nid_pattern = re.compile(r"unit.klass in \((.*?)\)$")
+    class_str_pattern = re.compile(r"'([^']+)'")
     for unit_cond in ast[0].get("children", []):
         if unit_str := unit_cond.get("condition"):
             if unit_nid_match := re.match(unit_nid_pattern, unit_str):
@@ -1064,18 +1071,42 @@ def _get_unit_quotes(session: Session, json_dir: Path):
                 for class_ in unit_cond.get("children", []):
                     if class_str := class_.get("condition"):
                         if class_nid_match := re.match(class_nid_pattern, class_str):
-                            class_nid = class_nid_match.group(1)
+                            class_nids = [class_nid_match.group(1)]
+                        elif class_nid_match := re.match(
+                            class_multi_nid_pattern, class_str
+                        ):
+                            class_nids = re.findall(
+                                class_str_pattern, class_nid_match.group(1)
+                            )
+                        else:
+                            continue
+                        if not class_nids:
+                            continue
+                        for class_nid in class_nids:
                             stmt = select(Class.name).where(Class.nid == class_nid)
                             if not (class_name := session.scalar(stmt)):
                                 continue
-                            unit_quote_map[unit_nid][class_nid] = {
-                                "name": class_name,
-                                "quotes": [],
-                            }
+                            if class_name not in unit_quote_map[unit_nid]:
+                                unit_quote_map[unit_nid][class_name] = {
+                                    "name": class_name,
+                                    "nids": [class_nid],
+                                    "quotes": [],
+                                }
+                            else:
+                                unit_quote_map[unit_nid][class_name]["nids"].append(
+                                    class_nid
+                                )
                             for command in class_.get("children", []):
                                 if command.get("name") == "speak":
                                     _, unit_quote, *_ = command.get("args", [])
-                                    unit_quote_map[unit_nid][class_nid][
+                                    if any(
+                                        _is_similar(unit_quote, added_quotes)
+                                        for added_quotes in unit_quote_map[unit_nid][
+                                            class_name
+                                        ]["quotes"]
+                                    ):
+                                        continue
+                                    unit_quote_map[unit_nid][class_name][
                                         "quotes"
                                     ].append(unit_quote.replace("|", "<br/>"))
     return unit_quote_map
