@@ -227,14 +227,15 @@
   <summary>Quotes</summary>
   <h5>Promotion Quotes</h5>
   <div>
-    {% for promo_nid, promo_quote_data in unit_data.quotes|items %}
-    {% for quote in promo_quote_data.quotes %}
-    <blockquote>{{quote}}<footer>
+    {% for promo_name, promo_quote_data in unit_data.quotes|items %}
+    <blockquote>
+      {% for quote in promo_quote_data.quotes %}
+      {{quote}}{% if not loop.last and loop.length > 1%}<br /><br />{% endif %}
+      {% endfor %}
+      <footer>
         <cite>— {{unit_data.name}}, upon promoting to {{promo_quote_data.name}}</cite>
       </footer>
     </blockquote>
-
-    {% endfor %}
     {% endfor %}
   </div>
   </div>
