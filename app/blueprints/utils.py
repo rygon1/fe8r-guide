@@ -103,8 +103,7 @@ def convert_func(matchobj) -> str:
 
 def process_styled_text(raw_text) -> str:
     """
-    Converts in-game desc tags to html. Note that this uses pico.css, so remember to change the
-    classes to get proper colors.
+    Converts in-game desc tags to html.
     """
     new_text = raw_text
     replacements: tuple[
@@ -119,9 +118,14 @@ def process_styled_text(raw_text) -> str:
             convert_func,  # pyright: ignore[reportAssignmentType]
         ),
         (r"{e:(.*?)}", r""),
-        (r" \(<span class=\"lt-color-red\"></span>\)", r""),
+        (r"<span class=\"lt-color-red\"></span>", r""),
         (r"\n", r"<br/>"),
+        (r"\(Total Power:\)", r""),
         (r"\{br\}", r"<br/>"),
+        (r" ,", r","),
+        (r"( ){2,}", r" "),
+        (r"\(( ){0,}\)", r" "),
+        (r" .$", r"."),
     )
     for pattern, replacement in replacements:
         new_text = re.sub(pattern, replacement, new_text)
