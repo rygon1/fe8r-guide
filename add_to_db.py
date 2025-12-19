@@ -393,7 +393,8 @@ def _add_main_items(session: Session, json_dir: Path) -> None:
             or_conditions.append(func.lower(Skill.desc).startswith(prefix))
         prefix_exclusion_clause = or_(*or_conditions)
 
-        if skill_nids := get_status(data_entry):
+        # if skill_nids := get_status(data_entry):
+        if skill_nids := get_comp(data_entry, "multi_desc_skill", list):
             session.flush()
             all_skills = session.scalars(
                 select(Skill).where(
