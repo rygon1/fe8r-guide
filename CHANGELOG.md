@@ -2,7 +2,7 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
-## [0.1.0] - 2025-01-06
+## [0.1.0] - 2026-01-06
 
 ### Added
 
