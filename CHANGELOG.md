@@ -2,6 +2,20 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.1.0] - 2025-01-06
+
+### Added
+
+- Units: Gallery (promotion portraits)
+
+### Fixed
+
+- Items: Missing monster weapon category
+
+### Removed
+
+- Items: Arsenal items and some duplicates
+
 ## [0.0.8] - 2025-12-11
 
 ### Added
