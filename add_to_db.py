@@ -37,6 +37,7 @@ from app.blueprints.utils import (
     make_valid_class_name,
     pad_digits_in_string,
     process_styled_text,
+    save_json_data,
 )
 
 STAT_KEYS = ["HP", "STR", "MAG", "SKL", "SPD", "LCK", "DEF", "RES", "CON", "MOV"]
@@ -200,6 +201,7 @@ def _add_item_categories(session: Session):
         ("wtype_Anima", "Item Type", "Anima Tomes"),
         ("wtype_Dark", "Item Type", "Dark Tomes"),
         ("wtype_Light", "Item Type", "Light Tomes"),
+        ("wtype_Monster", "Item Type", "Monster Weapons"),
         ("wstype_Dagger", "Weapon Subtype", "Daggers"),
         ("wstype_Blade", "Weapon Subtype", "Blades"),
         ("wstype_Warhammer", "Weapon Subtype", "Warhammers"),
@@ -239,7 +241,6 @@ def _set_item_categories(session: Session, data_entry: DataEntry) -> list:
         "Shiro_Grimoire",
         "Davius_Arsenal_Old",
     }
-
     if wtype_cat := session.get(
         ItemCategory, f"wtype_{get_comp(data_entry, 'weapon_type', str)}"
     ):
@@ -291,7 +292,11 @@ def get_status(data_entry: DataEntry) -> list[str]:
     wp_status: set[str] = set()
 
     single_status_comps: tuple[str, ...] = ("status_on_equip", "status_on_hit")
-    multi_status_comps: tuple[str, ...] = ("multi_status_on_equip", "statuses_on_hit")
+    multi_status_comps: tuple[str, ...] = (
+        "multi_status_on_equip",
+        "statuses_on_hit",
+        "multi_status_on_hold",
+    )
 
     for comp_name in single_status_comps:
         status: str = get_comp(data_entry, comp_name, str)
@@ -1050,6 +1055,60 @@ def _is_similar(str1: str, str2: str) -> bool:
     return SequenceMatcher(None, str1, str2).ratio() >= 0.8
 
 
+def _get_unit_portraits(session: Session, json_dir: Path):
+    json_content = load_json_data(
+        json_dir / "events" / "Global_GenericPortraitChanger.json"
+    )
+    source_code = json_content[0]["_source"]
+    parser = ScriptParser()
+    ast = parser.parse(source_code)
+
+    unit_portrait_map = {}
+
+    unit_nid_pattern = re.compile(r"unit\.nid == '(.*?)'$")
+    class_nid_pattern = re.compile(r"unit\.klass == '(.*?)'$")
+    for unit_cond in ast[0].get("children", []):
+        if unit_str := unit_cond.get("condition"):
+            if unit_nid_match := re.match(unit_nid_pattern, unit_str):
+                unit_nid = unit_nid_match.group(1)
+                unit_portrait_map[unit_nid] = {}
+                for class_ in unit_cond.get("children", []):
+                    if class_str := class_.get("condition"):
+                        if class_nid_match := re.match(class_nid_pattern, class_str):
+                            class_nid = class_nid_match.group(1)
+                            if class_children := class_.get("children", []):
+                                for class_child in class_children:
+                                    if class_child.get("name", "") == "change_portrait":
+                                        stmt = select(Class.name).where(
+                                            Class.nid == class_nid
+                                        )
+                                        if not (class_name := session.scalar(stmt)):
+                                            continue
+                                        new_portrait_nid = class_child.get("args")[1]
+                                        if (
+                                            new_portrait_nid
+                                            in unit_portrait_map[unit_nid]
+                                        ):
+                                            if (
+                                                class_name
+                                                not in unit_portrait_map[unit_nid][
+                                                    new_portrait_nid
+                                                ]
+                                            ):
+                                                unit_portrait_map[unit_nid][
+                                                    new_portrait_nid
+                                                ].append(class_name)
+                                        else:
+                                            unit_portrait_map[unit_nid][
+                                                new_portrait_nid
+                                            ] = [class_name]
+                            else:
+                                continue
+                        else:
+                            continue
+    return unit_portrait_map
+
+
 def _get_unit_quotes(session: Session, json_dir: Path):
     json_content = load_json_data(
         json_dir / "events" / "Global_GenericPostPromotion.json"
@@ -1059,7 +1118,7 @@ def _get_unit_quotes(session: Session, json_dir: Path):
     parser = ScriptParser()
     ast = parser.parse(source_code)
 
-    unit_quote_map = {}
+    unit_portrait_map = {}
     unit_nid_pattern = re.compile(r"unit\.nid == '(.*?)'$")
     class_nid_pattern = re.compile(r"unit\.klass == '(.*?)'$")
     class_multi_nid_pattern = re.compile(r"unit.klass in \((.*?)\)$")
@@ -1068,7 +1127,7 @@ def _get_unit_quotes(session: Session, json_dir: Path):
         if unit_str := unit_cond.get("condition"):
             if unit_nid_match := re.match(unit_nid_pattern, unit_str):
                 unit_nid = unit_nid_match.group(1)
-                unit_quote_map[unit_nid] = {}
+                unit_portrait_map[unit_nid] = {}
                 for class_ in unit_cond.get("children", []):
                     if class_str := class_.get("condition"):
                         if class_nid_match := re.match(class_nid_pattern, class_str):
@@ -1087,14 +1146,14 @@ def _get_unit_quotes(session: Session, json_dir: Path):
                             stmt = select(Class.name).where(Class.nid == class_nid)
                             if not (class_name := session.scalar(stmt)):
                                 continue
-                            if class_name not in unit_quote_map[unit_nid]:
-                                unit_quote_map[unit_nid][class_name] = {
+                            if class_name not in unit_portrait_map[unit_nid]:
+                                unit_portrait_map[unit_nid][class_name] = {
                                     "name": class_name,
                                     "nids": [class_nid],
                                     "quotes": [],
                                 }
                             else:
-                                unit_quote_map[unit_nid][class_name]["nids"].append(
+                                unit_portrait_map[unit_nid][class_name]["nids"].append(
                                     class_nid
                                 )
                             for command in class_.get("children", []):
@@ -1102,22 +1161,23 @@ def _get_unit_quotes(session: Session, json_dir: Path):
                                     _, unit_quote, *_ = command.get("args", [])
                                     if any(
                                         _is_similar(unit_quote, added_quotes)
-                                        for added_quotes in unit_quote_map[unit_nid][
+                                        for added_quotes in unit_portrait_map[unit_nid][
                                             class_name
                                         ]["quotes"]
                                     ):
                                         continue
-                                    unit_quote_map[unit_nid][class_name][
+                                    unit_portrait_map[unit_nid][class_name][
                                         "quotes"
                                     ].append(unit_quote.replace("|", "<br/>"))
-    return unit_quote_map
+    return unit_portrait_map
 
 
 def _add_units(session: Session, json_dir: Path) -> None:
     """Parses unit JSON to create Unit objects and associations."""
     units_data = load_json_data(json_dir / "units.json")
     init_category_map = load_json_data(json_dir / "units.category.json")
-    unit_quote_map = _get_unit_quotes(session, json_dir)
+    unit_quotes_map = _get_unit_quotes(session, json_dir)
+    unit_portrait_map = _get_unit_portraits(session, json_dir)
     exclude_unit = ("_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit")
 
     for data_entry in units_data:
@@ -1149,7 +1209,8 @@ def _add_units(session: Session, json_dir: Path) -> None:
                 for stat_key in STAT_KEYS
             },
             categories=_set_unit_categories(session, data_entry, init_category_map),
-            quotes=unit_quote_map.get(new_unit_nid, {}),
+            quotes=unit_quotes_map.get(new_unit_nid, {}),
+            portraits=unit_portrait_map.get(new_unit_nid, {}),
         )
 
         session.add(new_unit)
