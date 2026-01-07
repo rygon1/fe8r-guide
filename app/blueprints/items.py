@@ -27,7 +27,11 @@ def get_item_list():
     if not (item_cat_nid := request.args.get("itemCategory")):
         item_cat_nid = "wtype_Sword"
     item_cat = db.get_or_404(ItemCategory, item_cat_nid)
-    unordered_items = item_cat.items
+    unordered_items = [
+        item
+        for item in item_cat.items
+        if (not item.arsenals and not item.nid.endswith(("_P", "_A", "_D", "_Test")))
+    ]
     if not (item_cat_sort := request.args.get("itemSort")):
         item_cat_sort = "wrank_inc"
     grouped_items = []
