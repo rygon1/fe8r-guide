@@ -244,6 +244,30 @@
 <hr />
 {% endif %}
 
+{% if unit_data.portraits %}
+<details name="sections">
+  <summary>Gallery</summary>
+  <h5>Promotion Portraits</h5>
+  <div>
+    {% for portrait_nid, portrait_class_names in unit_data.portraits|items %}
+    <p><img src="/static/images/portraits/{{ portrait_nid|urlencode }}.png" />
+
+      {% for portrait_class_name in portrait_class_names%}
+      {% if not loop.last %}
+      {{ portrait_class_name }} /
+      {% else %}
+      {{ portrait_class_name }}
+      {% endif %}
+      {% endfor %}
+    </p>
+    {% endfor %}
+  </div>
+  </div>
+
+</details>
+<hr />
+{% endif %}
+
 {% if unit_data.categories %}
 <strong><small>Categories:</small></strong>
 {% for unit_cat in unit_data.categories|sort(attribute='order_key')%}
