@@ -1,4 +1,5 @@
 import random
+from collections import OrderedDict
 
 from flask import Blueprint, render_template, request
 from sqlalchemy import and_, func, or_, select
@@ -113,7 +114,7 @@ def get_random_run_output() -> str:
 
     random_units = db.session.scalars(stmt).all()
     units += random_units
-    output_map = {}
+    output_map = OrderedDict()
     for unit in units:
         output_map[unit.nid] = [unit.base_class]
         if unit.base_class.turns_into:
@@ -126,6 +127,28 @@ def get_random_run_output() -> str:
                     fin_promo = random.choice(nxt_nxt_promo.turns_into)
                     output_map[unit.nid].append(fin_promo)
 
+    json_output_map = OrderedDict(
+        (unit_nid, [unit_class.nid for unit_class in unit_classes])
+        for unit_nid, unit_classes in output_map.items()
+    )
+
+    md_output = "# Random Run Generator\n\n"
+    for idx, unit in enumerate(units):
+        len_class = len(output_map[unit.nid])
+        if idx == 0:
+            md_output += f"## {unit.name} (Lord)\n\n"
+        else:
+            md_output += f"## {unit.name}\n\n"
+        for class_idx, unit_class in enumerate(output_map[unit.nid]):
+            if class_idx != len_class - 1:
+                md_output += f"{unit_class.name} -> "
+            else:
+                md_output += f"{unit_class.name}\n\n"
+
     return render_template(
-        "random_run_output.html.jinja2", units=units, output_map=output_map
+        "random_run_output.html.jinja2",
+        units=units,
+        output_map=output_map,
+        json_output_map=json_output_map,
+        md_output=md_output,
     )

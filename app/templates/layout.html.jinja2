@@ -19,6 +19,20 @@
   <link rel="stylesheet" href="https://unpkg.com/open-props" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/iconsheet.min.css') }}">
+  <script>
+    function downloadText(elementId, filename) {
+      let textToSave = document.getElementById(elementId).textContent;
+      let blob = new Blob([textToSave], { type: 'text/plain;charset=utf-8' });
+      let a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }
+    _hyperscript.browserInit();
+  </script>
 </head>
 
 <body>
