@@ -71,8 +71,11 @@ def get_random_run_output() -> str:
             .options(joinedload(Unit.base_class))
         )
 
-        target_units = db.session.scalars(stmt).all()
-        units.append(random.choice(target_units))
+        thief_units = db.session.scalars(stmt).all()
+        new_unit = random.choice(thief_units)
+        while new_unit in units:
+            new_unit = random.choice(thief_units)
+        units.append(new_unit)
         units_remaining -= 1
 
     if input_form["add_flier"]:
@@ -87,7 +90,10 @@ def get_random_run_output() -> str:
         )
 
         flying_units = db.session.scalars(stmt).all()
-        units.append(random.choice(flying_units))
+        new_unit = random.choice(flying_units)
+        while new_unit in units:
+            new_unit = random.choice(flying_units)
+        units.append(new_unit)
         units_remaining -= 1
 
     if input_form["add_support"]:
@@ -101,13 +107,22 @@ def get_random_run_output() -> str:
             .options(joinedload(Unit.base_class).selectinload(Class.categories))
         )
 
-        flying_units = db.session.scalars(stmt).all()
-        units.append(random.choice(flying_units))
+        support_units = db.session.scalars(stmt).all()
+        new_unit = random.choice(support_units)
+        while new_unit in units:
+            new_unit = random.choice(support_units)
+        units.append(new_unit)
         units_remaining -= 1
 
     stmt = (
         select(Unit)
-        .where(and_(include_unit_cat_filter, ~is_lord))
+        .where(
+            and_(
+                include_unit_cat_filter,
+                ~is_lord,
+                Unit.nid.not_in([x.nid for x in units]),
+            )
+        )
         .order_by(func.random())
         .limit(units_remaining)
     )
