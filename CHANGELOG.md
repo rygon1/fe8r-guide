@@ -2,6 +2,16 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.1.1] - 2026-01-18
+
+### Added
+
+- Classes: Catalog detailed list now lists skills
+
+## Fixed
+
+- Random Run Generator: duplicates
+
 ## [0.1.0] - 2026-01-06
 
 ### Added
