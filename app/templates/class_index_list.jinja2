@@ -40,6 +40,13 @@
                         class.alt_name }}){% endif %}</a>
                 </p>
                 <p class="muted-text entry-description"><small><i>{{ class.desc }}</i></small></p>
+                {% if class.learned_skills %}
+                <p class="muted-text entry-description"><small><i>Skills:&nbsp;
+                            {% for class_skill_data in class.learned_skills%}
+                            {{class_skill_data.skill.name}}{% if not loop.last %},&nbsp;{% endif %}
+                            {% endfor %}
+                        </i></small></p>
+                {% endif %}
             </div>
         </div>
 
