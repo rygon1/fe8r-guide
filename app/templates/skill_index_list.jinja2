@@ -5,7 +5,8 @@
         <h3>{% if group_data.key %}{{group_data.key}}{% else %}N/A{% endif %}</h3>
 
         {% for skill in group_data['skills']%}
-        <p><span class="{{ skill.icon_class }}"></span><a href="/skills/{{ skill.nid }}">{{ skill.name }}</a></p>
+        <p><span class="{{ skill.icon_class }}"></span><a href="/skills/{{ skill.nid }}">{{ skill.name }}{% if
+                skill.alt_name %} ({{skill.alt_name}}){% endif %}</a></p>
         {% endfor %}
 
     </section>
@@ -18,8 +19,19 @@
         <h3>{% if group_data.key %}{{group_data.key}}{% else %}N/A{% endif %}</h3>
         <hr />
         {% for skill in group_data['skills']%}
-        <p><span class="{{ skill.icon_class }}"></span><a href="/skills/{{ skill.nid }}">{{ skill.name }}</a></p>
+        <p><span class="{{ skill.icon_class }}"></span><a href="/skills/{{ skill.nid }}">{{ skill.name }}{% if
+                skill.alt_name %} ({{skill.alt_name}}){% endif %}</a></p>
         <p class="muted-text entry-description"><small><i>{{ skill.desc }}</i></small></p>
+        {% if skill.class_associations %}
+        <p class="muted-text entry-description"><small><i>Classes:&nbsp;
+                    {% for class_assoc in skill.class_associations%}
+                    {{ class_assoc.class_with_skill.name }} {% if
+                    class_assoc.class_with_skill.alt_name %}({{
+                    class_assoc.class_with_skill.alt_name }}){% endif %} {% if not loop.last%},&nbsp;{%
+                    endif %}
+                    {% endfor %}
+                </i></small></p>
+        {% endif %}
         {% endfor %}
 
     </section>

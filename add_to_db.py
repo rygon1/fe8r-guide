@@ -58,13 +58,23 @@ def _get_tier_category(data_entry):
     return ""
 
 
-def is_skill_filtered(nid):
-    """Checks if a skill's nid meets the filtering criteria."""
+def is_skill_filtered(data_entry):
+    """Checks if a skill meets the filtering criteria."""
+    nid = data_entry.get("nid")
     if not nid:
         return False
+    if "_Pair_Up" in nid or "_hide" in nid:
+        return False
+    component_names = {
+        comp[0]
+        for comp in data_entry.get("components", [])
+        if isinstance(comp, list) and len(comp) > 0
+    }
+    if "hidden" in component_names:
+        return False
     ends_with_tier = nid.endswith(("_T1", "_T2", "_T3"))
-    has_pair_up = "_Pair_Up" in nid
-    return ends_with_tier and not has_pair_up
+    is_class_skill = "class_skill" in component_names
+    return ends_with_tier or is_class_skill
 
 
 def _set_skill_categories(session, data_entry):
@@ -96,7 +106,7 @@ def _set_skill_categories(session, data_entry):
         "can move after",
     ]
 
-    if not is_skill_filtered(data_entry.get("nid")):
+    if not is_skill_filtered(data_entry):
         return []
 
     components = data_entry.get("components", [])
@@ -132,9 +142,9 @@ def _set_skill_categories(session, data_entry):
 def _add_skill_categories(session: Session):
     """Adds initial skill categories to the session."""
     new_skill_categories = [
-        ("feat_t1", "Tier 1", "Tier"),
-        ("feat_t2", "Tier 2", "Tier"),
-        ("feat_t3", "Tier 3", "Tier"),
+        ("feat_t1", "Tier 1 (Feats Only)", "Tier"),
+        ("feat_t2", "Tier 2 (Feats Only)", "Tier"),
+        ("feat_t3", "Tier 3 (Feats Only)", "Tier"),
         ("active", "Active", "Type"),
         ("passive", "Passive", "Type"),
         ("support", "Support", "Type"),
@@ -152,7 +162,77 @@ def remove_lt_tags(orig_str: str):
     """Removes HTML-like tags from a string."""
     new_str = re.sub(r"<\w+[^>]*>.*?((</\w+>)|/>)", "", orig_str, flags=re.DOTALL)
     new_str = re.sub(r"\([ \t\r\n]*\)|\s*\[[ \t\r\n]*\]|\s*\{[ \t\r\n]*\}", "", new_str)
-    return new_str
+    return new_str.lstrip().rstrip()
+
+
+def _get_skill_alt_name(data_entry):
+    nid = data_entry.get("nid")
+    name = remove_lt_tags(data_entry.get("name"))
+    check_name = name.replace("'", "").replace("-", " ").replace(",", "")
+    alt_name = " ".join(nid.split("_"))
+    if any(x in alt_name for x in ("T1", "T2", "T3")):
+        return "Feat"
+    alt_name = alt_name.replace(check_name, "")
+    remove_substrings = (
+        "Proc",
+        "Art",
+        "Punishment",
+        "Paladin Shield",
+        "Military Training",
+        "Immovable Position",
+        "Plus",
+        "Rage Mode",
+        "Released ResentmentAura",
+        "FireA",
+        "FireB",
+        "WaterAWaterB",
+        "AirA",
+        "AirB",
+        "EarthA",
+        "EarthB",
+        "Anatomy Murder",
+        "Explosive Poison CritBowfaire",
+        "Bowrange P1",
+        "FGR",
+        "Shadowblight",
+        "Frozen",
+        "Aura",
+        "Dragon power",
+        "Guardian of Light",
+        "Pariah Innate",
+        "Parent",
+        "Hunter Mark",
+        "Light Range P1 Light",
+        "Leicester Lineage",
+        "Tome Destroyer",
+        "Bright Idea",
+        "main",
+        "Seared",
+        "Oni Sweep",
+        "Magic RangeP1",
+        "Martial Maestry",
+        "Shield Aura",
+        "Pin ShotBuff",
+        "Protective Shade",
+        "Royal Charge Aura",
+        "Ally Parent",
+        "Terror Of The Skies",
+        "The Biggest Boulder",
+        "Savage Blow",
+        "Sight P",
+        "Staff Range P1",
+        "Pressence Supreme",
+        "Swiftfang",
+        "Laced Poison",
+        "Wrath P",
+        "CA",
+    )
+    for substring in remove_substrings:
+        alt_name = alt_name.replace(substring, "")
+    alt_name = alt_name.rstrip().lstrip()
+    if alt_name == name:
+        return ""
+    return alt_name
 
 
 @log_execution_step
@@ -166,13 +246,15 @@ def _add_skills(session: Session, json_dir: Path) -> None:
             if icon_nid
             else ""
         )
+        categories = _set_skill_categories(session, data_entry)
         new_skill = Skill(
             nid=data_entry.get("nid"),
             name=remove_lt_tags(data_entry.get("name")),
+            alt_name=_get_skill_alt_name(data_entry),
             desc=process_styled_text(data_entry.get("desc")),
             icon_class=icon_class.strip(),
             is_hidden=get_comp(data_entry, "hidden", bool),
-            categories=_set_skill_categories(session, data_entry),
+            categories=categories,
         )
 
         session.add(new_skill)

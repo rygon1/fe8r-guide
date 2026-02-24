@@ -21,6 +21,19 @@
         {% endif %}
         {% endfor %}
         {% endif %}
+        {% if skill_data.class_associations %}
+        <strong><small>Classes:</small></strong>
+        {% for class_assoc in skill_data.class_associations%}
+        <a href="/classes/{{ class_assoc.class_nid }}"><small>{{ class_assoc.class_with_skill.name }}{% if
+                class_assoc.class_with_skill.alt_name %} ({{
+                class_assoc.class_with_skill.alt_name }}){% endif %}</small></a>
+        {% if not loop.last %}
+        |
+        {% else %}
+        &nbsp;&nbsp;
+        {% endif %}
+        {% endfor %}
+        {% endif %}
     </footer>
     {% endif %}
 </article>

@@ -124,6 +124,7 @@ class Skill(db.Model):
     __tablename__ = "skills"
     nid: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
+    alt_name: Mapped[str]
     desc: Mapped[str]
     icon_class: Mapped[str]
     is_hidden: Mapped[bool]
