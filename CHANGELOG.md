@@ -2,11 +2,11 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
-## [0.1.1] - 2026-01-18
+## [0.1.2] - 2026-02-23
 
 ### Added
 
-- Skills: Class skills (not only feats anymore!)
+- Skills: Class skills (not only feats anymore!).
 - Skills: Catalog detailed list mode and individual skill pages now lists classes with the skill. Only the skill pages have clickable links to the class page
 
 ## [0.1.1] - 2026-01-18
