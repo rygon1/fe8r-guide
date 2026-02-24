@@ -25,9 +25,9 @@
         {% if skill.class_associations %}
         <p class="muted-text entry-description"><small><i>Classes:&nbsp;
                     {% for class_assoc in skill.class_associations%}
-                    {{ class_assoc.class_with_skill.name }} {% if
+                    {{ class_assoc.class_with_skill.name }}{% if
                     class_assoc.class_with_skill.alt_name %}({{
-                    class_assoc.class_with_skill.alt_name }}){% endif %} {% if not loop.last%},&nbsp;{%
+                    class_assoc.class_with_skill.alt_name }}){% endif %}{% if not loop.last%},&nbsp;{%
                     endif %}
                     {% endfor %}
                 </i></small></p>
