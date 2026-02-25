@@ -78,18 +78,22 @@
     <summary>Skills</summary>
     <div class="skill-grid">
       {% for skill in unit_data.learned_skills|sort(attribute="level") %}
+      {% if not skill.skill.is_hidden or "Affinity Strike" in skill.skill.name%}
       <div>
         <p><small>Level {{skill.level}}</small></p>
         <div hx-get=/skills/{{skill.skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
         </div>
       </div>
+      {% endif %}
       {% endfor %}
       {% for skill in unit_data.base_class.learned_skills|sort(attribute="level") %}
+      {% if not skill.skill.is_hidden %}
       <div>
         <p><small>Level {{skill.level}}</small></p>
         <div hx-get=/skills/{{skill.skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
         </div>
       </div>
+      {% endif %}
       {% endfor %}
     </div>
   </details>

@@ -65,11 +65,13 @@
         <summary>Skills</summary>
         <div class="skill-grid">
             {% for skill_assoc in class_data.learned_skills|sort(attribute="level") %}
+            {% if not skill_assoc.skill.is_hidden %}
             <div>
                 <p><small>Level {{skill_assoc.level}}</small></p>
                 <div hx-get=/skills/{{skill_assoc.skill_nid}} hx-trigger="load" hx-target="this" hx-swap="outerHTML">
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </details>
