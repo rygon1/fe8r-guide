@@ -72,9 +72,11 @@ def is_skill_filtered(data_entry):
     }
     if "hidden" in component_names:
         return False
+
+    is_neg_status = "negative" in component_names
     ends_with_tier = nid.endswith(("_T1", "_T2", "_T3"))
     is_class_skill = "class_skill" in component_names
-    return ends_with_tier or is_class_skill
+    return ends_with_tier or is_class_skill or is_neg_status
 
 
 def _set_skill_categories(session, data_entry):
@@ -121,19 +123,26 @@ def _set_skill_categories(session, data_entry):
 
     is_active_by_component = any(comp in component_names for comp in active_components)
     is_active_by_desc = any(keyword in desc for keyword in active_desc_keywords)
-    if is_active_by_component or is_active_by_desc:
+    if (
+        is_active_by_component or is_active_by_desc
+    ) and "negative" not in component_names:
         categories.append(session.get(SkillCategory, "active"))
 
     is_support_by_component = any(
         comp in component_names for comp in support_components
     )
     is_support_by_desc = any(keyword in desc for keyword in support_desc_keywords)
-    if is_support_by_component or is_support_by_desc:
+    if (
+        is_support_by_component or is_support_by_desc
+    ) and "negative" not in component_names:
         categories.append(session.get(SkillCategory, "support"))
 
     if not (is_active_by_component or is_active_by_desc):
-        if "Passive" not in categories:
+        if "Passive" not in categories and "negative" not in component_names:
             categories.append(session.get(SkillCategory, "passive"))
+
+    if "negative" in component_names:
+        categories.append(session.get(SkillCategory, "negative"))
 
     return categories
 
@@ -148,6 +157,7 @@ def _add_skill_categories(session: Session):
         ("active", "Active", "Type"),
         ("passive", "Passive", "Type"),
         ("support", "Support", "Type"),
+        ("negative", "Negative Status", "Type"),
     ]
 
     session.add_all(
@@ -173,64 +183,25 @@ def _get_skill_alt_name(data_entry):
     if any(x in alt_name for x in ("T1", "T2", "T3")):
         return "Feat"
     alt_name = alt_name.replace(check_name, "")
-    remove_substrings = (
-        "Proc",
-        "Art",
-        "Punishment",
-        "Paladin Shield",
-        "Military Training",
-        "Immovable Position",
-        "Plus",
-        "Rage Mode",
-        "Released ResentmentAura",
-        "FireA",
-        "FireB",
-        "WaterAWaterB",
-        "AirA",
-        "AirB",
-        "EarthA",
-        "EarthB",
-        "Anatomy Murder",
-        "Explosive Poison CritBowfaire",
-        "Bowrange P1",
-        "FGR",
-        "Shadowblight",
-        "Frozen",
-        "Aura",
-        "Dragon power",
-        "Guardian of Light",
-        "Pariah Innate",
-        "Parent",
-        "Hunter Mark",
-        "Light Range P1 Light",
-        "Leicester Lineage",
-        "Tome Destroyer",
-        "Bright Idea",
-        "main",
-        "Seared",
-        "Oni Sweep",
-        "Magic RangeP1",
-        "Martial Maestry",
-        "Shield Aura",
-        "Pin ShotBuff",
-        "Protective Shade",
-        "Royal Charge Aura",
-        "Ally Parent",
-        "Terror Of The Skies",
-        "The Biggest Boulder",
-        "Savage Blow",
-        "Sight P",
-        "Staff Range P1",
-        "Pressence Supreme",
-        "Swiftfang",
-        "Laced Poison",
-        "Wrath P",
-        "CA",
-    )
-    for substring in remove_substrings:
-        alt_name = alt_name.replace(substring, "")
     alt_name = alt_name.rstrip().lstrip()
-    if alt_name == name:
+    if alt_name == "Player":
+        alt_name = "MyUnit"
+    if alt_name == "Burned Boss":
+        alt_name = "Boss"
+    if alt_name not in (
+        "Feat",
+        "Ewan",
+        "Knoll",
+        "Lindsey",
+        "Azuth",
+        "MyUnit",
+        "Light",
+        "Dark",
+        "Anima",
+        "Short",
+        "Boss",
+        "Monster",
+    ):
         return ""
     return alt_name
 
@@ -857,6 +828,7 @@ def _add_class_categories(session: Session):
         ("class_cat_monster", "Monster", "Category"),
         ("class_cat_flying", "Flying", "Category"),
         ("class_cat_dragon", "Dragon", "Category"),
+        ("class_cat_myunit", "MyUnit", "Category"),
         # ("class_cat_staff", "Staff", "Category"),
         ("prof_Sword", "Sword Users", "Weapon Prof."),
         ("prof_Axe", "Axe Users", "Weapon Prof."),
@@ -891,6 +863,40 @@ def _set_class_categories(session: Session, data_entry: DataEntry) -> list:
                 ClassCategory, f"class_cat_{class_tag.lower()}"
             ):
                 categories.append(class_cat)
+    if data_entry.get("nid") in (
+        "Archer",
+        "Bael",
+        "Barbarian_MyUnit",
+        "Cavalier",
+        "Cleric",
+        "Fighter",
+        "Gargoyle",
+        "Hellhound",
+        "Knight",
+        "Kyudoka",
+        "Mage_Male",
+        "Medic_Player",
+        "Mercenary",
+        "Mogall",
+        "Monk",
+        "Myrmidon_Male",
+        "Pegasus_Knight",
+        "Pirate",
+        "Priest",
+        "Revenant_Player",
+        "Shaman",
+        "Soldier",
+        "Sword_Bonewalker_Player",
+        "T1_Axe_Cav",
+        "T1_Sword_Cav",
+        "Tarvadour",
+        "Tarvos",
+        "Thief",
+        "Troubadour",
+        "Wyvern_Rider",
+    ):
+        if class_cat := session.get(ClassCategory, "class_cat_myunit"):
+            categories.append(class_cat)
 
     weapon_nids = [x for x, y in data_entry.get("wexp_gain", {}).items() if y[0]]
     for weapon_nid in weapon_nids:

@@ -2,6 +2,13 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.1.3] - 2026-02-26
+
+### Added
+
+- Skills: "Negative Status" category (you might notice some dupes here, but they are)
+- Classes: "MyUnit" category (base classes you can pick for your MyUnit)
+
 ## [0.1.2] - 2026-02-23
 
 ### Added
