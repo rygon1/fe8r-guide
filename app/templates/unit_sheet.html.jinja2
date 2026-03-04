@@ -52,7 +52,8 @@
         <tr>
           <th scope="row">Base</th>
           {% for stat_name in stat_names[:-1] %}
-          <td>{{ unit_data.base_class.promotion[stat_name] + unit_data.bases[stat_name] }}</td>
+          {# <td>{{ unit_data.base_class.promotion[stat_name] + unit_data.bases[stat_name] }}</td> #}
+          <td>{{ unit_data.bases[stat_name] }}</td>
           {% endfor %}
           <td>{{ unit_data.base_class.bases['MOV'] }}</td>
         </tr>
