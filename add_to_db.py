@@ -209,7 +209,10 @@ def _get_skill_alt_name(data_entry):
 @log_execution_step
 def _add_skills(session: Session, json_dir: Path) -> None:
     """Parses skill JSON and adds Skill objects to the database."""
-    for data_entry in load_json_data(json_dir / "skills.json"):
+    skills_data = []
+    for json_file in (json_dir / "skills").glob("*.json"):
+        skills_data += load_json_data(json_file)
+    for data_entry in skills_data:
         icon_nid = data_entry.get("icon_nid")
         icon_class = (
             f"{make_valid_class_name(data_entry.get('nid'))}-skill-icon "
@@ -941,7 +944,10 @@ def _set_class_weapons(session: Session, data_entry: DataEntry):
 @log_execution_step
 def _add_classes(session: Session, json_dir: Path) -> None:
     """Parses class JSON to create Class objects and associations."""
-    classes_data = load_json_data(json_dir / "classes.json")
+    # classes_data = load_json_data(json_dir / "classes.json")
+    classes_data = []
+    for json_file in (json_dir / "classes").glob("*.json"):
+        classes_data += load_json_data(json_file)
     exclude_class = (
         "Test",
         "_Plushie",
@@ -1262,7 +1268,10 @@ def _get_unit_quotes(session: Session, json_dir: Path):
 
 def _add_units(session: Session, json_dir: Path) -> None:
     """Parses unit JSON to create Unit objects and associations."""
-    units_data = load_json_data(json_dir / "units.json")
+    # units_data = load_json_data(json_dir / "units.json")
+    units_data = []
+    for json_file in (json_dir / "units").glob("*.json"):
+        units_data += load_json_data(json_file)
     init_category_map = load_json_data(json_dir / "units.category.json")
     unit_quotes_map = _get_unit_quotes(session, json_dir)
     unit_portrait_map = _get_unit_portraits(session, json_dir)
