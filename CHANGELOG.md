@@ -2,6 +2,13 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.1.4] - 2026-03-11
+
+### Added
+
+- Units: "Enemies" category
+- Units: Enemy unit pages have stats for each difficulty mode and droppable items are now labelled
+
 ## [0.1.3] - 2026-02-26
 
 ### Added
