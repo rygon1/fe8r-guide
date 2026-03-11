@@ -1,3 +1,5 @@
+import math
+
 from flask import Flask, Response, render_template
 
 from app.blueprints import classes, codex, items, random_run, skills, units
@@ -41,6 +43,11 @@ def growth_colors(value):
     return "red"
 
 
+def commercial_round(value, decimals=0):
+    multiplier = 10**decimals
+    return math.floor(value * multiplier + 0.5) / multiplier
+
+
 def create_app(config_class=Config) -> Flask:
     app = Flask(__name__)
 
@@ -59,6 +66,7 @@ def create_app(config_class=Config) -> Flask:
 
     app.jinja_env.filters["currency_format"] = currency_format
     app.jinja_env.filters["growth_colors"] = growth_colors
+    app.jinja_env.filters["commercial_round"] = commercial_round
 
     @app.route("/favicon.ico")
     def favicon() -> Response:

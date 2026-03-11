@@ -6,7 +6,8 @@
 
         {% for unit in group_data['units']%}
         <p><img src="/static/images/portraits/{{ unit.portrait_nid|urlencode }}.png" height="45"
-                width="54" />&nbsp;&nbsp;&nbsp;<a href="/units/{{ unit.nid }}">{{ unit.name }}</a>
+                width="54" />&nbsp;&nbsp;&nbsp;<a href="/units/{{ unit.nid }}">{% if unit.alt_name %}{{
+                unit.alt_name }}{% else %}{{ unit.name }}{% endif %}</a>
         </p>
         {% endfor %}
 
@@ -25,7 +26,8 @@
             <div class="list-unit-desc">
                 <p></p>
                 <p>
-                    <a href="/units/{{ unit.nid }}">{{ unit.name }}</a>
+                    <a href="/units/{{ unit.nid }}">{% if unit.alt_name %}{{ unit.alt_name }}{% else %}{{
+                        unit.name }}{% endif %}</a>
                 </p>
                 <p class="muted-text entry-description"><small><i>{{ unit.desc }}</i></small></p>
             </div>

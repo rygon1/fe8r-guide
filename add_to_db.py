@@ -18,6 +18,7 @@ from add_to_db_models import (
     Class,
     ClassCategory,
     ClassSkillAssociation,
+    DifficultyMode,
     Item,
     ItemCategory,
     Shop,
@@ -25,6 +26,7 @@ from add_to_db_models import (
     SkillCategory,
     Unit,
     UnitCategory,
+    UnitItemAssociation,
     UnitSkillAssociation,
     Weapon,
 )
@@ -783,8 +785,8 @@ def _add_unit_categories(session: Session):
         ("Vanilla", "Vanilla", "Category"),
         ("Dragon Gate", "Dragon's Gate", "Category"),
         ("Monsters", "Monsters", "Category"),
-        # "NPCs",
-        # "Enemies",
+        # ("NPCs", "NPCs", "Category"),
+        ("Enemies", "Enemies", "Category"),
     ]
 
     session.add_all(
@@ -1268,7 +1270,6 @@ def _get_unit_quotes(session: Session, json_dir: Path):
 
 def _add_units(session: Session, json_dir: Path) -> None:
     """Parses unit JSON to create Unit objects and associations."""
-    # units_data = load_json_data(json_dir / "units.json")
     units_data = []
     for json_file in (json_dir / "units").glob("*.json"):
         units_data += load_json_data(json_file)
@@ -1279,19 +1280,21 @@ def _add_units(session: Session, json_dir: Path) -> None:
 
     for data_entry in units_data:
         new_unit_nid = data_entry.get("nid")
-        if init_category_map.get(new_unit_nid, "") not in (
-            "Vanilla",
-            "Dragon Gate",
-            "Monsters",
-        ) or new_unit_nid.endswith(exclude_unit):
+        if new_unit_nid.endswith(exclude_unit):
             continue
+        if new_unit_nid in ("LyonE",):
+            alt_name = "Lyon (Evil)"
+        else:
+            alt_name = ""
         new_unit = Unit(
             nid=data_entry.get("nid"),
             name=data_entry.get("name", "Unknown"),
+            alt_name=alt_name,
             desc=process_styled_text(data_entry.get("desc", "")),
             level=data_entry.get("level", 1),
             base_class_nid=data_entry.get("klass"),
             portrait_nid=data_entry.get("portrait_nid"),
+            is_boss="Boss" in data_entry.get("tags", []),
             affinity_nid=data_entry.get("affinity", ""),
             bases={
                 stat_key: data_entry.get("bases", {}).get(stat_key, 0)
@@ -1314,12 +1317,12 @@ def _add_units(session: Session, json_dir: Path) -> None:
         session.flush()
 
         if current_unit := session.get(Unit, data_entry.get("nid")):
-            if start_items := data_entry.get("starting_items"):
-                item_nids = [i[0] for i in start_items]
-                items = session.scalars(
-                    select(Item).where(Item.nid.in_(item_nids))
-                ).all()
-                current_unit.starting_items.extend(items)
+            if start_items := data_entry.get("starting_items", []):
+                for item_nid, is_droppable in start_items:
+                    if item := session.get(Item, item_nid):
+                        current_unit.starting_items.append(
+                            UnitItemAssociation(item=item, is_droppable=is_droppable)
+                        )
 
             if learned := data_entry.get("learned_skills", []):
                 for skill_level, skill_nid in learned:
@@ -1330,6 +1333,42 @@ def _add_units(session: Session, json_dir: Path) -> None:
                             UnitSkillAssociation(skill=skill, level=skill_level)
                         )
 
+    session.flush()
+
+
+def _add_diff_modes(session, json_dir):
+    diff_mode_data = load_json_data(json_dir / "difficulty_modes.json")
+    for data_entry in diff_mode_data:
+        new_diff_mode = DifficultyMode(
+            nid=data_entry.get("nid"),
+            name=data_entry.get("name", "Unknown"),
+            color=data_entry.get("color", ""),
+            player_bases={
+                stat_key: data_entry.get("player_bases", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            enemy_bases={
+                stat_key: data_entry.get("enemy_bases", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            boss_bases={
+                stat_key: data_entry.get("boss_bases", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            player_growths={
+                stat_key: data_entry.get("player_growths", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            enemy_growths={
+                stat_key: data_entry.get("enemy_growths", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+            boss_growths={
+                stat_key: data_entry.get("boss_growths", {}).get(stat_key, 0)
+                for stat_key in STAT_KEYS
+            },
+        )
+        session.add(new_diff_mode)
     session.flush()
 
 
@@ -1383,6 +1422,9 @@ def add_to_db(json_dir: Path) -> None:
         session.commit()
 
         _add_arsenals(session, json_dir)
+        session.commit()
+
+        _add_diff_modes(session, json_dir)
         session.commit()
 
     print("--- Database Population Complete ---")

@@ -77,13 +77,6 @@ arsenal_item_assoc = Table(
     Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
 )
 
-unit_item_assoc = Table(
-    "unit_item_assoc",
-    db.metadata,
-    Column("unit_nid", String, ForeignKey("units.nid"), primary_key=True),
-    Column("item_nid", String, ForeignKey("items.nid"), primary_key=True),
-)
-
 class_weapon_assoc = Table(
     "class_weapon_assoc",
     db.metadata,
@@ -104,6 +97,20 @@ class ClassSkillAssociation(db.Model):
 
     def __repr__(self) -> str:
         return f"ClassSkillAssociation(class_nid={self.class_nid!r}, skill_nid={self.skill_nid!r}, level={self.level!r})"
+
+
+class UnitItemAssociation(db.Model):
+    __tablename__ = "unit_item_assoc"
+
+    unit_nid: Mapped[str] = mapped_column(ForeignKey("units.nid"), primary_key=True)
+    item_nid: Mapped[str] = mapped_column(ForeignKey("items.nid"), primary_key=True)
+    is_droppable: Mapped[bool]
+
+    units_with_item: Mapped["Unit"] = relationship(back_populates="starting_items")
+    item: Mapped["Item"] = relationship(back_populates="unit_associations")
+
+    def __repr__(self) -> str:
+        return f"UnitItemAssociation(unit_nid={self.unit_nid!r}, skill_nid={self.item_nid!r}, is_droppable={self.is_droppable!r})"
 
 
 class UnitSkillAssociation(db.Model):
@@ -204,6 +211,9 @@ class Item(db.Model):
         secondary=item_skill_assoc,
         backref="items",
     )
+    unit_associations: Mapped[list["UnitItemAssociation"]] = relationship(
+        back_populates="item"
+    )
 
     def __repr__(self) -> str:
         return f"Item(nid={self.nid!r}, name={self.name!r})"
@@ -302,9 +312,11 @@ class Unit(db.Model):
     __tablename__ = "units"
     nid: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
+    alt_name: Mapped[str]
     desc: Mapped[str]
     level: Mapped[int]
     portrait_nid: Mapped[str]
+    is_boss: Mapped[bool]
 
     base_class_nid: Mapped[str] = mapped_column(
         ForeignKey("classes.nid"), nullable=True
@@ -324,8 +336,8 @@ class Unit(db.Model):
     categories: Mapped[list["UnitCategory"]] = relationship(
         secondary=unit_category_assoc, back_populates="units"
     )
-    starting_items: Mapped[list["Item"]] = relationship(
-        secondary=unit_item_assoc, backref="units"
+    starting_items: Mapped[list["UnitItemAssociation"]] = relationship(
+        back_populates="units_with_item"
     )
     learned_skills: Mapped[list["UnitSkillAssociation"]] = relationship(
         back_populates="units_with_skill"
@@ -398,3 +410,19 @@ class Class(db.Model):
 
     def __repr__(self) -> str:
         return f"Class(nid={self.nid!r}, name={self.name!r})"
+
+
+class DifficultyMode(db.Model):
+    __tablename__ = "difficulty_modes"
+    nid: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    color: Mapped[str]
+    player_bases: Mapped[dict] = mapped_column(JSON)
+    enemy_bases: Mapped[dict] = mapped_column(JSON)
+    boss_bases: Mapped[dict] = mapped_column(JSON)
+    player_growths: Mapped[dict] = mapped_column(JSON)
+    enemy_growths: Mapped[dict] = mapped_column(JSON)
+    boss_growths: Mapped[dict] = mapped_column(JSON)
+
+    def __repr__(self) -> str:
+        return f"DifficultyMode(nid={self.nid!r}, name={self.name!r})"

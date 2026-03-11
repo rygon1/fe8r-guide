@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request
 from sqlalchemy import select
 
 from app.extensions import db
-from app.models import Class, Unit, UnitCategory
+from app.models import Class, DifficultyMode, Unit, UnitCategory
 
 bp = Blueprint(
     "units",
@@ -29,7 +29,7 @@ def get_fe_unit_index() -> str:
 @bp.route("/categories")
 def get_unit_list():
     if not (unit_cat_nid := request.args.get("unitCategory")):
-        unit_cat_nid = "Eirika"
+        unit_cat_nid = "Vanilla"
     unit_cat = db.get_or_404(UnitCategory, unit_cat_nid)
     unordered_items = unit_cat.units
     if not (unit_cat_sort := request.args.get("unitSort")):
@@ -62,6 +62,7 @@ def get_fe_unit_sheet(fe_unit_nid="Eirika") -> str:
     return render_template(
         "unit_sheet.html.jinja2",
         unit_data=unit_data,
+        diff_modes=db.session.execute(select(DifficultyMode)).scalars().all(),
     )
 
 

@@ -3,12 +3,17 @@
 {% block title %}{{ unit_data.name }} &mdash; Units | {% endblock %}
 {% endif %}
 {% block content %}
+{% set unit_categories = unit_data.categories | map(attribute="nid") | list %}
 <div id="unitSheet">
   <div class="unit-head-container">
     <div class="div1"><img src="/static/images/portraits/{{ unit_data.portrait_nid|urlencode }}.png" /></div>
     <div class="div2">
       <hgroup>
+        {% if unit_data.alt_name %}
+        <h2>{{ unit_data.alt_name }}</h2>
+        {% else %}
         <h2>{{ unit_data.name }}</h2>
+        {% endif %}
         <p>{{ unit_data.desc }}</p>
       </hgroup>
     </div>
@@ -36,7 +41,7 @@
       </hgroup>
     </div>
   </div>
-
+  {% if "Enemies" not in unit_categories and "NPCs" not in unit_categories%}
   <div class="overflow-auto">
     <table class="striped">
       {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
@@ -71,8 +76,68 @@
           <td>{{ unit_data.base_class.max_stats[stat_name] + unit_data.stat_cap_modifiers[stat_name]}}</td>
           {% endfor %}
         </tr>
+      </tbody>
     </table>
   </div>
+  {% elif "Enemies" in unit_categories %}
+  <div class="overflow-auto">
+    <table class="striped">
+      {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
+      <thead>
+        <tr>
+          <th scope="col">Stat</th>
+          {% for stat_name in stat_names %}
+          <th scope="col">{{ stat_name }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for diff_mode in diff_modes%}
+        {% if diff_mode.nid not in ["Hard_2RN", "Lunatic_2RN"]%}
+        {% if unit_data.is_boss %}
+        <tr>
+          <th scope="row"><span class="lt-color-{{ diff_mode.color }}">{{diff_mode.name | replace(" 1RN","")}}</span>
+          </th>
+          {% for stat_name in stat_names %}
+          {% if unit_data.base_class.tier <= 1 %} <td>{{ (unit_data.bases[stat_name] +
+            (unit_data.level-1)*diff_mode.boss_growths[stat_name]/100 +
+            diff_mode.boss_bases[stat_name] ) | commercial_round | int}}</td>
+            {% elif unit_data.base_class.tier == 2 %}
+            <td>{{ (unit_data.bases[stat_name] + (unit_data.level+20)*diff_mode.boss_growths[stat_name]/100 +
+              diff_mode.boss_bases[stat_name] ) | commercial_round | int}}</td>
+            {% elif unit_data.base_class.tier == 3 %}
+            <td>{{ (unit_data.bases[stat_name] +
+              (unit_data.level+20+20)*diff_mode.boss_growths[stat_name]/100 +
+              diff_mode.boss_bases[stat_name] ) | commercial_round | int}}</td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% else %}
+        <tr>
+          <th scope="row"><span class="lt-color-{{ diff_mode.color }}">{{diff_mode.name | replace(" 1RN","")}}</span>
+          </th>
+          {% for stat_name in stat_names %}
+          {% if unit_data.base_class.tier <= 1 %} <td>{{ (unit_data.bases[stat_name] +
+            (unit_data.level-1)*diff_mode.enemy_growths[stat_name]/100 +
+            diff_mode.enemy_bases[stat_name] ) | commercial_round | int}}</td>
+            {% elif unit_data.base_class.tier == 2 %}
+            <td>{{ (unit_data.bases[stat_name] + (unit_data.level+20)*diff_mode.enemy_growths[stat_name]/100 +
+              diff_mode.enemy_bases[stat_name] ) | commercial_round | int}}</td>
+            {% elif unit_data.base_class.tier == 3 %}
+            <td>{{ (unit_data.bases[stat_name] +
+              (unit_data.level+20+20)*diff_mode.enemy_growths[stat_name]/100 +
+              diff_mode.enemy_bases[stat_name] ) | commercial_round | int}}</td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </table>
+    </tbody>
+  </div>
+  {% endif %}
+
 
   {% if unit_data.learned_skills or unit_data.base_class.learned_skills%}
   <details name="sections" open>
@@ -85,6 +150,7 @@
         <div hx-get=/skills/{{skill.skill_nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
         </div>
       </div>
+
       {% endif %}
       {% endfor %}
       {% for skill in unit_data.base_class.learned_skills|sort(attribute="level") %}
@@ -101,6 +167,7 @@
   <hr />
   {% endif %}
 
+  {% if "Enemies" not in unit_categories and "NPCs" not in unit_categories%}
   <details name="sections">
     <summary>Promotions</summary>
     {% if unit_data.base_class.tier == 0 %}
@@ -146,24 +213,25 @@
     <div id="unitClassT3Sheet"></div>
   </details>
   <hr />
+  {% endif %}
 
   {% if unit_data.starting_items %}
   <details name="sections">
     <summary>Starting Items</summary>
-
     <div class="skill-grid">
       {% for item in unit_data.starting_items %}
-
       <div>
         <p></p>
-        <div hx-get=/items/{{item.nid}} hx-vals='{"hideSkills": "true"}' hx-trigger=" load" hx-target="this"
-          hx-swap="outerHTML">
-        </div>
+        <article>
+          <header>
+            <strong>{{ item.item.name }} <span class="{{ item.item.icon_class }}"></span></strong>
+          </header>
+          <p>{{ item.item.desc }}{% if item.is_droppable %}<br><span class="lt-color-pink">Droppable</span>{% endif %}
+          </p>
+        </article>
       </div>
-
       {% endfor %}
     </div>
-
   </details>
   <hr />
   {% endif %}
