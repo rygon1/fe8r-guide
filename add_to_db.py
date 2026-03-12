@@ -1274,16 +1274,43 @@ def _add_units(session: Session, json_dir: Path) -> None:
     for json_file in (json_dir / "units").glob("*.json"):
         units_data += load_json_data(json_file)
     init_category_map = load_json_data(json_dir / "units.category.json")
+    init_category_map["PabloB"] = "Enemies"
+    init_category_map["RievB"] = "Enemies"
     unit_quotes_map = _get_unit_quotes(session, json_dir)
     unit_portrait_map = _get_unit_portraits(session, json_dir)
     exclude_unit = ("_Plushie", "Orson", "Orson_Evil", "Davius_Old", "MyUnit")
-
+    custom_units_data = []
     for data_entry in units_data:
+        if data_entry.get("nid") == "Pablo":
+            new_data_entry = dict(data_entry.items())
+            new_data_entry["nid"] = "PabloB"
+            new_data_entry["name"] = "Pablo"
+            new_data_entry["starting_items"].append(["Aura_Glacier", True])
+            new_data_entry["starting_items"].append(["Magic_Maxxer", True])
+            custom_units_data.append(new_data_entry)
+        elif data_entry.get("nid") == "Riev":
+            new_data_entry = dict(data_entry.items())
+            new_data_entry["nid"] = "RievB"
+            new_data_entry["name"] = "Riev"
+            new_data_entry["starting_items"].remove(["Chaos_Bolt", True])
+            new_data_entry["starting_items"].append(["Night_Sky", True])
+            custom_units_data.append(new_data_entry)
+    for data_entry in units_data + custom_units_data:
         new_unit_nid = data_entry.get("nid")
         if new_unit_nid.endswith(exclude_unit):
             continue
-        if new_unit_nid in ("LyonE",):
-            alt_name = "Lyon (Evil)"
+        if new_unit_nid == "LyonE":
+            alt_name = "Lyon (Final Ch.)"
+        elif new_unit_nid == "Lyon":
+            alt_name = "Lyon (Ch. 17)"
+        elif new_unit_nid == "Pablo":
+            alt_name = "Pablo (Ch. 10A)"
+        elif new_unit_nid == "PabloB":
+            alt_name = "Pablo (Ch. 13A)"
+        elif new_unit_nid == "Riev":
+            alt_name = "Riev (Ch. 19)"
+        elif new_unit_nid == "RievB":
+            alt_name = "Riev (Ch. 20)"
         else:
             alt_name = ""
         new_unit = Unit(
