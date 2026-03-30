@@ -22,10 +22,12 @@
         <div>
             {% if item_data.min_range == item_data.max_range %}
             <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}<br />
-            {% else %}
-            <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}&ndash;{{ item_data.max_range
-            }}<br />
-            {% endif %}
+            {% elif item_data.min_range and (not item_data.max_range or item_data.max_range < item_data.min_range) %}
+                <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}+<br />
+                {% else %}
+                <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}&ndash;{{ item_data.max_range
+                }}<br />
+                {% endif %}
         </div>
         {% endif %}
         {% if item_data.weight %}
