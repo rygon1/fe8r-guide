@@ -960,6 +960,7 @@ def _add_classes(session: Session, json_dir: Path) -> None:
         "Dummy_T3",
         "Boat",
         "Dead_Body",
+        "Squire_D",
     )
     for data_entry in classes_data:
         if any(substr in data_entry.get("nid") for substr in exclude_class):
