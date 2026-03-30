@@ -2,6 +2,12 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.1.5] - 2026-03-30
+
+### Added
+
+- Stuff from new update
+
 ## [0.1.4] - 2026-03-11
 
 ### Added
