@@ -10,7 +10,8 @@ This is the github repo for <a href="https://fe8r-guide.onrender.com/">FE8R Wiki
 
 ### Prerequisites
 
-Python >=3.10
+Python >=3.14
+uv
 
 ### Installation
 
@@ -20,12 +21,11 @@ Python >=3.10
     git clone --depth 1 https://github.com/rygon1/fe8r-guide.git
     ```
 
-2. Run `deploy.sh`
+2. Run `uv sync`
 
     ```bash
     cd fe8r-guide
-    chmod +x deploy.sh
-    ./deploy.sh
+    uv sync
     ```
 
 The next ones are optional, just in case this repo is out of date with the FE8RProject files.
@@ -46,10 +46,9 @@ The next ones are optional, just in case this repo is out of date with the FE8RP
 ### Running the server locally
 
 ```bash
-source .venv/bin/activate
-gunicorn wsgi:app
+uv run gunicorn wsgi:app
 ```
 
 Go to [localhost:8000](http://localhost:8000) in your internet browser of choice. The port number (8000 in this case) might be different on your machine, so check what port gunicorn is served in your terminal.
 
-Alternatively, you can just use `flask run` instead of gunicorn if you don't mind just running a dev server. Go to [localhost:5000](http://localhost:5000) or whatever flask says the port is.
+Alternatively, you can just use `uv run flask run` instead of gunicorn if you don't mind just running a dev server. Go to [localhost:5000](http://localhost:5000) or whatever flask says the port is.
