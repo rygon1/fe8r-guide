@@ -15,7 +15,7 @@ source "$VENV_DIR/bin/activate"
 
 if [ -f "$REQUIREMENTS_FILE" ]; then
     echo "Installing Python dependencies from $REQUIREMENTS_FILE"
-    pip install -r "$REQUIREMENTS_FILE"
+    uv pip install -r "$REQUIREMENTS_FILE"
 else
     echo "No $REQUIREMENTS_FILE found. Skipping dependency installation."
 fi
