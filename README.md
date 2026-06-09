@@ -40,7 +40,7 @@ The next ones are optional, just in case this repo is out of date with the FE8RP
 3. In the fe8r-guide directory, run `get_resources.py`
   
     ```bash
-    python get_resources.py
+    uv run get_resources.py
     ```
 
 ### Running the server locally
