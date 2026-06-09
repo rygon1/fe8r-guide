@@ -10,8 +10,8 @@ This is the github repo for <a href="https://fe8r-guide.onrender.com/">FE8R Wiki
 
 ### Prerequisites
 
-Python >=3.14
-uv
+- Python >=3.14
+- uv
 
 ### Installation
 
