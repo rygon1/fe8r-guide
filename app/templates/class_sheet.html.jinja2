@@ -5,11 +5,11 @@
 {% block content %}
 <div id="classSheet">
     <div class="unit-head-container">
-        <div class="div1">
+        <div class="class-tile">
             <img src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}"
-                height="96" width="96" />
+                class="gba-sprite" />
         </div>
-        <div class="div2">
+        <div>
             <hgroup>
                 <h2>{{ class_data.name }}</h2>
                 <p>{{ class_data.desc }}

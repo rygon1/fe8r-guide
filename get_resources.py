@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import json
 import shutil
 import sys
@@ -39,7 +40,7 @@ if not LTPROJ_DIR.exists():
         f"The directory {LTPROJ_DIR} does not exist. Check config.json."
     )
 
-TARGET_COLOR = tuple(config.get("target_color", [128, 160, 128]))
+TARGET_COLOR = (128, 160, 128)
 
 JSON_DIR = LTPROJ_DIR / "game_data"
 ICONS_16_DIR = LTPROJ_DIR / "resources/icons16"
@@ -70,15 +71,11 @@ def process_image_transparency(
     img: Image.Image, target_rgb: tuple[int, int, int] = TARGET_COLOR
 ) -> Image.Image:
     """Converts a specific RGB color in an image to transparent (RGBA)."""
-    img = img.convert("RGBA")
-    datas = img.getdata()
-
-    new_data = [
-        (255, 255, 255, 0) if item[:3] == target_rgb else item for item in datas
-    ]
-
-    img.putdata(new_data)
-    return img
+    new_img = img.convert("RGBA")
+    data = new_img.getdata()
+    new_data = [(255, 255, 255, 0) if item[:3] == target_rgb else item for item in data]  # type:ignore
+    new_img.putdata(new_data)
+    return new_img
 
 
 @log_execution_step
@@ -218,7 +215,7 @@ def get_map_sprites():
                 lower = upper + frame_height
 
                 sprite = sprite_sheet.crop((left, upper, right, lower))
-                frame = sprite.crop((8, 0, 56, 48))
+                frame = sprite.resize((int(frame_width * 2), int(frame_height * 2)))
                 frames.append(frame)
 
             if frames:
