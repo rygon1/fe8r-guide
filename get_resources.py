@@ -204,7 +204,10 @@ def get_map_sprites():
             main_sprite = sprite_sheet.crop(
                 (frame_width, 0, frame_width * 2, frame_height)
             )
-            main_sprite = main_sprite.crop((8, 0, 56, 48))
+            # main_sprite = main_sprite.crop((8, 0, 56, 48))
+            main_sprite = main_sprite.resize(
+                (int(frame_width * 1.25), int(frame_height * 1.25))
+            )
             main_sprite.save(dest_dir / f"{entry['map_sprite_nid']}-stand-static.webp")
 
             frames = []
