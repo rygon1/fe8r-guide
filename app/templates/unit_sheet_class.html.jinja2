@@ -1,0 +1,149 @@
+{% if not request.headers.hx_request %}
+{% extends "layout.html.jinja2" %}
+{% block title %}{{ class_data.name }} &mdash; Classes | {% endblock %}
+{% endif %}
+{% block content %}
+
+
+<div class="unit-head-container">
+    <div class="class-tile">
+        <img src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}"
+            class="gba-sprite" />
+    </div>
+    <hgroup>
+        <p><strong>{{ class_data.name }}</strong></p>
+        <p><small>{{ class_data.desc }}
+                {% if class_data.weapons%}
+                <br />
+                <span class="lt-color-red">Prof:</span>
+                {% for weapon in class_data.weapons%}
+                <span class="{{ weapon.icon_class }}"></span>
+                {% endfor %}
+                {% endif %}
+            </small>
+        </p>
+    </hgroup>
+    <div></div>
+</div>
+{% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
+<div class="tabs" _="on click
+    set tab to the closest <[role=tab]/> to the target
+    if no tab exit end
+    take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab
+    add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
+
+    <div class="tab-bar" role="tablist">
+        <span class="tab" role="tab" aria-selected="true" aria-controls="class-stat-promo"><small>On
+                Promo</small></span>&nbsp;|&nbsp;
+        <span class="tab" role="tab" aria-selected="false" aria-controls="class-stat-growth"><small>Total
+                Growths</small></span>&nbsp;|&nbsp;
+        <span class="tab" role="tab" aria-selected="false" aria-controls="class-stat-cap"><small>Caps</small></span>
+    </div>
+
+    <div class="panel" id="class-stat-promo" role="tabpanel">
+        <table class="striped stat">
+            <tbody>
+                {% for stat_name in stat_names[:4] %}
+                <tr>
+                    <td><strong>{{ stat_name }}</strong></td>
+                    <td>+{{ class_data.promotion[stat_name] }}</td>
+                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                    {% if stat_names[loop.index+5] == "MOV"%}
+                    <td>{{ class_data.bases["MOV"] }}</td>
+                    {% else %}
+                    <td>+{{ class_data.promotion[stat_names[loop.index+5]] }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
+        <table class="striped stat">
+            <tbody>
+                {% for stat_name in stat_names[:4] %}
+                <tr>
+                    <td><strong>{{ stat_name }}</strong></td>
+                    <td
+                        class="lt-color-{{ (unit_data.growths[stat_name] + class_data.growth_bonus[stat_name])|growth_colors }}">
+                        {{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%</td>
+                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                    <td
+                        class="lt-color-{{ (unit_data.growths[stat_names[loop.index+5]] + class_data.growth_bonus[stat_names[loop.index+5]])|growth_colors }}">
+                        {{ unit_data.growths[stat_names[loop.index+5]] +
+                        class_data.growth_bonus[stat_names[loop.index+5]] }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
+        <table class="striped stat">
+            <tbody>
+                {% for stat_name in stat_names[:4] %}
+                <tr>
+                    <td><strong>{{ stat_name }}</strong></td>
+                    <td>{{ unit_data.stat_cap_modifiers[stat_name] + class_data.max_stats[stat_name] }}</td>
+                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                    <td>{{ unit_data.stat_cap_modifiers[stat_names[loop.index+5]] +
+                        class_data.max_stats[stat_names[loop.index+5]] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{# <div class="overflow-auto">
+    <table class="striped">
+
+        <thead>
+            <tr>
+                <th scope="col">Stat</th>
+                {% for stat_name in stat_names %}
+                <th scope="col">{{ stat_name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">On Promo</th>
+                {% for stat_name in stat_names[:-1] %}
+                <td>+{{ class_data.promotion[stat_name] }}</td>
+                {% endfor %}
+                <td>{{ class_data.bases['MOV'] }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Total Growth</th>
+                {% for stat_name in stat_names %}
+                <td
+                    class="lt-color-{{ (unit_data.growths[stat_name] + class_data.growth_bonus[stat_name])|growth_colors }}">
+                    {{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th scope="row">Cap</th>
+                {% for stat_name in stat_names %}
+                <td>{{ unit_data.stat_cap_modifiers[stat_name] + class_data.max_stats[stat_name] }}</td>
+                {% endfor %}
+            </tr>
+    </table>
+</div> #}
+
+{% if class_data.learned_skills %}
+<div>
+    <p><strong>Skills</strong></p>
+    {% for skill in class_data.learned_skills|sort(attribute="level") %}
+    {% if not skill.skill.is_hidden%}
+    <div>
+        <p><small>Level {{skill.level}}</small></p>
+        <p class="muted-text"><small>{{ skill.skill.desc }}</small></p>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% endif %}
+
+{% endblock content %}

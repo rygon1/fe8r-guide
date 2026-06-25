@@ -66,14 +66,10 @@ def get_fe_unit_sheet(fe_unit_nid="Eirika") -> str:
     )
 
 
-@bp.route("/<string:fe_unit_nid>/classes")
-def get_fe_unit_class(fe_unit_nid="Eirika", fe_class_nid="Eirika_Lord") -> str:
-    if fe_class_nid := request.args.get("unitClassSelect"):
-        pass
-    else:
-        fe_class_nid = "Eirika_Lord"
+@bp.route("/<string:fe_unit_nid>/classes/<string:fe_class_nid>")
+def get_fe_unit_class_tree(fe_unit_nid="Eirika", fe_class_nid="Eirika_Lord") -> str:
     return render_template(
-        "unit_class_sheet.html.jinja2",
+        "unit_sheet_class.html.jinja2",
         unit_data=db.get_or_404(Unit, fe_unit_nid),
         class_data=db.get_or_404(Class, fe_class_nid),
     )

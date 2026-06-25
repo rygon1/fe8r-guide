@@ -20,13 +20,13 @@
   </div>
   <br />
 
-  <div class="unit-head-container">
-    <div class="class-tile">
+  <div class="class-head-container">
+    <div class="class-sprite-anchor">
       <img
         src="{{ url_for('static',filename='images/map_sprites/'+unit_data.base_class.map_sprite_nid+'-stand.webp') }}"
         class="gba-sprite" />
     </div>
-    <div class="div2">
+    <div class="class-info">
       <hgroup>
         <h3>{{ unit_data.base_class.name }}</h3>
         <p>{{ unit_data.base_class.desc }}
@@ -40,46 +40,79 @@
         </p>
       </hgroup>
     </div>
+    {% if "Enemies" not in unit_categories and "NPCs" not in unit_categories%}
+    {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
+    <div class="tabs" _="on click
+    set tab to the closest <[role=tab]/> to the target
+    if no tab exit end
+    take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab
+    add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
+
+      <div class="tab-bar" role="tablist">
+        <span class="tab" role="tab" aria-selected="true"
+          aria-controls="class-stat-promo"><small>Base</small></span>&nbsp;|&nbsp;
+        <span class="tab" role="tab" aria-selected="false"
+          aria-controls="class-stat-growth"><small>Growth</small></span>&nbsp;|&nbsp;
+        <span class="tab" role="tab" aria-selected="false" aria-controls="class-stat-cap"><small>Caps</small></span>
+      </div>
+
+      <div class="panel" id="class-stat-promo" role="tabpanel">
+        <table class="striped stat">
+          <tbody>
+            {% for stat_name in stat_names[:4] %}
+            <tr>
+              <td><strong>{{ stat_name }}</strong></td>
+              <td>{{ unit_data.bases[stat_name] }}</td>
+              <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+              {% if stat_names[loop.index+5] == "MOV"%}
+              <td>{{ unit_data.base_class.bases["MOV"] }}</td>
+              {% else %}
+              <td>{{ unit_data.bases[stat_names[loop.index+5]] }}</td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
+        <table class="striped stat">
+          <tbody>
+            {% for stat_name in stat_names[:4] %}
+            <tr>
+              <td><strong>{{ stat_name }}</strong></td>
+              <td
+                class="lt-color-{{ (unit_data.growths[stat_name] + unit_data.base_class.growth_bonus[stat_name])|growth_colors }}">
+                {{ unit_data.growths[stat_name] + unit_data.base_class.growth_bonus[stat_name] }}%</td>
+              <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+              <td
+                class="lt-color-{{ (unit_data.growths[stat_names[loop.index+5]] + unit_data.base_class.growth_bonus[stat_names[loop.index+5]])|growth_colors }}">
+                {{ unit_data.growths[stat_names[loop.index+5]] +
+                unit_data.base_class.growth_bonus[stat_names[loop.index+5]] }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
+        <table class="striped stat">
+          <tbody>
+            {% for stat_name in stat_names[:4] %}
+            <tr>
+              <td><strong>{{ stat_name }}</strong></td>
+              <td>{{ unit_data.stat_cap_modifiers[stat_name] + unit_data.base_class.max_stats[stat_name] }}</td>
+              <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+              <td>{{ unit_data.stat_cap_modifiers[stat_names[loop.index+5]] +
+                unit_data.base_class.max_stats[stat_names[loop.index+5]] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
   </div>
-  {% if "Enemies" not in unit_categories and "NPCs" not in unit_categories%}
-  <div class="overflow-auto">
-    <table class="striped">
-      {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
-      <thead>
-        <tr>
-          <th scope="col">Stat</th>
-          {% for stat_name in stat_names %}
-          <th scope="col">{{ stat_name }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Base</th>
-          {% for stat_name in stat_names[:-1] %}
-          {# <td>{{ unit_data.base_class.promotion[stat_name] + unit_data.bases[stat_name] }}</td> #}
-          <td>{{ unit_data.bases[stat_name] }}</td>
-          {% endfor %}
-          <td>{{ unit_data.base_class.bases['MOV'] }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Growth</th>
-          {% for stat_name in stat_names %}
-          <td
-            class="lt-color-{{ (unit_data.base_class.growth_bonus[stat_name] + unit_data.growths[stat_name])|growth_colors }}">
-            {{ unit_data.base_class.growth_bonus[stat_name] + unit_data.growths[stat_name] }}%</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">Cap</th>
-          {% for stat_name in stat_names %}
-          <td>{{ unit_data.base_class.max_stats[stat_name] + unit_data.stat_cap_modifiers[stat_name]}}</td>
-          {% endfor %}
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  {% elif "Enemies" in unit_categories %}
+  <hr>
+  {% if "Enemies" in unit_categories %}
   <div class="overflow-auto">
     <table class="striped">
       {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
@@ -176,47 +209,27 @@
   {% if "Enemies" not in unit_categories and "NPCs" not in unit_categories%}
   <details name="sections">
     <summary>Promotions</summary>
-    {% if unit_data.base_class.tier == 0 %}
-    <div id="classT1Selector">
-      <label>Tier 1</label>
-      {% if unit_data.base_class.turns_into|length > 1%}
-      <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
-        hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT1Sheet" hx-indicator="#unitClassT1Sheet"
-        hx-swap="innerHTML"
-        _="on change set #unitClassT3Sheet.innerHTML to '' then set #unitClassT2Sheet.innerHTML to ''">
-        <option value="default" selected disabled>Select a tier 1 class</option>
-        {% for promo_class_t2 in unit_data.base_class.turns_into %}
-        <option value="{{ promo_class_t2.nid }}">{{ promo_class_t2.name }}</option>
-        {% endfor %}
-      </select>
-      {% else %}
-      {% set promo_class_t2=unit_data.base_class.turns_into|first%}
-      <div hx-vals='{"unitClassSelect":"{{ promo_class_t2.nid }}"}' hx-get="/units/{{ unit_data.nid }}/classes"
-        hx-target="#unitClassT1Sheet" hx-indicator="#unitClassT1Sheet" hx-swap="innerHTML" hx-trigger="load"></div>
-      {% endif %}
+    <div id="promo-container">
+      <div id="promo-tree">
+        {% macro render_tree(class_promo_data) %}
+        <ol class="promo-branch">
+          {% for promo_class in class_promo_data %}
+          <li>
+            <small><a hx-get="/units/{{ unit_data.nid }}/classes/{{promo_class.nid}}" hx-target="#promo-class"
+                href="#">{{
+                promo_class.name
+                }}</a></small>
+            {% if promo_class.turns_into %}
+            {{ render_tree(promo_class.turns_into) }}
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+        {% endmacro %}
+        {{ render_tree(unit_data.base_class.turns_into) }}
+      </div>
+      <div id="promo-class"></div>
     </div>
-    {% else %}
-    <div id="classT2Selector">
-      <label>Tier 2</label>
-      {% if unit_data.base_class.turns_into|length > 1%}
-      <select class="unitClassSelect" name="unitClassSelect" aria-label="Select unit" required
-        hx-get="/units/{{ unit_data.nid }}/classes" hx-target="#unitClassT2Sheet" hx-indicator="#unitClassT2Sheet"
-        hx-swap="innerHTML" _="on change set #unitClassT3Sheet.innerHTML to ''">
-        <option value="default" selected disabled>Select a tier 2 class</option>
-        {% for promo_class_t2 in unit_data.base_class.turns_into%}
-        <option value="{{ promo_class_t2.nid }}">{{ promo_class_t2.name }}</option>
-        {% endfor %}
-      </select>
-      {% else %}
-      {% set promo_class_t2=unit_data.base_class.turns_into|first%}
-      <div hx-vals='{"unitClassSelect":"{{ promo_class_t2.nid }}"}' hx-get="/units/{{ unit_data.nid }}/classes"
-        hx-target="#unitClassT2Sheet" hx-indicator="#unitClassT2Sheet" hx-swap="innerHTML" hx-trigger="load"></div>
-      {% endif %}
-    </div>
-    {% endif %}
-    <div id="unitClassT1Sheet"></div>
-    <div id="unitClassT2Sheet"></div>
-    <div id="unitClassT3Sheet"></div>
   </details>
   <hr />
   {% endif %}
@@ -224,7 +237,7 @@
   {% if unit_data.starting_items %}
   <details name="sections">
     <summary>Starting Items</summary>
-    <div class="skill-grid">
+    <div>
       {% for item in unit_data.starting_items %}
       <div>
         <p></p>
