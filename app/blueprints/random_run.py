@@ -1,3 +1,4 @@
+import json
 import random
 from collections import OrderedDict
 
@@ -18,6 +19,19 @@ def get_random_run_index() -> str:
     return render_template(
         "random_run_index.html.jinja2",
     )
+
+
+def get_units_by_category(category_nid, include_unit_cat_filter):
+    category_condition = Class.categories.any(ClassCategory.nid == category_nid)
+    stmt = (
+        select(Unit)
+        .join(Unit.base_class)
+        .where(and_(category_condition, include_unit_cat_filter))
+        .options(joinedload(Unit.base_class).selectinload(Class.categories))
+    )
+
+    possible_units = db.session.scalars(stmt).all()
+    return possible_units
 
 
 @bp.route("/generate", methods=["POST"])
@@ -41,7 +55,7 @@ def get_random_run_output() -> str:
     else:
         units.append(db.get_or_404(Unit, input_form["lord"]))
     is_lord = or_(Unit.nid == "Eirika", Unit.nid == "Ephraim")
-    units_remaining = int(input_form["num_units"]) - 1
+    units_remaining = int(input_form["num_units"]) - 1 if input_form["num_units"] else 0
     unit_categories_to_include = []
     unit_categories_to_include.append("Vanilla")
     if input_form["include_monsters"]:
@@ -49,7 +63,7 @@ def get_random_run_output() -> str:
     if input_form["include_dg"]:
         unit_categories_to_include.append("Dragon Gate")
     include_unit_cat_conditions = or_(
-        UnitCategory.nid == cat_name for cat_name in unit_categories_to_include
+        *(UnitCategory.nid == cat_name for cat_name in unit_categories_to_include)
     )
     include_unit_cat_filter = Unit.categories.any(include_unit_cat_conditions)
     if input_form["add_thief"]:
@@ -64,8 +78,6 @@ def get_random_run_output() -> str:
                 and_(
                     class_name_condition,
                     include_unit_cat_filter,
-                    # Unit.nid != "Dozla",
-                    # Unit.nid != "Rennac",
                 )
             )
             .options(joinedload(Unit.base_class))
@@ -79,17 +91,9 @@ def get_random_run_output() -> str:
         units_remaining -= 1
 
     if input_form["add_flier"]:
-        category_condition = Class.categories.any(
-            ClassCategory.nid == "class_cat_flying"
+        flying_units = get_units_by_category(
+            "class_cat_flying", include_unit_cat_filter
         )
-        stmt = (
-            select(Unit)
-            .join(Unit.base_class)
-            .where(and_(category_condition, include_unit_cat_filter))
-            .options(joinedload(Unit.base_class).selectinload(Class.categories))
-        )
-
-        flying_units = db.session.scalars(stmt).all()
         new_unit = random.choice(flying_units)
         while new_unit in units:
             new_unit = random.choice(flying_units)
@@ -97,17 +101,9 @@ def get_random_run_output() -> str:
         units_remaining -= 1
 
     if input_form["add_support"]:
-        category_condition = Class.categories.any(
-            ClassCategory.nid == "class_cat_support"
+        support_units = get_units_by_category(
+            "class_cat_support", include_unit_cat_filter
         )
-        stmt = (
-            select(Unit)
-            .join(Unit.base_class)
-            .where(and_(category_condition, include_unit_cat_filter))
-            .options(joinedload(Unit.base_class).selectinload(Class.categories))
-        )
-
-        support_units = db.session.scalars(stmt).all()
         new_unit = random.choice(support_units)
         while new_unit in units:
             new_unit = random.choice(support_units)
@@ -142,9 +138,11 @@ def get_random_run_output() -> str:
                     fin_promo = random.choice(nxt_nxt_promo.turns_into)
                     output_map[unit.nid].append(fin_promo)
 
-    json_output_map = OrderedDict(
-        (unit_nid, [unit_class.nid for unit_class in unit_classes])
-        for unit_nid, unit_classes in output_map.items()
+    json_output_map = json.dumps(
+        OrderedDict(
+            (unit_nid, [unit_class.nid for unit_class in unit_classes])
+            for unit_nid, unit_classes in output_map.items()
+        )
     )
 
     md_output = "# Random Run Generator\n\n"
@@ -166,4 +164,12 @@ def get_random_run_output() -> str:
         output_map=output_map,
         json_output_map=json_output_map,
         md_output=md_output,
+    )
+
+
+@bp.route("/reroll", methods=["POST"])
+def reroll() -> str:
+    return render_template(
+        "random_run_partial_output.html.jinja2",
+        json_output_map="{}",
     )
