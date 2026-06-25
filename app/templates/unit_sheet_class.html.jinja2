@@ -93,56 +93,20 @@
         </table>
     </div>
 </div>
-
-
-{# <div class="overflow-auto">
-    <table class="striped">
-
-        <thead>
-            <tr>
-                <th scope="col">Stat</th>
-                {% for stat_name in stat_names %}
-                <th scope="col">{{ stat_name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">On Promo</th>
-                {% for stat_name in stat_names[:-1] %}
-                <td>+{{ class_data.promotion[stat_name] }}</td>
-                {% endfor %}
-                <td>{{ class_data.bases['MOV'] }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Total Growth</th>
-                {% for stat_name in stat_names %}
-                <td
-                    class="lt-color-{{ (unit_data.growths[stat_name] + class_data.growth_bonus[stat_name])|growth_colors }}">
-                    {{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%</td>
-                {% endfor %}
-            </tr>
-            <tr>
-                <th scope="row">Cap</th>
-                {% for stat_name in stat_names %}
-                <td>{{ unit_data.stat_cap_modifiers[stat_name] + class_data.max_stats[stat_name] }}</td>
-                {% endfor %}
-            </tr>
-    </table>
-</div> #}
-
 {% if class_data.learned_skills %}
+<p><strong>Skills</strong></p>
 <div>
-    <p><strong>Skills</strong></p>
     {% for skill in class_data.learned_skills|sort(attribute="level") %}
     {% if not skill.skill.is_hidden%}
     <div>
-        <p><small>Level {{skill.level}}</small></p>
-        <p class="muted-text"><small>{{ skill.skill.desc }}</small></p>
+        <small>
+            <p>Level {{skill.level}}</p>
+            <p>{{skill.skill.name}}&nbsp;<span class="{{ skill.skill.icon_class }}"></span>
+            <p class="muted-text">{{ skill.skill.desc }}</span></p>
+        </small>
     </div>
-</div>
-{% endif %}
-{% endfor %}
+    {% endif %}
+    {% endfor %}
 </div>
 {% endif %}
 
