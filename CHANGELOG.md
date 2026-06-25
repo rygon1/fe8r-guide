@@ -2,6 +2,14 @@
 
 [Wiki](https://fe8r-guide.onrender.com/)
 
+## [0.1.6] - 2026-06-24
+
+### Changed
+
+- Units: New stat table layout (tabs)
+- Units: New promotions layout (promotion tree and simplified class info)
+- Classes: Map sprites look less wonky
+
 ## [0.1.5] - 2026-03-30
 
 ### Added
