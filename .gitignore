@@ -222,5 +222,9 @@ static/images/*
 
 app/static/css/iconsheet.css
 app/static/css/custom.css
+app/templates/layout_local.html.jinja2
+app/templates/layout_prod.html.jinja2
 
 ltprojpath.txt
+
+config.json
