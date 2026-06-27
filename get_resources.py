@@ -22,7 +22,9 @@ CONFIG_FILE = Path("config.json")
 def load_config() -> dict[str, Any]:
     """Loads the application configuration from config.json."""
     if not CONFIG_FILE.exists():
-        raise FileNotFoundError(f"Configuration file '{CONFIG_FILE}' not found.")
+        print(f"Configuration file '{CONFIG_FILE}' not found.")
+        with open(CONFIG_FILE, mode="w", encoding="utf-8") as f:
+            json.dump({"ltproj_path": "./my_lex_talionis_project.ltproj"}, f)
 
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -121,7 +123,7 @@ def make_icon_css():
             url_str = quote(icon_nid_val + ".png")
             css_lines.append(
                 f".{safe_cls}-icon {{ background-image: url('/static/images/icons/{url_str}'); "
-                f"background-repeat: no-repeat; width: 16px; height: 16px; display: inline-block; }}"
+                f"background-repeat: no-repeat; width: 16px; height: 16px; display: inline-block; vertical-align: sub; }}"
             )
             added_sheets.add(icon_nid_val)
 
@@ -158,7 +160,7 @@ def make_icon_css():
 
             css_lines.append(
                 f"{sub_classes} {{ background-image: url('/static/images/icons/{url_str}'); "
-                f"background-repeat: no-repeat; width: 16px; height: 16px; display: inline-block; }}"
+                f"background-repeat: no-repeat; width: 16px; height: 16px; display: inline-block; vertical-align: sub; }}"
             )
 
             for sub_nid, sub_idx in entry["subicon_dict"].items():
@@ -168,7 +170,7 @@ def make_icon_css():
     css_lines.append(
         f".Wexpicons-icon.Monster-subIcon {{ background-image: url('/static/images/icons/{monster_icon_url}'); "
         "background-repeat: no-repeat; background-position: 0px 0px; width: 16px; height: 16px; "
-        "display: inline-block; margin: 0px 4px; transform: scale(1.5); }"
+        "display: inline-block; vertical-align: sub; margin: 0px 4px; transform: scale(1.5); }"
     )
 
     with (GUIDE_CSS_DIR / "iconsheet.css").open("w", encoding="utf-8") as fp:
