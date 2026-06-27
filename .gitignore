@@ -222,6 +222,7 @@ static/images/*
 
 app/static/css/iconsheet.css
 app/static/css/custom.css
+app/static/css/input.css
 app/templates/layout_local.html.jinja2
 app/templates/layout_prod.html.jinja2
 
@@ -372,3 +373,5 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+
