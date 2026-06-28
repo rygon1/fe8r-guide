@@ -1,126 +1,158 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
-{% block title %}{{ item_data.name }} &mdash; Items | {% endblock %}
+    {% extends "layout.html.jinja2" %}
+    {% block title %}{{ item_data.name }} — Items |{% endblock title %}
 {% endif %}
 {% block content %}
-<article>
-    <header>
-        <strong>{{ item_data.name }} <span class="{{ item_data.icon_class }}"></span></strong>
-    </header>
-    {% if (item_data.weapon_type and item_data.weapon_type not in ['Misc','Accessory','Held Item']) or
-    item_data.min_range or item_data.weight or
-    item_data.damage or item_data.hit or
-    item_data.crit or item_data.value %}
-    <section class="stat-grid">
-        {% if item_data.weapon_type not in ['Misc','Accessory','Held Item',"Consumable"] %}
-        <div>
-            <span class=" Wexpicons-icon {{ item_data.weapon_type }}-subIcon"></span>{% if item_data.weapon_rank %}
-            {{item_data.weapon_rank}}{% endif %}<br />
-        </div>
-        {% endif %}
-        {% if item_data.min_range %}
-        <div>
-            {% if item_data.min_range == item_data.max_range %}
-            <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}<br />
-            {% elif item_data.min_range and (not item_data.max_range or item_data.max_range < item_data.min_range) %}
-                <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}+<br />
-                {% else %}
-                <span class="lt-color-yellow">Rng: </span>{{ item_data.min_range }}&ndash;{{ item_data.max_range
-                }}<br />
+    {% if not request.headers.hx_request %}
+        <article>
+            <header>
+                <strong>{{ item_data.name }} <span class="{{ item_data.icon_class }}"></span></strong>
+            </header>
+            {% if (item_data.weapon_type and item_data.weapon_type not in ['Misc','Accessory','Held Item']) or
+                item_data.min_range or item_data.weight or
+                item_data.damage or item_data.hit or
+                item_data.crit or item_data.value %}
+                <section class="stat-grid">
+                    {% if item_data.weapon_type not in ['Misc','Accessory','Held Item',"Consumable"] %}
+                        <div>
+                            <span class=" Wexpicons-icon {{ item_data.weapon_type }}-subIcon"></span>
+                            {% if item_data.weapon_rank %}
+                                {{ item_data.weapon_rank }}
+                            {% endif %}
+                            <br />
+                        </div>
+                    {% endif %}
+                    {% if item_data.min_range %}
+                        <div>
+                            {% if item_data.min_range == item_data.max_range %}
+                                <span class="lt-color-yellow">Rng:</span>{{ item_data.min_range }}
+                                <br />
+                            {% elif item_data.min_range and (not item_data.max_range or item_data.max_range < item_data.min_range) %}
+                                <span class="lt-color-yellow">Rng:</span>{{ item_data.min_range }}+
+                                <br />
+                            {% else %}
+                                <span class="lt-color-yellow">Rng:</span>{{ item_data.min_range }}–{{ item_data.max_range
+                                }}
+                                <br />
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    {% if item_data.weight %}
+                        <div>
+                            <span class="lt-color-yellow">Wt:</span>{{ item_data.weight }}
+                            <br />
+                        </div>
+                    {% endif %}
+                    {% if item_data.damage %}
+                        <div>
+                            <span class="lt-color-yellow">Mt:</span>{{ item_data.damage }}
+                            <br />
+                        </div>
+                    {% endif %}
+                    {% if item_data.hit %}
+                        <div>
+                            <span class="lt-color-yellow">Hit:</span>{{ item_data.hit }}
+                            <br />
+                        </div>
+                    {% endif %}
+                    {% if item_data.crit %}
+                        <div>
+                            <span class="lt-color-yellow">Crit:</span>{{ item_data.crit }}
+                            <br />
+                        </div>
+                    {% endif %}
+                    {% if item_data.value %}
+                        <div>
+                            <span class="lt-color-yellow">Value:</span>{{ item_data.value|currency_format }}
+                            <br />
+                        </div>
+                    {% endif %}
                 {% endif %}
-        </div>
-        {% endif %}
-        {% if item_data.weight %}
+            </section>
+            {% if item_data.desc %}
+                <section>
+                    <p>{{ item_data.desc }}</p>
+                </section>
+            {% endif %}
+            {% if item_data.status_on_equip and request.args.get('hideSkills') != "true" %}
+                <br />
+                <section class="skill-grid">
+                    {% for skill in item_data.status_on_equip %}
+                        <div>
+                            <div hx-get="{{ url_for('skills.get_fe_skill_sheet',fe_skill_nid=skill.nid) }}"
+                                 hx-trigger=" load"
+                                 hx-target="this"
+                                 hx-swap="outerHTML"></div>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+            {% if item_data.nid in
+                ['Crystal_Ring_DG','Antitoxin','Elixir','Vulnerary','Orsons_Vuln_Multi','Treat','Regenerating_Concoction_DG']
+                and request.args.get('hideSkills') != "true" %}
+                <br />
+                <section class="skill-grid">
+                    {% for subitem in item_data.sub_items %}
+                        <div>
+                            <div hx-get="{{ url_for('items.get_fe_item_sheet',fe_item_nid=subitem.nid) }}"/items/{{ subitem.nid }} hx-vals='{"hideSkills": "true"}' hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+            {% if not request.headers.hx_request %}
+                <footer>
+                    {% if item_data.categories %}
+                        <strong><small>Categories:</small></strong>
+                        {% for item_cat in item_data.categories %}
+                            <a href="{{ url_for('items.get_fe_item_index',selectedCategory=item_cat.nid) }}"><small>{{ item_cat.name }}</small></a>
+                            {% if not loop.last %}
+                                |
+                            {% else %}
+                                &nbsp;&nbsp;
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if item_data.arsenals %}
+                        <strong><small>Arsenals:</small></strong>
+                        {% for arsenal in item_data.arsenals %}
+                            <a href="{{ url_for('items.get_fe_arsenal_sheet',fe_unit_nid=arsenal.arsenal_owner_nid) }}"><small>{{ arsenal.name }}</small></a>
+                            {% if not loop.last %}
+                                |
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if item_data.shops %}
+                        <strong><small>Shops:</small></strong>
+                        {% for shop in item_data.shops %}
+                            <a href="{{ url_for('items.get_shop_sheet',shop_nid=shop.nid) }}"><small>{{ shop.abbr_name }}</small></a>
+                            {% if not loop.last %}
+                                |
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </footer>
+            {% endif %}
+        </article>
+    {% else %}
         <div>
-            <span class="lt-color-yellow">Wt: </span>{{ item_data.weight }}<br />
+            <small>
+                <p>
+                    {% if item_data.weapon_rank %}<span class="muted-text">[{{ item_data.weapon_rank }}]&nbsp;</span>{% endif %}
+                    <strong>{{ item_data.name }}&nbsp;</strong><span class="{{ item_data.icon_class }}"></span>
+                    <br />
+                    <span class="muted-text">{{ item_data.desc }}</span>
+                    {% if item_data.status_on_equip and request.args.get('hideSkills') != "true" %}
+                        <br />
+                        <span><sub>
+                            {% for skill in item_data.status_on_equip %}
+                                <a href="{{ url_for('skills.get_fe_skill_sheet',fe_skill_nid=skill.nid) }}">{{ skill.name }}</a>
+                                {% if not loop.last %} | {% endif %}
+                            {% endfor %}
+                        </sub></span>
+                    {% endif %}
+                </p>
+            </small>
         </div>
-        {% endif %}
-        {% if item_data.damage %}
-        <div>
-            <span class="lt-color-yellow">Mt: </span>{{ item_data.damage }}<br />
-        </div>
-        {% endif %}
-        {% if item_data.hit %}
-        <div>
-            <span class="lt-color-yellow">Hit: </span>{{ item_data.hit }}<br />
-        </div>
-        {% endif %}
-        {% if item_data.crit %}
-        <div>
-            <span class="lt-color-yellow">Crit: </span>{{ item_data.crit }}<br />
-        </div>
-        {% endif %}
-        {% if item_data.value %}
-        <div>
-            <span class="lt-color-yellow">Value: </span>{{ item_data.value|currency_format }}<br />
-        </div>
-        {% endif %}
-        {% endif %}
-    </section>
-    {% if item_data.desc %}
-    <section>
-        <p>{{ item_data.desc }}</p>
-    </section>
     {% endif %}
-    {% if item_data.status_on_equip and request.args.get('hideSkills') != "true" %}
-    <br />
-    <section class="skill-grid">
-        {% for skill in item_data.status_on_equip %}
-        <div>
-            <p></p>
-            <div hx-get=/skills/{{skill.nid}} hx-trigger=" load" hx-target="this" hx-swap="outerHTML">
-            </div>
-        </div>
-        {% endfor %}
-    </section>
-    {% endif %}
-    {% if item_data.nid in
-    ['Crystal_Ring_DG','Antitoxin','Elixir','Vulnerary','Orsons_Vuln_Multi','Treat','Regenerating_Concoction_DG']
-    and request.args.get('hideSkills') != "true" %}
-    <br />
-    <section class="skill-grid">
-        {% for subitem in item_data.sub_items %}
-        <div>
-            <p></p>
-            <div hx-get=/items/{{subitem.nid}} hx-vals='{"hideSkills": "true"}' hx-trigger=" load" hx-target="this"
-                hx-swap="outerHTML">
-            </div>
-        </div>
-        {% endfor %}
-    </section>
-    {% endif %}
-    {% if not request.headers.hx_request%}
-    <footer>
-        {% if item_data.categories %}
-        <strong><small>Categories:</small></strong>
-        {% for item_cat in item_data.categories%}
-        <a href="/items?selectedCategory={{ item_cat.nid }}"><small>{{ item_cat.name }}</small></a>
-        {% if not loop.last %}
-        |
-        {% else %}
-        &nbsp;&nbsp;
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {% if item_data.arsenals %}
-        <strong><small>Arsenals:</small></strong>
-        {% for arsenal in item_data.arsenals %}
-        <a href="/items/arsenals/{{ arsenal.arsenal_owner_nid }}"><small>{{ arsenal.name }}</small></a>
-        {% if not loop.last %}
-        |
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {% if item_data.shops %}
-        <strong><small>Shops:</small></strong>
-        {% for shop in item_data.shops %}
-        <a href="/items/shops/{{ shop.nid }}"><small>{{ shop.abbr_name }}</small></a>
-        {% if not loop.last %}
-        |
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-    </footer>
-    {% endif %}
-</article>
 {% endblock content %}
