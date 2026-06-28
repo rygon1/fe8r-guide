@@ -290,45 +290,50 @@
     {% if unit_data.supports %}
       <details>
         <summary>Supports</summary>
-        <ul>
+        <div class="tabs"
+             _="on click set tab to the closest <[role=tab]/> to the target if no tab exit end take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
+          <div class="tab-bar" role="tablist">
+            {% for support in unit_data.supports %}
+              <span class="tab"
+                    role="tab"
+                    {% if loop.first %} aria-selected="true" {% else %} aria-selected="false" {% endif %}
+                    aria-controls="{{ support.nid }}-tab"><small>{{ support.name }}&nbsp;</small><span class="{{ support.affinity.icon_class }}"></span></span>
+            {% endfor %}
+          </div>
           {% for support in unit_data.supports %}
-            <li>
-              <details>
-                <summary>
-                  <a href="{{ url_for('units.get_fe_unit_sheet', fe_unit_nid=support.nid) }}">{{
-                  support.name }}</a>
-                  <span class="{{ support.affinity.icon_class }}"></span>
-                </summary>
-                <div class="overflow-auto">
-                  <table class="striped">
-                    <thead>
+            <div class="panel"
+                 id="{{ support.nid }}-tab"
+                 role="tabpanel"
+                 {% if not loop.first %}hidden{% endif %}>
+              <div>
+                <table class="striped">
+                  <thead>
+                    <tr>
+                      {% for stat, stat_val in support.affinity.bonus[0]|items %}
+                        {% if stat == "RANK" or stat_val|float > 0.0 %}
+                          <th scope="col">{{ stat }}</th>
+                        {% endif %}
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for bonus_data in support.affinity.bonus %}
                       <tr>
-                        {% for stat, stat_val in support.affinity.bonus[0]|items %}
-                          {% if stat == "RANK" or stat_val|float > 0.0 %}
-                            <th scope="col">{{ stat }}</th>
+                        {% for stat, stat_val in bonus_data|items %}
+                          {% if stat != "RANK" and stat_val|float > 0.0 %}
+                            <td>+{{ stat_val }}</td>
+                          {% elif stat == "RANK" %}
+                            <th scope="row">{{ stat_val }}</th>
                           {% endif %}
                         {% endfor %}
                       </tr>
-                    </thead>
-                    <tbody>
-                      {% for bonus_data in support.affinity.bonus %}
-                        <tr>
-                          {% for stat, stat_val in bonus_data|items %}
-                            {% if stat != "RANK" and stat_val|float > 0.0 %}
-                              <td>+{{ stat_val }}</td>
-                            {% elif stat == "RANK" %}
-                              <th scope="row">{{ stat_val }}</th>
-                            {% endif %}
-                          {% endfor %}
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-              </details>
-            </li>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           {% endfor %}
-        </ul>
+        </div>
       </details>
       <hr />
     {% endif %}
