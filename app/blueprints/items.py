@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request
 from sqlalchemy import select
 
 from app.extensions import db
-from app.models import Arsenal, Item, ItemCategory, Shop
+from app.models import Arsenal, Item, ItemCategory, Shop, Weapon
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
 
@@ -81,9 +81,14 @@ def get_fe_item_sheet(fe_item_nid="Iron_Sword_Test") -> str:
 def get_fe_arsenal_sheet(fe_unit_nid="Eirika") -> str:
     stmt = select(Arsenal).where(Arsenal.arsenal_owner_nid == fe_unit_nid)
     unit_arsenals = db.session.execute(stmt).scalars().all()
+    weapon_table = db.session.execute(select(Weapon)).scalars().all()
+    weapon_lookup = {}
+    for weapon_data in weapon_table:
+        weapon_lookup[weapon_data.nid] = weapon_data.icon_class
     return render_template(
         "arsenal_sheet.html.jinja2",
         unit_arsenals=unit_arsenals,
+        weapon_lookup=weapon_lookup,
     )
 
 
