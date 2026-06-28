@@ -1,166 +1,188 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
-{% block title %}{{ class_data.name }} &mdash; Classes | {% endblock %}
+    {% extends "layout.html.jinja2" %}
+    {% block title %}{{ class_data.name }} &mdash; Classes |{% endblock %}
 {% endif %}
 {% block content %}
-<div id="classSheet">
-    <div class="class-head-container">
-        <div class="class-sprite-anchor">
-            <img src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}"
-                class="gba-sprite" />
-        </div>
-        <div class="class-info">
-            <hgroup>
-                <h2>{{ class_data.name }}</h2>
-                <p>{{ class_data.desc }}
-                    {% if class_data.weapons%}
-                    <br />
-                    <span class="lt-color-red">Prof:</span>
-                    {% for weapon in class_data.weapons%}
-                    <span class="{{ weapon.icon_class }}"></span>
-                    {% endfor %}
-                    {% endif %}
-                </p>
-            </hgroup>
-        </div>
-        {% set stat_names = ('HP','STR','MAG','SKL','SPD','LCK','DEF','RES','CON','MOV') %}
-        <div class="tabs" _="on click
-    set tab to the closest <[role=tab]/> to the target
-    if no tab exit end
-    take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab
-    add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
-
-            <div class="tab-bar" role="tablist">
-                <span class="tab" role="tab" aria-selected="true" aria-controls="class-stat-promo"><small>On
-                        Promo</small></span>&nbsp;|&nbsp;
-                <span class="tab" role="tab" aria-selected="false" aria-controls="class-stat-growth"><small>Total
-                        Growths</small></span>&nbsp;|&nbsp;
-                <span class="tab" role="tab" aria-selected="false"
-                    aria-controls="class-stat-cap"><small>Caps</small></span>
+    <div id="classSheet">
+        <div class="class-head-container">
+            <div class="class-sprite-anchor">
+                <img src="{{ url_for('static',filename='images/map_sprites/'+class_data.map_sprite_nid+'-stand.webp') }}"
+                     class="gba-sprite" />
             </div>
-
-            <div class="panel" id="class-stat-promo" role="tabpanel">
-                <table class="striped stat">
-                    <tbody>
-                        {% for stat_name in stat_names[:4] %}
-                        <tr>
-                            <td><strong>{{ stat_name }}</strong></td>
-                            <td>+{{ class_data.promotion[stat_name] }}</td>
-                            <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                            {% if stat_names[loop.index+5] == "MOV"%}
-                            <td>{{ class_data.bases["MOV"] }}</td>
-                            {% else %}
-                            <td>+{{ class_data.promotion[stat_names[loop.index+5]] }}</td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="class-info">
+                <hgroup>
+                    <h2>{{ class_data.name }}</h2>
+                    <p>
+                        {{ class_data.desc }}
+                        {% if class_data.weapons %}
+                            <br />
+                            <span class="lt-color-red">Prof:</span>
+                            {% for weapon in class_data.weapons %}
+                                <span class="{{ weapon.icon_class }}"></span>
+                            {% endfor %}
+                        {% endif %}
+                    </p>
+                </hgroup>
             </div>
-            <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
-                <table class="striped stat">
-                    <tbody>
-                        {% for stat_name in stat_names[:4] %}
-                        <tr>
-                            <td><strong>{{ stat_name }}</strong></td>
-                            <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">+{{
-                                class_data.growth_bonus[stat_name] }}%</td>
-                            <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                            <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">+{{
-                                class_data.growth_bonus[stat_names[loop.index+5]] }}%</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
-                <table class="striped stat">
-                    <tbody>
-                        {% for stat_name in stat_names[:4] %}
-                        <tr>
-                            <td><strong>{{ stat_name }}</strong></td>
-                            <td>{{ class_data.max_stats[stat_name] }}</td>
-                            <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                            <td>{{ class_data.max_stats[stat_names[loop.index+5]] }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    {% if class_data.learned_skills %}
-    <hr>
-    <details open>
-        <summary>Skills</summary>
-        <div class="skill-grid">
-            {% for skill_assoc in class_data.learned_skills|sort(attribute="level") %}
-            {% if not skill_assoc.skill.is_hidden %}
-            <div>
-                <p><small>Level {{skill_assoc.level}}</small></p>
-                <div hx-get=/skills/{{skill_assoc.skill_nid}} hx-trigger="load" hx-target="this" hx-swap="outerHTML">
+            {% set stat_names = 'HP', 'STR', 'MAG', 'SKL', 'SPD', 'LCK', 'DEF', 'RES', 'CON', 'MOV' %}
+            <div class="tabs"
+                 _="on click set tab to the closest <[role=tab]/> to the target if no tab exit end take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
+                <div class="tab-bar" role="tablist">
+                    <span class="tab"
+                          role="tab"
+                          aria-selected="true"
+                          aria-controls="class-stat-promo"><small>On
+                    Promo</small></span>
+                    <span class="tab"
+                          role="tab"
+                          aria-selected="false"
+                          aria-controls="class-stat-growth"><small>Total
+                    Growths</small></span>
+                    <span class="tab"
+                          role="tab"
+                          aria-selected="false"
+                          aria-controls="class-stat-cap"><small>Caps</small></span>
+                </div>
+                <div class="panel" id="class-stat-promo" role="tabpanel">
+                    <table class="striped stat">
+                        <tbody>
+                            {% for stat_name in stat_names[:4] %}
+                                <tr>
+                                    <td><strong>{{ stat_name }}</strong></td>
+                                    <td>+{{ class_data.promotion[stat_name] }}</td>
+                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                                    {% if stat_names[loop.index+5] == "MOV" %}
+                                        <td>{{ class_data.bases["MOV"] }}</td>
+                                    {% else %}
+                                        <td>+{{ class_data.promotion[stat_names[loop.index+5]] }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
+                    <table class="striped stat">
+                        <tbody>
+                            {% for stat_name in stat_names[:4] %}
+                                <tr>
+                                    <td><strong>{{ stat_name }}</strong></td>
+                                    <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">
+                                        +{{
+                                        class_data.growth_bonus[stat_name] }}%
+                                    </td>
+                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                                    <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">
+                                        +{{
+                                        class_data.growth_bonus[stat_names[loop.index+5]] }}%
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
+                    <table class="striped stat">
+                        <tbody>
+                            {% for stat_name in stat_names[:4] %}
+                                <tr>
+                                    <td><strong>{{ stat_name }}</strong></td>
+                                    <td>{{ class_data.max_stats[stat_name] }}</td>
+                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                                    <td>{{ class_data.max_stats[stat_names[loop.index+5]] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            {% endif %}
-            {% endfor %}
         </div>
-    </details>
-    <hr />
-    {% endif %}
-
-    {% if class_data.turns_into or class_data.promotes_from%}
-    <div class="grid">
-        {% if class_data.promotes_from %}
-        <details open>
-            <summary>Promotes From</summary>
-            <ul>
-                {% for prev_class_data in class_data.promotes_from %}
-                <li><a href="#" hx-get="/classes/{{prev_class_data.nid}}" hx-target="#classSheet"
-                        hx-vals='{"addCopy":"True"}' hx-swap="outerHTML">{{prev_class_data.name}} {% if
-                        prev_class_data.alt_name %}({{
-                        prev_class_data.alt_name }}){% endif %}</a>
-                    {% if prev_class_data.weapons%}
-                    {% for weapon in prev_class_data.weapons%}
-                    <span class="{{ weapon.icon_class }}"></span>
+        {% if class_data.learned_skills %}
+            <hr>
+            <details open>
+                <summary>Skills</summary>
+                <div class="skill-grid">
+                    {% for skill_assoc in class_data.learned_skills|sort(attribute="level") %}
+                        {% if not skill_assoc.skill.is_hidden %}
+                            <div>
+                                <p><small>Level {{ skill_assoc.level }}</small></p>
+                                <div hx-get=/skills/{{ skill_assoc.skill_nid }} hx-trigger="load" hx-target="this" hx-swap="outerHTML">
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </details>
+                </div>
+            </details>
+            <hr />
         {% endif %}
-        {% if class_data.turns_into %}
-        <details open>
-            <summary>Promotes To</summary>
-            <ul>
-                {% for next_class_data in class_data.turns_into %}
-                <li><a href="#" hx-get="/classes/{{next_class_data.nid}}" hx-target="#classSheet"
-                        hx-vals='{"addCopy":"True"}' hx-swap="outerHTML">{{next_class_data.name}} {% if
-                        next_class_data.alt_name %}({{
-                        next_class_data.alt_name }}){% endif %}</a>
-                    {% if next_class_data.weapons%}
-                    {% for weapon in next_class_data.weapons%}
-                    <span class="{{ weapon.icon_class }}"></span>
-                    {% endfor %}
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </details>
+        {% if class_data.turns_into or class_data.promotes_from %}
+            <div class="grid">
+                {% if class_data.promotes_from %}
+                    <details open>
+                        <summary>Promotes From</summary>
+                        <ul>
+                            {% for prev_class_data in class_data.promotes_from %}
+                                <li>
+                                    <a href="#"
+                                       hx-get="/classes/{{ prev_class_data.nid }}"
+                                       hx-target="#classSheet"
+                                       hx-vals='{"addCopy":"True"}'
+                                       hx-swap="outerHTML">{{ prev_class_data.name }}
+                                        {% if
+                                            prev_class_data.alt_name %}
+                                            ({{
+                                            prev_class_data.alt_name }})
+                                        {% endif %}
+                                    </a>
+                                    {% if prev_class_data.weapons %}
+                                        {% for weapon in prev_class_data.weapons %}
+                                            <span class="{{ weapon.icon_class }}"></span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                {% endif %}
+                {% if class_data.turns_into %}
+                    <details open>
+                        <summary>Promotes To</summary>
+                        <ul>
+                            {% for next_class_data in class_data.turns_into %}
+                                <li>
+                                    <a href="#"
+                                       hx-get="/classes/{{ next_class_data.nid }}"
+                                       hx-target="#classSheet"
+                                       hx-vals='{"addCopy":"True"}'
+                                       hx-swap="outerHTML">{{ next_class_data.name }}
+                                        {% if
+                                            next_class_data.alt_name %}
+                                            ({{
+                                            next_class_data.alt_name }})
+                                        {% endif %}
+                                    </a>
+                                    {% if next_class_data.weapons %}
+                                        {% for weapon in next_class_data.weapons %}
+                                            <span class="{{ weapon.icon_class }}"></span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if class_data.categories %}
+            <strong><small>Categories:</small></strong>
+            {% for class_cat in class_data.categories|sort(attribute='order_key') %}
+                <a href="/classes?selectedCategory={{ class_cat.nid }}"><small>{{ class_cat.name }}</small></a>
+                {% if not loop.last %}
+                    |
+                {% else %}
+                    &nbsp;&nbsp;
+                {% endif %}
+            {% endfor %}
         {% endif %}
     </div>
-    {% endif %}
-    {% if class_data.categories %}
-    <strong><small>Categories:</small></strong>
-    {% for class_cat in class_data.categories|sort(attribute='order_key')%}
-    <a href="/classes?selectedCategory={{ class_cat.nid }}"><small>{{ class_cat.name }}</small></a>
-    {% if not loop.last %}
-    |
-    {% else %}
-    &nbsp;&nbsp;
-    {% endif %}
-    {% endfor %}
-    {% endif %}
-</div>
 {% endblock content %}

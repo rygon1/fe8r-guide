@@ -26,7 +26,6 @@
                                       role="tab"
                                       {% if loop.first %} aria-selected="true" {% else %} aria-selected="false" {% endif %}
                                       aria-controls="{{ item_type }}-tab"><small>{{ item_type }}&nbsp;</small><span class="{% if weapon_lookup[item_type] %}{{ weapon_lookup[item_type] }}{% else %}{{ weapon_lookup.Default }}{% endif %}"></span></span>
-                                {% if not loop.last %}&nbsp;|&nbsp;{% endif %}
                             {% endfor %}
                         </div>
                         {% for item_type, item_list in arsenal.items | groupby('weapon_type') %}

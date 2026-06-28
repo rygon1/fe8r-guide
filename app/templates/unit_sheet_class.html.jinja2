@@ -34,88 +34,88 @@
                   role="tab"
                   aria-selected="true"
                   aria-controls="class-stat-promo"><small>On
-                Promo</small></span>&nbsp;|&nbsp;
-                <span class="tab"
-                      role="tab"
-                      aria-selected="false"
-                      aria-controls="class-stat-growth"><small>Total
-                    Growths</small></span>&nbsp;|&nbsp;
-                    <span class="tab"
-                          role="tab"
-                          aria-selected="false"
-                          aria-controls="class-stat-cap"><small>Caps</small></span>
-                </div>
-                <div class="panel" id="class-stat-promo" role="tabpanel">
-                    <table class="striped stat">
-                        <tbody>
-                            {% for stat_name in stat_names[:4] %}
-                                <tr>
-                                    <td><strong>{{ stat_name }}</strong></td>
-                                    <td>+{{ class_data.promotion[stat_name] }}</td>
-                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                                    {% if stat_names[loop.index+5] == "MOV" %}
-                                        <td>{{ class_data.bases["MOV"] }}</td>
-                                    {% else %}
-                                        <td>+{{ class_data.promotion[stat_names[loop.index+5]] }}</td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
-                    <table class="striped stat">
-                        <tbody>
-                            {% for stat_name in stat_names[:4] %}
-                                <tr>
-                                    <td><strong>{{ stat_name }}</strong></td>
-                                    <td class="lt-color-{{ (unit_data.growths[stat_name] + class_data.growth_bonus[stat_name])|growth_colors }}">
-                                        {{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%
-                                    </td>
-                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                                    <td class="lt-color-{{ (unit_data.growths[stat_names[loop.index+5]] + class_data.growth_bonus[stat_names[loop.index+5]])|growth_colors }}">
-                                        {{ unit_data.growths[stat_names[loop.index+5]] +
-                                        class_data.growth_bonus[stat_names[loop.index+5]] }}%
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
-                    <table class="striped stat">
-                        <tbody>
-                            {% for stat_name in stat_names[:4] %}
-                                <tr>
-                                    <td><strong>{{ stat_name }}</strong></td>
-                                    <td>{{ unit_data.stat_cap_modifiers[stat_name] + class_data.max_stats[stat_name] }}</td>
-                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                                    <td>
-                                        {{ unit_data.stat_cap_modifiers[stat_names[loop.index+5]] +
-                                        class_data.max_stats[stat_names[loop.index+5]] }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% if class_data.learned_skills %}
-                <p><strong>Skills</strong></p>
-                <div>
-                    {% for skill in class_data.learned_skills|sort(attribute="level") %}
-                        {% if not skill.skill.is_hidden or "Affinity Strike" in skill.skill.name %}
-                            <div>
-                                <small>
-                                    <p class="skill-title-container">
-                                        <span class="muted-text">[Lvl {{ skill.level }}]</span><strong>&nbsp;{{ skill.skill.name }}&nbsp;</strong><span class="{{ skill.skill.icon_class }}"></span>
-                                        <br>
-                                        <span class="muted-text">{{ skill.skill.desc }}</span>
-                                    </p>
-                                </small>
-                            </div>
-                        {% endif %}
+            Promo</small></span>
+            <span class="tab"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="class-stat-growth"><small>Total
+            Growths</small></span>
+            <span class="tab"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="class-stat-cap"><small>Caps</small></span>
+        </div>
+        <div class="panel" id="class-stat-promo" role="tabpanel">
+            <table class="striped stat">
+                <tbody>
+                    {% for stat_name in stat_names[:4] %}
+                        <tr>
+                            <td><strong>{{ stat_name }}</strong></td>
+                            <td>+{{ class_data.promotion[stat_name] }}</td>
+                            <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                            {% if stat_names[loop.index+5] == "MOV" %}
+                                <td>{{ class_data.bases["MOV"] }}</td>
+                            {% else %}
+                                <td>+{{ class_data.promotion[stat_names[loop.index+5]] }}</td>
+                            {% endif %}
+                        </tr>
                     {% endfor %}
-                </div>
-            {% endif %}
-        {% endblock content %}
+                </tbody>
+            </table>
+        </div>
+        <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
+            <table class="striped stat">
+                <tbody>
+                    {% for stat_name in stat_names[:4] %}
+                        <tr>
+                            <td><strong>{{ stat_name }}</strong></td>
+                            <td class="lt-color-{{ (unit_data.growths[stat_name] + class_data.growth_bonus[stat_name])|growth_colors }}">
+                                {{ unit_data.growths[stat_name] + class_data.growth_bonus[stat_name] }}%
+                            </td>
+                            <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                            <td class="lt-color-{{ (unit_data.growths[stat_names[loop.index+5]] + class_data.growth_bonus[stat_names[loop.index+5]])|growth_colors }}">
+                                {{ unit_data.growths[stat_names[loop.index+5]] +
+                                class_data.growth_bonus[stat_names[loop.index+5]] }}%
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
+            <table class="striped stat">
+                <tbody>
+                    {% for stat_name in stat_names[:4] %}
+                        <tr>
+                            <td><strong>{{ stat_name }}</strong></td>
+                            <td>{{ unit_data.stat_cap_modifiers[stat_name] + class_data.max_stats[stat_name] }}</td>
+                            <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                            <td>
+                                {{ unit_data.stat_cap_modifiers[stat_names[loop.index+5]] +
+                                class_data.max_stats[stat_names[loop.index+5]] }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if class_data.learned_skills %}
+        <p><strong>Skills</strong></p>
+        <div>
+            {% for skill in class_data.learned_skills|sort(attribute="level") %}
+                {% if not skill.skill.is_hidden or "Affinity Strike" in skill.skill.name %}
+                    <div>
+                        <small>
+                            <p class="skill-title-container">
+                                <span class="muted-text">[Lvl {{ skill.level }}]</span><strong>&nbsp;{{ skill.skill.name }}&nbsp;</strong><span class="{{ skill.skill.icon_class }}"></span>
+                                <br>
+                                <span class="muted-text">{{ skill.skill.desc }}</span>
+                            </p>
+                        </small>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock content %}
