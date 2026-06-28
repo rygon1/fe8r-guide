@@ -1,40 +1,52 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
-{% block title %}{{ skill_data.name }} &mdash; Skills | {% endblock %}
+    {% extends "layout.html.jinja2" %}
+    {% block title %}{{ skill_data.name }} — Skills |{% endblock title %}
 {% endif %}
 {% block content %}
-<article>
-    <header>
-        <strong>{{ skill_data.name }} <span class="{{ skill_data.icon_class }}"></span></strong>
-    </header>
-    <p>{{ skill_data.desc }}</p>
-    {% if not request.headers.hx_request%}
-    <footer>
-        {% if skill_data.categories %}
-        <strong><small>Categories:</small></strong>
-        {% for skill_cat in skill_data.categories|sort(attribute='order_key')%}
-        <a href="/skills?selectedCategory={{ skill_cat.nid }}"><small>{{ skill_cat.name }}</small></a>
-        {% if not loop.last %}
-        |
-        {% else %}
-        &nbsp;&nbsp;
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {% if skill_data.class_associations %}
-        <strong><small>Classes:</small></strong>
-        {% for class_assoc in skill_data.class_associations%}
-        <a href="/classes/{{ class_assoc.class_nid }}"><small>{{ class_assoc.class_with_skill.name }}{% if
-                class_assoc.class_with_skill.alt_name %} ({{
-                class_assoc.class_with_skill.alt_name }}){% endif %}</small></a>
-        {% if not loop.last %}
-        |
-        {% else %}
-        &nbsp;&nbsp;
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-    </footer>
+    {% if not request.headers.hx_request %}
+        <article>
+            <header>
+                <strong>{{ skill_data.name }} <span class="{{ skill_data.icon_class }}"></span></strong>
+            </header>
+            <p>{{ skill_data.desc }}</p>
+            {% if not request.headers.hx_request %}
+                <footer>
+                    {% if skill_data.categories %}
+                        <strong><small>Categories:</small></strong>
+                        {% for skill_cat in skill_data.categories|sort(attribute='order_key') %}
+                            <a href="{{ url_for('skills.get_fe_skill_index',selectedCategory=skill_cat.nid) }}"><small>{{ skill_cat.name }}</small></a>
+                            {% if not loop.last %}
+                                |
+                            {% else %}
+                                &nbsp;&nbsp;
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if skill_data.class_associations %}
+                        <strong><small>Classes:</small></strong>
+                        {% for class_assoc in skill_data.class_associations %}
+                            <a href="{{ url_for('classes.get_fe_class_sheet',fe_class_nid=class_assoc.class_nid) }}"><small>{{ class_assoc.class_with_skill.name }}
+                                {% if class_assoc.class_with_skill.alt_name %}({{ class_assoc.class_with_skill.alt_name }}){% endif %}
+                            </small></a>
+                            {% if not loop.last %}
+                                |
+                            {% else %}
+                                &nbsp;&nbsp;
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </footer>
+            {% endif %}
+        </article>
+    {% else %}
+        <div>
+            <small>
+                <p class="skill-title-container">
+                    <strong>{{ skill_data.name }}&nbsp;</strong><span class="{{ skill_data.icon_class }}"></span>
+                    <br>
+                    <span class="muted-text">{{ skill_data.desc }}</span>
+                </p>
+            </small>
+        </div>
     {% endif %}
-</article>
 {% endblock content %}
