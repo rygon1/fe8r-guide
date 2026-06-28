@@ -1,43 +1,49 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
-{% block title %} {{ (unit_arsenals|first).arsenal_owner.name }} &mdash; Arsenals | {% endblock %}
+    {% extends "layout.html.jinja2" %}
+    {% block title %}{{ (unit_arsenals|first).arsenal_owner.name }} — Arsenals |{% endblock title %}
 {% endif %}
 {% block content %}
-<div id="arsenalSheet">
-    <div aria-busy="true" class="htmx-indicator"></div>
-    {% if not request.headers.hx_request %}
-    <h2>{{ (unit_arsenals|first).arsenal_owner.name }}</h2>
-    {% endif %}
-    {% for arsenal in unit_arsenals %}
-    <section>
-        <hgroup>
-            <h5>{{ arsenal.name }}<span class="{{ arsenal.icon_class }}"></span></h5>
-            <p>{{ arsenal.desc }}</p>
-        </hgroup>
-        <select name="arsenalItemType" aria-label="Select weapon type" required
-            _="on change set myFilter to me.value then show .arsenalItemType in #arsenalItems when its.getAttribute('data-category') is myFilter or myFilter=='all'">
-            <option selected disabled value="">
-                Select weapon type
-            </option>
-            <option value="all">All</option>
-            {% set unique_wtypes = arsenal.items | map(attribute='weapon_type') | unique | list %}
-            {% for item_type in unique_wtypes%}
-            <option value="{{item_type}}">{{ item_type }}</option>
-            {% endfor %}
-        </select>
-        <div id="arsenalItems">
-            {% for item_type, item_list in arsenal.items | groupby('weapon_type') %}
-            <div>
-                <div class="arsenalItemType" data-category="{{ item_type }}">
-                    {% for item in item_list | sort(attribute='weapon_rank_order_key,damage') %}
-                    <div hx-get="/items/{{ item.nid }}" hx-trigger="load" hx-target="this">
+    <div id="arsenalSheet">
+        <div aria-busy="true" class="htmx-indicator"></div>
+        {% if not request.headers.hx_request %}
+            <h2>{{ (unit_arsenals|first).arsenal_owner.name }}</h2>
+        {% endif %}
+        <div class="grid">
+            {% for arsenal in unit_arsenals %}
+                <section>
+                    <hgroup>
+                        <p><strong>{{ arsenal.name }}</strong><span class="{{ arsenal.icon_class }}"></span></p>
+                        <p>{{ arsenal.desc }}</p>
+                    </hgroup>
+                    {{ weapons_table }}
+                    {% set unique_wtypes = arsenal.items | map(attribute='weapon_type') | unique | list %}
+                    <div class="tabs"
+                         _="on click set tab to the closest <[role=tab]/> to the target if no tab exit end take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
+                        <div class="tab-bar" role="tablist">
+                            {% for item_type in unique_wtypes %}
+                                {% set weapon = arsenal.items | map(attribute='weapon_type') | unique | list %}
+                                <span class="tab"
+                                      role="tab"
+                                      {% if loop.first %} aria-selected="true" {% else %} aria-selected="false" {% endif %}
+                                      aria-controls="{{ item_type }}-tab"><small>{{ item_type }}&nbsp;</small><span class="{% if weapon_lookup[item_type] %}{{ weapon_lookup[item_type] }}{% else %}{{ weapon_lookup.Default }}{% endif %}"></span></span>
+                                {% if not loop.last %}&nbsp;|&nbsp;{% endif %}
+                            {% endfor %}
+                        </div>
+                        {% for item_type, item_list in arsenal.items | groupby('weapon_type') %}
+                            <div class="panel"
+                                 id="{{ item_type }}-tab"
+                                 role="tabpanel"
+                                 {% if not loop.first %}hidden{% endif %}>
+                                <div>
+                                    {% for item in item_list | sort(attribute='weapon_rank_order_key,damage') %}
+                                        <div hx-get="/items/{{ item.nid }}" hx-trigger="load" hx-target="this"></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
-            </div>
+                </section>
             {% endfor %}
         </div>
-    </section>
-    {% endfor %}
-</div>
+    </div>
 {% endblock content %}
