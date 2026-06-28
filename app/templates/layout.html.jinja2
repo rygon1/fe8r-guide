@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-16" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="keywords" content="gaming, fire emblem">
-  <meta name="description" content="Reference Guide for FE8R">
-  <title>{% block title %}{% endblock %}FE8R Wiki</title>
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hyperscript.org@0.9.91/dist/_hyperscript.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/open-props" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/iconsheet.min.css') }}">
-  <script>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-16" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="keywords" content="gaming, fire emblem">
+    <meta name="description" content="Reference Guide for FE8R">
+    <title>
+      {% block title %}
+      {% endblock title %}
+    FE8R Wiki</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hyperscript.org@0.9.91/dist/_hyperscript.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/open-props" />
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/custom.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/iconsheet.min.css') }}">
+    <script>
     function downloadText(elementId, filename) {
       let textToSave = document.getElementById(elementId).textContent;
       let blob = new Blob([textToSave], { type: 'text/plain;charset=utf-8' });
@@ -32,90 +36,93 @@
       URL.revokeObjectURL(a.href);
     }
     _hyperscript.browserInit();
-  </script>
-</head>
-
-<body>
-  <header class="container-fluid">
-    <nav role="burger">
-      <ul>
-        <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Wiki</a></strong></li>
-      </ul>
-      <ul>
-        <li>
-          <details class="dropdown">
-            <summary role="button" class="secondary outline"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-            </summary>
-            <ul dir="rtl">
-              <li>
-                <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
-              </li>
-              <li>
-                <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
-              </li>
-              <li>
-                <a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
-              </li>
-              <li>
-                <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
-              </li>
-              <li>
-                <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
-              </li>
-              <li>
-                <a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
-              </li>
-              <li>
-                <a href="{{ url_for('random_run.get_random_run_index') }}">Run Generator</a>
-              </li>
-            </ul>
-          </details>
-        </li>
-      </ul>
-    </nav>
-    <nav role="menu">
-      <ul>
-        <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Wiki</a></strong></li>
-      </ul>
-      <ul>
-        <li>
-          <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
-        </li>
-        <li>
-          <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
-        </li>
-        <li>
-          <a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
-        </li>
-        <li>
-          <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
-        </li>
-        <li>
-          <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
-        </li>
-        <li>
-          <a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
-        </li>
-        <li>
-          <a href="{{ url_for('random_run.get_random_run_index') }}">Run Generator</a>
-        </li>
-      </ul>
-    </nav>
-  </header>
-  <main class="container">
-    {% block content %}
-    {% endblock content %}
-  </main>
-  <footer class="container-fluid">
-    <span><a href="{{ url_for('get_credits') }}">Credits</a></span> •
-    <span><a href="https://github.com/rygon1/fe8r-guide">Github</a></span> •
-    <span><a href="https://github.com/FE8Dev/FE8RProject">FE8R</a></span> •
-    <span><a href="https://discord.gg/vBZDdfDxAC">FE8R Discord</a></span> •
-    <span><a href="https://lex-talionis.net/">Lex Talionis</a></span>
-  </footer>
-</body>
-
+    </script>
+  </head>
+  <body>
+    <header class="container-fluid">
+      <nav role="burger">
+        <ul>
+          <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Wiki</a></strong></li>
+        </ul>
+        <ul>
+          <li>
+            <details class="dropdown">
+              <summary role="button" class="secondary outline">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.5"
+                     stroke="currentColor"
+                     class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </summary>
+              <ul dir="rtl">
+                <li>
+                  <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('random_run.get_random_run_index') }}">Run Generator</a>
+                </li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </nav>
+      <nav role="menu">
+        <ul>
+          <li><strong><a class="contrast" href="{{ url_for('index') }}">FE8R Wiki</a></strong></li>
+        </ul>
+        <ul>
+          <li>
+            <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
+          </li>
+          <li>
+            <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
+          </li>
+          <li>
+            <a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
+          </li>
+          <li>
+            <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
+          </li>
+          <li>
+            <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
+          </li>
+          <li>
+            <a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
+          </li>
+          <li>
+            <a href="{{ url_for('random_run.get_random_run_index') }}">Run Generator</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main class="container">
+      {% block content %}
+      {% endblock content %}
+    </main>
+    <footer class="container-fluid">
+      <span><a href="{{ url_for('get_credits') }}">Credits</a></span> •
+      <span><a href="https://github.com/rygon1/fe8r-guide">Github</a></span> •
+      <span><a href="https://github.com/FE8Dev/FE8RProject">FE8R</a></span> •
+      <span><a href="https://discord.gg/vBZDdfDxAC">FE8R Discord</a></span> •
+      <span><a href="https://lex-talionis.net/">Lex Talionis</a></span>
+    </footer>
+  </body>
 </html>
