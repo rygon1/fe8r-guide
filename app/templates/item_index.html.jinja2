@@ -1,38 +1,44 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
+    {% extends "layout.html.jinja2" %}
 {% endif %}
-{% block title %}Items | {% endblock %}
+{% block title %}Items |{% endblock title %}
 {% block content %}
-<h1>Items</h1>
-<section>
-    <form hx-get="/items/categories" hx-target="#itemSelector" hx-swap="innerHTML" hx-trigger="change,load">
-        <fieldset role="group">
-
-            <select name="itemCategory" id="itemCategory" aria-label="Select category">
-                {% for category_type, category_list in item_cats %}
-                <option value="" disabled>-- {{ category_type }} --</option>
-                {% for category in category_list%}
-                <option value="{{ category.nid }}" {% if selected_category==category.nid %}selected{% endif %}>{{
-                    category.name }}</option>
-                {% endfor %}
-                {% endfor %}
-
-            </select>
-            <select name="itemSort" id="itemSort" class="sortSelect" aria-label="Select sort">
-                <option value="alpha_inc" selected>Name (A-Z)</option>
-                <option value="alpha_dec">Name (Z-A)</option>
-                <option value="wrank_inc">Rank (E-X)</option>
-                <option value="wrank_dec">Rank (X-E)</option>
-            </select>
-        </fieldset>
-        <fieldset>
-            <input type="radio" id="list" value="list" name="view" checked />
-            <label htmlFor="list"><small>List</small></label>
-            <input type="radio" id="detailed" value="detailed" name="view" />
-            <label htmlFor="detailed"><small>Detailed</small></label>
-        </fieldset>
-    </form>
-</section>
-<div id="itemSelector">
-</div>
+    <h1>Items</h1>
+    <section>
+        <form hx-get="{{ url_for('items.get_item_list') }}"
+              hx-target="#itemSelector"
+              hx-swap="innerHTML"
+              hx-trigger="change,load">
+            <fieldset role="group">
+                <select name="itemCategory" id="itemCategory" aria-label="Select category">
+                    {% for category_type, category_list in item_cats %}
+                        <option value="" disabled>-- {{ category_type }} --</option>
+                        {% for category in category_list %}
+                            <option value="{{ category.nid }}"
+                                    {% if selected_category==category.nid %}selected{% endif %}>
+                                {{
+                                category.name }}
+                            </option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+                <select name="itemSort"
+                        id="itemSort"
+                        class="sortSelect"
+                        aria-label="Select sort">
+                    <option value="alpha_inc" selected>Name (A-Z)</option>
+                    <option value="alpha_dec">Name (Z-A)</option>
+                    <option value="wrank_inc">Rank (E-X)</option>
+                    <option value="wrank_dec">Rank (X-E)</option>
+                </select>
+            </fieldset>
+            <fieldset>
+                <input type="radio" id="list" value="list" name="view" checked />
+                <label htmlFor="list"><small>List</small></label>
+                <input type="radio" id="detailed" value="detailed" name="view" />
+                <label htmlFor="detailed"><small>Detailed</small></label>
+            </fieldset>
+        </form>
+    </section>
+    <div id="itemSelector"></div>
 {% endblock content %}

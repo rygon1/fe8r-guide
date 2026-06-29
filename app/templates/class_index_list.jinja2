@@ -1,61 +1,78 @@
 {% if view == "list" %}
-<div>
-    {% for group_data in grouped_classes %}
-    <section>
-        <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
-        <hr />
-        {% for class in group_data['classes']%}
-        <div class="list-unit-container">
-            <div class="tile">
-                <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
-                    class="gba-sprite" />
-            </div>
-            <div class="list-unit-desc">
-                <p></p>
-                <p>
-                    <a href="/classes/{{ class.nid }}">{{ class.name }} {% if
-                        class.alt_name %}({{
-                        class.alt_name }}){% endif %}</a>
-                </p>
-            </div>
-        </div>
-
+    <div>
+        {% for group_data in grouped_classes %}
+            <section>
+                <h3>
+                    {% if group_data.key %}
+                        {{ group_data.key }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </h3>
+                <hr />
+                {% for class in group_data['classes'] %}
+                    <div class="list-unit-container">
+                        <div class="tile">
+                            <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
+                                 class="gba-sprite"
+                                 alt="{{ class.name }}"
+                                 width="80"
+                                 height="60" />
+                        </div>
+                        <div class="list-unit-desc">
+                            <p>
+                                <a href="{{ url_for('classes.get_fe_class_sheet',fe_class_nid=class.nid) }}">{{ class.name }}
+                                    {% if class.alt_name %}({{ class.alt_name }}){% endif %}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
         {% endfor %}
-    </section>
-    {% endfor %}
-</div>
+    </div>
 {% elif view == "detailed" %}
-<div>
-    {% for group_data in grouped_classes %}
-    <section>
-        <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
-        <hr />
-        {% for class in group_data['classes']%}
-        <div class="list-unit-container">
-            <div class="tile">
-                <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
-                    class="gba-sprite" />
-            </div>
-            <div class="list-unit-desc">
-                <p></p>
-                <p>
-                    <a href="/classes/{{ class.nid }}">{{ class.name }} {% if
-                        class.alt_name %}({{
-                        class.alt_name }}){% endif %}</a>
-                </p>
-                <p class="muted-text entry-description"><small><i>{{ class.desc }}</i></small></p>
-                {% if class.learned_skills %}
-                <p class="muted-text entry-description"><small><i>Skills:&nbsp;
-                            {% for class_skill_data in class.learned_skills%}
-                            {{class_skill_data.skill.name}}{% if not loop.last %},&nbsp;{% endif %}
-                            {% endfor %}
-                        </i></small></p>
-                {% endif %}
-            </div>
-        </div>
-
+    <div>
+        {% for group_data in grouped_classes %}
+            <section>
+                <h3>
+                    {% if group_data.key %}
+                        {{ group_data.key }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </h3>
+                <hr />
+                {% for class in group_data['classes'] %}
+                    <div class="list-unit-container">
+                        <div class="tile">
+                            <img src="{{ url_for('static',filename='images/map_sprites/'+class.map_sprite_nid+'-stand-static.webp') }}"
+                                 class="gba-sprite"
+                                 alt="{{ class.name }}"
+                                 width="80"
+                                 height="60" />
+                        </div>
+                        <div class="list-unit-desc">
+                            <p>
+                                <a href="{{ url_for('classes.get_fe_class_sheet',fe_class_nid=class.nid) }}">{{ class.name }}
+                                    {% if class.alt_name %}({{ class.alt_name }}){% endif %}
+                                </a>
+                            </p>
+                            <p class="muted-text entry-description"><small><i>{{ class.desc }}</i></small></p>
+                            {% if class.learned_skills %}
+                                <p class="muted-text entry-description">
+                                    <small><i>Skills:&nbsp;
+                                        {% for class_skill_data in class.learned_skills %}
+                                            {{ class_skill_data.skill.name }}
+                                            {% if not loop.last %},&nbsp;{% endif %}
+                                        {% endfor %}
+                                    </i></small>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
         {% endfor %}
-    </section>
-    {% endfor %}
-</div>
+    </div>
 {% endif %}

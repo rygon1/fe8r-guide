@@ -1,35 +1,42 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
+    {% extends "layout.html.jinja2" %}
 {% endif %}
-{% block title %}Units | {% endblock %}
+{% block title %}Units | {% endblock title %}
 {% block content %}
-<h1>Units</h1>
-<section>
-    <form hx-get="/units/categories" hx-target="#unitSelector" hx-swap="innerHTML" hx-trigger="change,load">
-        <fieldset role="group">
-            <select name="unitCategory" id="unitCategory" aria-label="Select category">
-                {% for category_type, category_list in unit_cats %}
-                <option value="" disabled>-- {{ category_type }} --</option>
-                {% for category in category_list%}
-                <option value="{{ category.nid }}" {% if selected_category==category.nid %}selected{% endif %}>{{
-                    category.name }}</option>
-                {% endfor %}
-                {% endfor %}
-
-            </select>
-            <select name="unitSort" id="unitSort" class="sortSelect" aria-label="Select sort">
-                <option value="alpha_inc" selected>Name (A-Z)</option>
-                <option value="alpha_dec">Name (Z-A)</option>
-            </select>
-        </fieldset>
-        <fieldset>
-            <input type="radio" id="list" value="list" name="view" checked />
-            <label htmlFor="list"><small>List</small></label>
-            <input type="radio" id="detailed" value="detailed" name="view" />
-            <label htmlFor="detailed"><small>Detailed</small></label>
-        </fieldset>
-    </form>
-</section>
-<div id="unitSelector">
-</div>
+    <h1>Units</h1>
+    <section>
+        <form hx-get="{{ url_for('units.get_unit_list') }}"
+              hx-target="#unitSelector"
+              hx-swap="innerHTML"
+              hx-trigger="change,load">
+            <fieldset role="group">
+                <select name="unitCategory" id="unitCategory" aria-label="Select category">
+                    {% for category_type, category_list in unit_cats %}
+                        <option value="" disabled>-- {{ category_type }} --</option>
+                        {% for category in category_list %}
+                            <option value="{{ category.nid }}"
+                                    {% if selected_category==category.nid %}selected{% endif %}>
+                                {{
+                                category.name }}
+                            </option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+                <select name="unitSort"
+                        id="unitSort"
+                        class="sortSelect"
+                        aria-label="Select sort">
+                    <option value="alpha_inc" selected>Name (A-Z)</option>
+                    <option value="alpha_dec">Name (Z-A)</option>
+                </select>
+            </fieldset>
+            <fieldset>
+                <input type="radio" id="list" value="list" name="view" checked />
+                <label htmlFor="list"><small>List</small></label>
+                <input type="radio" id="detailed" value="detailed" name="view" />
+                <label htmlFor="detailed"><small>Detailed</small></label>
+            </fieldset>
+        </form>
+    </section>
+    <div id="unitSelector"></div>
 {% endblock content %}

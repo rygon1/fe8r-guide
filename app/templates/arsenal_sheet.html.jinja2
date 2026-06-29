@@ -35,7 +35,9 @@
                                  {% if not loop.first %}hidden{% endif %}>
                                 <div>
                                     {% for item in item_list | sort(attribute='weapon_rank_order_key,damage') %}
-                                        <div hx-get="/items/{{ item.nid }}" hx-trigger="load" hx-target="this"></div>
+                                        <div hx-get="{{ url_for('items.get_fe_item_sheet',fe_item_nid=item.nid) }}"
+                                             hx-trigger="load"
+                                             hx-target="this"></div>
                                     {% endfor %}
                                 </div>
                             </div>

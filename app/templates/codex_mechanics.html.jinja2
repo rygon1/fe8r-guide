@@ -1,41 +1,48 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
+    {% extends "layout.html.jinja2" %}
 {% endif %}
-{% block title %}Mechanics &mdash; Codex | {% endblock %}
+{% block title %}Mechanics — Codex | {% endblock title %}
 {% block content %}
-<h1>Mechanics</h1>
-<div class="container-fluid-sidebar">
-    <aside id="sidebar" class="sidebar"
-        _="on click from body if event.target is not in me and event.target is not in <p.sidebar-toggle/> and I match .sidebar-open remove .sidebar-open then show <p.sidebar-toggle/>">
-        <nav>
-            <ul>
-                {% for mechanic_nid,mechanic_data in mechanics|items %}
-                <li>
-                    <a href="#{{ mechanic_nid }}"><small>{{ mechanic_data.name }}</small></a>
-                </li>
-                {% endfor %}
-            </ul>
-        </nav>
-    </aside>
-    <section>
-        <p class="sidebar-toggle">
-            <button class="secondary" _="on click toggle .sidebar-open on #sidebar then hide <p.sidebar-toggle/>">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    aria-hidden="true" data-slot="icon" fill="none" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 4.5v15m-4.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z">
-                    </path>
-                </svg>
-            </button>
-        </p>
-        {% for mechanic_nid,mechanic_data in mechanics|items %}
-        <article>
-            <header>
-                <strong id="{{ mechanic_nid }}">{{ mechanic_data.title }}</strong>
-            </header>
-            <p>{{ mechanic_data.text }}</p>
-        </article>
-        {% endfor %}
-    </section>
-</div>
+    <h1>Mechanics</h1>
+    <div class="container-fluid-sidebar">
+        <aside id="sidebar"
+               class="sidebar"
+               _="on click from body if event.target is not in me and event.target is not in <p.sidebar-toggle/> and I match .sidebar-open remove .sidebar-open then show <p.sidebar-toggle/>">
+            <nav>
+                <ul>
+                    {% for mechanic_nid,mechanic_data in mechanics|items %}
+                        <li>
+                            <a href="#{{ mechanic_nid }}"><small>{{ mechanic_data.name }}</small></a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        </aside>
+        <section>
+            <p class="sidebar-toggle">
+                <button class="secondary"
+                        _="on click toggle .sidebar-open on #sidebar then hide <p.sidebar-toggle/>">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.5"
+                         stroke="currentColor"
+                         aria-hidden="true"
+                         data-slot="icon"
+                         fill="none"
+                         class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m-4.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z">
+                        </path>
+                    </svg>
+                </button>
+            </p>
+            {% for mechanic_nid,mechanic_data in mechanics|items %}
+                <article>
+                    <header>
+                        <strong id="{{ mechanic_nid }}">{{ mechanic_data.title }}</strong>
+                    </header>
+                    <p>{{ mechanic_data.text }}</p>
+                </article>
+            {% endfor %}
+        </section>
+    </div>
 {% endblock content %}

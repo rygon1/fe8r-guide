@@ -1,48 +1,48 @@
 {% if not request.headers.hx_request %}
-{% extends "layout.html.jinja2" %}
+  {% extends "layout.html.jinja2" %}
 {% endif %}
-{% block title %}Home | {% endblock %}
+{% block title %}Home | {% endblock title %}
 {% block content %}
-<hgroup>
-  <h1>FE8R Wiki</h1>
-</hgroup>
-<section>
-  <p>An online reference guide for <a href="https://github.com/FE8Dev/FE8RProject">Fire Emblem 8R</a> using the
-    <a href="https://lex-talionis.net/">Lex Talionis
-      Engine</a>
-  </p>
-  <ul>
-    <li>
-      <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
-    </li>
-    <li>
-      <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
-    </li>
-    <li><a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
-    </li>
-    <li>
-      <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
-    </li>
-    <li>
-      <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
-    </li>
-    <li><a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
-      <ul>
-        <li>
-          <a href="{{ url_for('codex.get_codex_mechanics') }}">Mechanics</a>
-        </li>
-        <li>
-          <a href="{{ url_for('codex.get_codex_achievements') }}">Achievements</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="{{ url_for('get_credits') }}">Credits</a>
-    </li>
-    <li>
-      <a href="{{ url_for('random_run.get_random_run_index') }}">Run Generator</a>
-    </li>
-  </ul>
-</section>
-
+  <hgroup>
+    <h1>FE8R Wiki</h1>
+    <p>
+      An online reference guide for <a href="https://github.com/FE8Dev/FE8RProject">Fire Emblem 8R</a>
+    </p>
+  </hgroup>
+  <section>
+    <ul>
+      <li>
+        <a href="{{ url_for('units.get_fe_unit_index') }}">Units</a>
+      </li>
+      <li>
+        <a href="{{ url_for('classes.get_fe_class_index') }}">Classes</a>
+      </li>
+      <li>
+        <a href="{{ url_for('items.get_fe_item_index') }}">Items</a>
+      </li>
+      <li>
+        <a href="{{ url_for('items.get_shop_index') }}">Shops</a>
+      </li>
+      <li>
+        <a href="{{ url_for('skills.get_fe_skill_index') }}">Skills</a>
+      </li>
+      <li>
+        <a href="{{ url_for('codex.get_codex_index') }}">Codex</a>
+        <ul>
+          <li>
+            <a href="{{ url_for('codex.get_codex_mechanics') }}">Mechanics</a>
+          </li>
+          <li>
+            <a href="{{ url_for('codex.get_codex_achievements') }}">Achievements</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="{{ url_for('get_credits') }}">Credits</a>
+      </li>
+      <li>
+        <a href="{{ url_for('random_run.get_random_run_index') }}">Run Generator</a>
+      </li>
+    </ul>
+  </section>
 {% endblock content %}

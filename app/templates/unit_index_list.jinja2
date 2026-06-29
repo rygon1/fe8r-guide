@@ -1,40 +1,68 @@
 {% if view == "list" %}
-<div class="skill-grid">
-    {% for group_data in grouped_units %}
-    <div>
-        <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
-
-        {% for unit in group_data['units']%}
-        <p><img src="/static/images/portraits/{{ unit.portrait_nid|urlencode }}.png" height="45"
-                width="54" />&nbsp;&nbsp;&nbsp;<a href="/units/{{ unit.nid }}">{% if unit.alt_name %}{{
-                unit.alt_name }}{% else %}{{ unit.name }}{% endif %}</a>
-        </p>
-        {% endfor %}
-
-    </div>
+    <div class="skill-grid">
+        {% for group_data in grouped_units %}
+            <div>
+                <h3>
+                    {% if group_data.key %}
+                        {{ group_data.key }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </h3>
+                {% for unit in group_data['units'] %}
+                    <p>
+                        <img src="{{ url_for('static',filename='images/portraits/'+unit.portrait_nid+'.png') }}"
+                             alt="{{ unit.name }}"
+                             height="45"
+                             width="54" />
+                        &nbsp;&nbsp;&nbsp;<a href="{{ url_for('units.get_fe_unit_sheet',fe_unit_nid=unit.nid) }}">
+                        {% if unit.alt_name %}
+                            {{
+                            unit.alt_name }}
+                        {% else %}
+                            {{ unit.name }}
+                        {% endif %}
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
     {% endfor %}
 </div>
 {% elif view == "detailed" %}
 <div>
     {% for group_data in grouped_units %}
-    <section>
-        <h3>{% if group_data.key %}{{ group_data.key }}{% else %}N/A{% endif %}</h3>
-        <hr />
-        {% for unit in group_data['units']%}
-        <div class="list-unit-container">
-            <img src="/static/images/portraits/{{ unit.portrait_nid|urlencode }}.png" height="60" width="72" />
-            <div class="list-unit-desc">
-                <p></p>
-                <p>
-                    <a href="/units/{{ unit.nid }}">{% if unit.alt_name %}{{ unit.alt_name }}{% else %}{{
-                        unit.name }}{% endif %}</a>
-                </p>
-                <p class="muted-text entry-description"><small><i>{{ unit.desc }}</i></small></p>
-            </div>
-        </div>
-        {% endfor %}
-
-    </section>
+        <section>
+            <h3>
+                {% if group_data.key %}
+                    {{ group_data.key }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </h3>
+            <hr />
+            {% for unit in group_data['units'] %}
+                <div class="list-unit-container">
+                    <img src="{{ url_for('static',filename='images/portraits/'+unit.portrait_nid+'.png') }}"
+                         alt="{{ unit.name }}"
+                         height="60"
+                         width="72" />
+                    <div class="list-unit-desc">
+                        <p>
+                            <br />
+                            <a href="{{ url_for('units.get_fe_unit_sheet',fe_unit_nid=unit.nid) }}">
+                                {% if unit.alt_name %}
+                                    {{ unit.alt_name }}
+                                {% else %}
+                                    {{
+                                    unit.name }}
+                                {% endif %}
+                            </a>
+                        </p>
+                        <p class="muted-text entry-description"><small><i>{{ unit.desc }}</i></small></p>
+                    </div>
+                </div>
+            {% endfor %}
+        </section>
     {% endfor %}
 </div>
 {% endif %}

@@ -258,7 +258,7 @@
               <ol class="promo-branch">
                 {% for promo_class in class_promo_data %}
                   <li>
-                    <small><a hx-get="/units/{{ unit_data.nid }}/classes/{{ promo_class.nid }}"
+                    <small><a hx-get="{{ url_for('units.get_fe_unit_class_tree',fe_unit_nid=unit_data.nid, fe_class_nid=promo_class.nid) }}"
    hx-target="#promo-class"
    href="#">{{ promo_class.name }}</a></small>
                     {% if promo_class.turns_into %}
