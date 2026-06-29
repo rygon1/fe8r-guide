@@ -10,7 +10,6 @@
                 aria-label="Select shop"
                 required
                 hx-get="{{ url_for('items.get_shop_index') }}"
-                hx-vals='{"addCopy": "True"}'
                 hx-target="#shopSheet"
                 hx-indicator="#shopSheet">
             <option value="default" selected disabled>Select a shop</option>
@@ -21,5 +20,8 @@
     </section>
     <section id="shopSheet">
         <div aria-busy="true" class="htmx-indicator"></div>
+        <div hx-get="{{ url_for('items.get_shop_index',shopSelect=(shops|first).nid) }}"
+             hx-trigger="load"
+             hx-target="#shopSheet"></div>
     </section>
 {% endblock content %}
