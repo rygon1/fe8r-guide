@@ -39,11 +39,11 @@
                   role="tab"
                   aria-selected="false"
                   aria-controls="class-stat-growth"><small>Total
-            Growths</small></span>
+            Growth</small></span>
             <span class="tab"
                   role="tab"
                   aria-selected="false"
-                  aria-controls="class-stat-cap"><small>Caps</small></span>
+                  aria-controls="class-stat-cap"><small>Cap</small></span>
         </div>
         <div class="panel" id="class-stat-promo" role="tabpanel">
             <table class="striped stat">
@@ -102,7 +102,7 @@
     </div>
     {% if class_data.learned_skills %}
         <p><strong>Skills</strong></p>
-        <div>
+        <div class="grid">
             {% for skill in class_data.learned_skills|sort(attribute="level") %}
                 {% if not skill.skill.is_hidden or "Affinity Strike" in skill.skill.name %}
                     <div>
