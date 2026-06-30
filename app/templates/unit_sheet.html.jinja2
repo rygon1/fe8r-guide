@@ -3,6 +3,7 @@
   {% block title %}{{ unit_data.name }} — Units |{% endblock title %}
 {% endif %}
 {% block content %}
+  {% set stat_names = 'HP', 'STR', 'MAG', 'SKL', 'SPD', 'LCK', 'DEF', 'RES', 'CON', 'MOV' %}
   {% set unit_categories = unit_data.categories | map(attribute="nid") | list %}
   <div id="unitSheet">
     <div class="unit-head-container">
@@ -19,7 +20,11 @@
           {% else %}
             <h2>{{ unit_data.name }}</h2>
           {% endif %}
-          <p>{{ unit_data.desc }}</p>
+          <p>
+            {{ unit_data.desc }}
+            <br />
+            Affinity:&nbsp<span class="{{ unit_data.affinity.icon_class }}"></span>
+          </p>
         </hgroup>
       </div>
     </div>
@@ -48,7 +53,6 @@
         </hgroup>
       </div>
       {% if "Enemies" not in unit_categories and "NPCs" not in unit_categories %}
-        {% set stat_names = 'HP', 'STR', 'MAG', 'SKL', 'SPD', 'LCK', 'DEF', 'RES', 'CON', 'MOV' %}
         <div class="tabs"
              _="on click set tab to the closest <[role=tab]/> to the target if no tab exit end take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
           <div class="tab-bar" role="tablist">
@@ -68,7 +72,7 @@
           <div class="panel" id="class-stat-promo" role="tabpanel">
             <table class="striped stat">
               <tbody>
-                {% for stat_name in stat_names[:4] %}
+                {% for stat_name in stat_names[:5] %}
                   <tr>
                     <td><strong>{{ stat_name }}</strong></td>
                     <td>{{ unit_data.bases[stat_name] }}</td>
@@ -86,7 +90,7 @@
           <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
             <table class="striped stat">
               <tbody>
-                {% for stat_name in stat_names[:4] %}
+                {% for stat_name in stat_names[:5] %}
                   <tr>
                     <td><strong>{{ stat_name }}</strong></td>
                     <td class="lt-color-{{ (unit_data.growths[stat_name] + unit_data.base_class.growth_bonus[stat_name])|growth_colors }}">
@@ -105,7 +109,7 @@
           <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
             <table class="striped stat">
               <tbody>
-                {% for stat_name in stat_names[:4] %}
+                {% for stat_name in stat_names[:5] %}
                   <tr>
                     <td><strong>{{ stat_name }}</strong></td>
                     <td>{{ unit_data.stat_cap_modifiers[stat_name] + unit_data.base_class.max_stats[stat_name] }}</td>
@@ -261,9 +265,7 @@
                     <small><a hx-get="{{ url_for('units.get_fe_unit_class_tree',fe_unit_nid=unit_data.nid, fe_class_nid=promo_class.nid) }}"
    hx-target="#promo-class"
    href="#">{{ promo_class.name }}</a></small>
-                    {% if promo_class.turns_into %}
-                      {{ render_tree(promo_class.turns_into) }}
-                    {% endif %}
+                    {% if promo_class.turns_into %}{{ render_tree(promo_class.turns_into) }}{% endif %}
                   </li>
                 {% endfor %}
               </ol>
