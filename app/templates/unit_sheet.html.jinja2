@@ -76,11 +76,11 @@
                   <tr>
                     <td><strong>{{ stat_name }}</strong></td>
                     <td>{{ unit_data.bases[stat_name] }}</td>
-                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                    {% if stat_names[loop.index+5] == "MOV" %}
+                    <td><strong>{{ stat_names[loop.index+4] }}</strong></td>
+                    {% if stat_names[loop.index+4] == "MOV" %}
                       <td>{{ unit_data.base_class.bases["MOV"] }}</td>
                     {% else %}
-                      <td>{{ unit_data.bases[stat_names[loop.index+5]] }}</td>
+                      <td>{{ unit_data.bases[stat_names[loop.index+4]] }}</td>
                     {% endif %}
                   </tr>
                 {% endfor %}
@@ -96,10 +96,10 @@
                     <td class="lt-color-{{ (unit_data.growths[stat_name] + unit_data.base_class.growth_bonus[stat_name])|growth_colors }}">
                       {{ unit_data.growths[stat_name] + unit_data.base_class.growth_bonus[stat_name] }}%
                     </td>
-                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                    <td class="lt-color-{{ (unit_data.growths[stat_names[loop.index+5]] + unit_data.base_class.growth_bonus[stat_names[loop.index+5]])|growth_colors }}">
-                      {{ unit_data.growths[stat_names[loop.index+5]] +
-                      unit_data.base_class.growth_bonus[stat_names[loop.index+5]] }}%
+                    <td><strong>{{ stat_names[loop.index+4] }}</strong></td>
+                    <td class="lt-color-{{ (unit_data.growths[stat_names[loop.index+4]] + unit_data.base_class.growth_bonus[stat_names[loop.index+4]])|growth_colors }}">
+                      {{ unit_data.growths[stat_names[loop.index+4]] +
+                      unit_data.base_class.growth_bonus[stat_names[loop.index+4]] }}%
                     </td>
                   </tr>
                 {% endfor %}
@@ -113,10 +113,10 @@
                   <tr>
                     <td><strong>{{ stat_name }}</strong></td>
                     <td>{{ unit_data.stat_cap_modifiers[stat_name] + unit_data.base_class.max_stats[stat_name] }}</td>
-                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                    <td><strong>{{ stat_names[loop.index+4] }}</strong></td>
                     <td>
-                      {{ unit_data.stat_cap_modifiers[stat_names[loop.index+5]] +
-                      unit_data.base_class.max_stats[stat_names[loop.index+5]] }}
+                      {{ unit_data.stat_cap_modifiers[stat_names[loop.index+4]] +
+                      unit_data.base_class.max_stats[stat_names[loop.index+4]] }}
                     </td>
                   </tr>
                 {% endfor %}

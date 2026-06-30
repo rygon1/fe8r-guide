@@ -49,15 +49,15 @@
                 <div class="panel" id="class-stat-promo" role="tabpanel">
                     <table class="striped stat">
                         <tbody>
-                            {% for stat_name in stat_names[:4] %}
+                            {% for stat_name in stat_names[:5] %}
                                 <tr>
                                     <td><strong>{{ stat_name }}</strong></td>
                                     <td>+{{ class_data.promotion[stat_name] }}</td>
-                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                                    {% if stat_names[loop.index+5] == "MOV" %}
+                                    <td><strong>{{ stat_names[loop.index+4] }}</strong></td>
+                                    {% if stat_names[loop.index+4] == "MOV" %}
                                         <td>{{ class_data.bases["MOV"] }}</td>
                                     {% else %}
-                                        <td>+{{ class_data.promotion[stat_names[loop.index+5]] }}</td>
+                                        <td>+{{ class_data.promotion[stat_names[loop.index+4]] }}</td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
@@ -67,17 +67,17 @@
                 <div class="panel" id="class-stat-growth" role="tabpanel" hidden>
                     <table class="striped stat">
                         <tbody>
-                            {% for stat_name in stat_names[:4] %}
+                            {% for stat_name in stat_names[:5] %}
                                 <tr>
                                     <td><strong>{{ stat_name }}</strong></td>
                                     <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">
                                         +{{
                                         class_data.growth_bonus[stat_name] }}%
                                     </td>
-                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
+                                    <td><strong>{{ stat_names[loop.index+4] }}</strong></td>
                                     <td class="lt-color-{{ class_data.growth_bonus[stat_name]|growth_colors }}">
                                         +{{
-                                        class_data.growth_bonus[stat_names[loop.index+5]] }}%
+                                        class_data.growth_bonus[stat_names[loop.index+4]] }}%
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -87,12 +87,12 @@
                 <div class="panel" id="class-stat-cap" role="tabpanel" hidden>
                     <table class="striped stat">
                         <tbody>
-                            {% for stat_name in stat_names[:4] %}
+                            {% for stat_name in stat_names[:5] %}
                                 <tr>
                                     <td><strong>{{ stat_name }}</strong></td>
                                     <td>{{ class_data.max_stats[stat_name] }}</td>
-                                    <td><strong>{{ stat_names[loop.index+5] }}</strong></td>
-                                    <td>{{ class_data.max_stats[stat_names[loop.index+5]] }}</td>
+                                    <td><strong>{{ stat_names[loop.index+4] }}</strong></td>
+                                    <td>{{ class_data.max_stats[stat_names[loop.index+4]] }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
