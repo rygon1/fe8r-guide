@@ -3,31 +3,49 @@
     {% block title %}{{ shop_data.name }} — Shops | {% endblock title %}
 {% endif %}
 {% block content %}
+    {% set std_wtypes = ["Sword", "Lance", "Axe", "Bow", "Staff", "Light", "Anima", "Dark", "Monster"] %}
     <div>
         <h2>{{ shop_data.name }} <span class="{{ shop_data.icon_class }}"></span></h2>
     </div>
-    <section class="shop-grid">
-        {% for wtype in wtypes %}
-            <table class="striped">
-                <caption>{{ wtype if wtype else "Misc" }}</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Item</th>
-                        <th scope="col">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in shop_data.items | selectattr('weapon_type', 'equalto', wtype) %}
-                        <tr>
-                            <th scope="row">
-                                <span class="{{ item.icon_class }}"></span><a href="{{ url_for('items.get_fe_item_sheet',fe_item_nid=item.nid) }}">{{ item.name
-                                }}</a>
-                            </th>
-                            <td>{{ item.value | currency_format }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endfor %}
+    <section>
+        <div class="tabs"
+             _="on click set tab to the closest <[role=tab]/> to the target if no tab exit end take @aria-selected='true' from <[role=tab]/> in me giving 'false' for tab add @hidden to <[role=tabpanel]/> in me when its @id is not (tab's @aria-controls)">
+            <div class="tab-bar" role="tablist">
+                {% for wtype in wtypes %}
+                    <span class="tab"
+                          role="tab"
+                          {% if loop.first %} aria-selected="true" {% else %} aria-selected="false" {% endif %}
+                          aria-controls="{{ wtype }}-tab"><small>{{ wtype }}&nbsp;</small><span class="{% if wtype in std_wtypes %}{{ wtype }}{% else %}Default{% endif %}-weapon-icon Wexp-icons-icon"></span></span>
+                {% endfor %}
+            </div>
+            {% for wtype in wtypes %}
+                <div class="panel"
+                     id="{{ wtype }}-tab"
+                     role="tabpanel"
+                     {% if not loop.first %}hidden{% endif %}>
+                    <div>
+                        <table class="striped shop">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Item</th>
+                                    <th scope="col">Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in shop_data.items | selectattr('weapon_type', 'equalto', wtype) %}
+                                    <tr>
+                                        <th scope="row">
+                                            <span class="{{ item.icon_class }}"></span><a href="{{ url_for('items.get_fe_item_sheet',fe_item_nid=item.nid) }}">{{ item.name
+                                            }}</a>
+                                        </th>
+                                        <td>{{ item.value | currency_format }}<b>G</b></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </section>
 {% endblock content %}

@@ -92,6 +92,21 @@ def get_fe_arsenal_sheet(fe_unit_nid="Eirika") -> str:
     )
 
 
+def wtype_sort(wtype):
+    WTYPE_SORT_DICT = {
+        "Sword": 1,
+        "Lance": 2,
+        "Axe": 3,
+        "Bow": 4,
+        "Staff": 5,
+        "Light": 6,
+        "Anima": 7,
+        "Dark": 8,
+        "Monster": 9,
+    }
+    return WTYPE_SORT_DICT.get(wtype, 10)
+
+
 @bp.route("/shops")
 def get_shop_index() -> str:
     stmt = select(Shop).order_by(Shop.order_name.asc())
@@ -102,7 +117,7 @@ def get_shop_index() -> str:
         shop_nid = "2_Armory_Global_IdeArmory"
         template = "shop_index.html.jinja2"
     shop_data = db.get_or_404(Shop, shop_nid)
-    wtypes = set(x.weapon_type for x in shop_data.items)
+    wtypes = sorted(set(item.weapon_type for item in shop_data.items), key=wtype_sort)
     return render_template(template, shop_data=shop_data, shops=shops, wtypes=wtypes)
 
 
