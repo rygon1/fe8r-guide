@@ -1,10 +1,10 @@
 from itertools import groupby
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, abort, render_template, request
 from sqlalchemy import select
 
 from app.extensions import db
-from app.models import Arsenal, Item, ItemCategory, Shop, Weapon
+from app.models import Arsenal, Item, ItemCategory, Shop
 
 bp = Blueprint("items", __name__, url_prefix="/items", static_folder="../static/")
 
@@ -77,21 +77,6 @@ def get_fe_item_sheet(fe_item_nid="Iron_Sword_Test") -> str:
     return render_template("item_sheet.html.jinja2", item_data=item_data)
 
 
-@bp.route("/arsenals/<string:fe_unit_nid>")
-def get_fe_arsenal_sheet(fe_unit_nid="Eirika") -> str:
-    stmt = select(Arsenal).where(Arsenal.arsenal_owner_nid == fe_unit_nid)
-    unit_arsenals = db.session.execute(stmt).scalars().all()
-    weapon_table = db.session.execute(select(Weapon)).scalars().all()
-    weapon_lookup = {}
-    for weapon_data in weapon_table:
-        weapon_lookup[weapon_data.nid] = weapon_data.icon_class
-    return render_template(
-        "arsenal_sheet.html.jinja2",
-        unit_arsenals=unit_arsenals,
-        weapon_lookup=weapon_lookup,
-    )
-
-
 def wtype_sort(wtype):
     WTYPE_SORT_DICT = {
         "Sword": 1,
@@ -103,8 +88,26 @@ def wtype_sort(wtype):
         "Anima": 7,
         "Dark": 8,
         "Monster": 9,
+        "Accessory": 10,
+        "Held Item": 11,
+        "Consumable": 12,
+        "Misc": 13,
     }
-    return WTYPE_SORT_DICT.get(wtype, 10)
+    return WTYPE_SORT_DICT.get(wtype, 13)
+
+
+@bp.route("/arsenals/<string:fe_unit_nid>")
+def get_fe_arsenal_sheet(fe_unit_nid="Eirika") -> str:
+    stmt = select(Arsenal).where(Arsenal.arsenal_owner_nid == fe_unit_nid)
+    unit_arsenals = db.session.execute(stmt).scalars().all()
+    if not unit_arsenals:
+        abort(404)
+    for arsenal in unit_arsenals:
+        arsenal.items.sort(key=lambda x: wtype_sort(x.weapon_type))
+    return render_template(
+        "arsenal_sheet.html.jinja2",
+        unit_arsenals=unit_arsenals,
+    )
 
 
 @bp.route("/shops")
